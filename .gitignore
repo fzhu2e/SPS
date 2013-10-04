@@ -1,0 +1,31 @@
+#================================
+# Temp
+#================================
+~*
+*.tmp
+*.log
+*.swap
+.*.swap
+
+#================================
+# Meta
+#================================
+~*
+*.log
+*.tmp
+
+*.o
+*.mod
+sp_dynamic
+tags
+DevLog.markdown
+
+#================================
+# Results
+#================================
+output/*.bin
+debug/*.txt
+scripts/*.pdf
+scripts/*.markdown
+scripts/2013*/*.pdf
+scripts/2013*/*.markdown
