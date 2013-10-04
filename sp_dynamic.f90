@@ -40,8 +40,8 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: p_0
 !INTEGER, PARAMETER :: nstep = 500
 !INTEGER, PARAMETER :: nstep = 3000
 !INTEGER, PARAMETER :: nstep = 6000
-INTEGER, PARAMETER :: nstep = 9000     ! for the DC case
-!INTEGER, PARAMETER :: nstep = 10000   ! for the TB case
+!INTEGER, PARAMETER :: nstep = 9000     ! for the DC case
+INTEGER, PARAMETER :: nstep = 10000   ! for the TB case
 !INTEGER, PARAMETER :: nstep = 15000
 !INTEGER, PARAMETER :: nstep = 18000
 !INTEGER, PARAMETER :: nstep = 20000
