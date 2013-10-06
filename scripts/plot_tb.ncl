@@ -103,8 +103,8 @@ res@tiMainFontHeightF  = 0.015                    ; change font heights
 ;res@tiXAxisFontHeightF  = 0.015                    ; change font heights
 ;res@tiYAxisFontHeightF  = 0.015                    ; change font heights
 
-res@gsnLeftString   = "dx = 50m; dz = 50m; dt = 0.1s"               ; add the gsn titles
-;res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 0.1s"               ; add the gsn titles
+;res@gsnLeftString   = "dx = 50m; dz = 50m; dt = 0.1s"               ; add the gsn titles
+res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 0.1s"               ; add the gsn titles
 res@gsnLeftStringFontHeightF   = 0.015
 
 ;plot = gsn_contour(wks,pi_data,res)

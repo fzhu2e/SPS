@@ -15,7 +15,7 @@ IMPLICIT NONE
 !=================================================
 ! Model settings.
 !-------------------------------------------------
-INTEGER, PARAMETER :: RunCase = 3         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
+INTEGER, PARAMETER :: RunCase = 2         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
 INTEGER, PARAMETER :: TimeScheme = 3      ! 1. Forward-backward; 2. Leapfrog; 3. Runge-Kutta; 99. Debug
 INTEGER, PARAMETER :: AdvectionScheme = 5 ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order
 INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic
@@ -37,27 +37,27 @@ INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic
 !-------------------------------------------------
 ! 2. Thermal bubble.
 !-------------------------------------------------
-!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
+REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
 !INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
 !REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
 !REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
 
 !-------------------------------------------------
 ! 3. Inertia gravity waves.
 !-------------------------------------------------
-INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
-REAL(preci), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
 !-------------------------------------------------
 !REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
 !REAL(preci), PARAMETER :: ztop = 35000.                     ! (m)

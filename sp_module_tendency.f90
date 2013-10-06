@@ -623,7 +623,7 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	!IF (rhoutheta_v(i,k) == undef .OR. rhoutheta_v(i-1,k) == undef) STOP "PrhouthetaPx_w is WRONG!!!"
 	!IF (rhowtheta_pi(i,k) == undef .OR. rhowtheta_pi(i,k-1) == undef) STOP "PrhowthetaPz_w is WRONG!!!"
 	
-	!F_theta(i,k) = - 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k) + PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
+	F_theta(i,k) = - 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k) + PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
 	!IF (rho_0_w(i,k) == undef .OR. PrhouthetaPx_w(i,k) == undef .OR. theta(i,k) == undef .OR. PrhouPx_w(i,k) == undef .OR. PrhowthetaPz_w(i,k) == undef .OR. PrhowPz_w(i,k) == undef) STOP "F_theta is WRONG!!!"
 
 	tend_theta(i,k) = F_theta(i,k)
