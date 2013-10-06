@@ -185,7 +185,7 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_pi_1
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_theta
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_theta_1
 !-------------------------------------------------
-INTEGER :: i, k, imin, imax, kmin, kmax
+INTEGER :: i, k
 !=================================================
 ! Step 1. phi* = phi(n) + dt/3.*tend(phi(n))
 !-------------------------------------------------
@@ -212,20 +212,14 @@ CALL tendency_w(old_w,rho_0,old_theta_1,theta_0,old_pi_1,F_w,tend_w)
 CALL tendency_theta(old_u,old_w,rho_0,old_theta,F_theta,tend_theta)
 
 ! u-grid (its + 1:ite - 1, kts:kte)
-imin = its + 1
-imax = ite - 1
-kmin = kts
-kmax = kte
+CALL set_calc_area_u
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	mid1_u(i,k) = old_u(i,k) + DeltaT/3.*tend_u(i,k)
 END FORALL
 
 ! w-grid (it + 1:ite, kts + 1:kte)
-imin = its + 1
-imax = ite
-kmin = kts + 1
-kmax = kte
+CALL set_calc_area_w
 ! ATTENTION: The calculated area includes the boundary layers.
 kmin = kmin - 1
 kmax = kmax + 1
@@ -241,10 +235,7 @@ CALL update_boundary(mid1_u,mid1_w)
 CALL tendency_pi(mid1_u,mid1_w,rho_0,theta_0,F_pi,tend_pi)
 
 ! pi-grid (its + 1:ite, kts:kte)
-imin = its + 1
-imax = ite
-kmin = kts
-kmax = kte
+CALL set_calc_area_pi
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	mid1_pi_1(i,k) = old_pi_1(i,k) + DeltaT/3.*tend_pi(i,k)
@@ -278,20 +269,14 @@ CALL tendency_w(mid1_w,rho_0,mid1_theta_1,theta_0,mid1_pi_1,F_w,tend_w)
 CALL tendency_theta(mid1_u,mid1_w,rho_0,mid1_theta,F_theta,tend_theta)
 
 ! u-grid (its + 1:ite - 1, kts:kte)
-imin = its + 1
-imax = ite - 1
-kmin = kts
-kmax = kte
+CALL set_calc_area_u
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	mid2_u(i,k) = old_u(i,k) + DeltaT/2.*tend_u(i,k)
 END FORALL
 
 ! w-grid (it + 1:ite, kts + 1:kte)
-imin = its + 1
-imax = ite
-kmin = kts + 1
-kmax = kte
+CALL set_calc_area_w
 ! ATTENTION: The calculated area includes the boundary laye.
 kmin = kmin - 1
 kmax = kmax + 1
@@ -307,10 +292,7 @@ CALL update_boundary(mid2_u,mid2_w)
 CALL tendency_pi(mid2_u,mid2_w,rho_0,theta_0,F_pi,tend_pi)
 
 ! pi-grid (its + 1:ite, kts:kte)
-imin = its + 1
-imax = ite
-kmin = kts
-kmax = kte
+CALL set_calc_area_pi
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	mid2_pi_1(i,k) = old_pi_1(i,k) + DeltaT/2.*tend_pi(i,k)
@@ -344,20 +326,14 @@ CALL tendency_w(mid2_w,rho_0,mid2_theta_1,theta_0,mid2_pi_1,F_w,tend_w)
 CALL tendency_theta(mid2_u,mid2_w,rho_0,mid2_theta,F_theta,tend_theta)
 
 ! u-grid (its + 1:ite - 1, kts:kte)
-imin = its + 1
-imax = ite - 1
-kmin = kts
-kmax = kte
+CALL set_calc_area_u
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	new_u(i,k) = old_u(i,k) + DeltaT*tend_u(i,k)
 END FORALL
 
 ! w-grid (it + 1:ite, kts + 1:kte)
-imin = its + 1
-imax = ite
-kmin = kts + 1
-kmax = kte
+CALL set_calc_area_w
 ! ATTENTION: The calculated area includes the boundary laye.
 kmin = kmin - 1
 kmax = kmax + 1
@@ -373,10 +349,7 @@ CALL update_boundary(new_u,new_w)
 CALL tendency_pi(new_u,new_w,rho_0,theta_0,F_pi,tend_pi)
 
 ! pi-grid (its + 1:ite, kts:kte)
-imin = its + 1
-imax = ite
-kmin = kts
-kmax = kte
+CALL set_calc_area_pi
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	new_pi_1(i,k) = old_pi_1(i,k) + DeltaT*tend_pi(i,k)

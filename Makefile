@@ -13,7 +13,7 @@ OBJS =	sp_dynamic.o sp_module_boundary.o sp_module_constant.o \
 LIBS =	
 
 F90 = ifort
-F90FLAGS = -O0 -g -w -DDEBUG
+F90FLAGS = -O0 -g -w -DDEBUG -parallel
 LDFLAGS =
 
 all: $(PROG)

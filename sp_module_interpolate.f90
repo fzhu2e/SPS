@@ -40,7 +40,7 @@ REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0
 !-------------------------------------------------
-INTEGER :: i, k, imin, imax, kmin, kmax
+INTEGER :: i, k
 !=================================================
 CALL debug_undef_all( u_pi,u_w,u_v,                               &
                       w_pi,w_u,w_v,                               &
@@ -56,10 +56,7 @@ CALL debug_undef_all( u_pi,u_w,u_v,                               &
 !=================================================
 ! To u-grid (pi, rho, w, theta) - Mid-vars can be calculated on boundaries. 
 ! u-grid (its + 1:ite - 1, kts:kte)
-imin = its + 1
-imax = ite - 1
-kmin = kts
-kmax = kte
+CALL set_calc_area_u
 ! ATTENTION: The calculated area includes the boundaries.
 imin = imin - 1
 imax = imax + 1
@@ -91,10 +88,7 @@ END FORALL
 
 ! To pi-grid (u, w, theta)
 ! pi-grid (its + 1:ite, kts:kte)
-imin = its + 1
-imax = ite
-kmin = kts
-kmax = kte
+CALL set_calc_area_pi
 ! ATTENTION: The calculated area includes the boundaries.
 imin = imin - 1
 imax = imax + 1
@@ -117,10 +111,7 @@ END FORALL
 
 ! To w-grid (pi, rho, u)
 ! w-grid (its + 1:ite, kts + 1:kte)
-imin = its + 1
-imax = ite
-kmin = kts + 1
-kmax = kte
+CALL set_calc_area_w
 ! ATTENTION: The calculated area includes the boundaries.
 imin = imin - 1
 imax = imax + 1
@@ -139,10 +130,7 @@ END FORALL
 
 ! To v(virtual)-grid (pi, rho, u, w, theta)
 ! v-grid (its + 1:ite - 1, kts + 1:kte)
-imin = its + 1
-imax = ite - 1
-kmin = kts + 1
-kmax = kte
+CALL set_calc_area_v
 ! ATTENTION: The calculated area includes the boundaries.
 imin = imin - 1
 imax = imax + 1
