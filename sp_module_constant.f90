@@ -31,18 +31,6 @@ REAL(preci), PARAMETER :: Cp = 1005.4152   ! 0.2403 (cal/g/K) = 0.2403*4.184*100
 REAL(preci), PARAMETER :: p0 = 100000.      ! (Pa)
 REAL(preci), PARAMETER :: p_top = 100.       ! (Pa)
 REAL(preci), PARAMETER :: Rd = 287.04       ! 2.8704E+6 (erg/g/K) = 287.04 (J/kg/K)
-
-! Density current.
-!REAL(preci), PARAMETER :: Km = 75.        !(m^2/s)
-!REAL(preci), PARAMETER :: Kh = 75.        !(m^2/s)
-
-! Thermal bubble.
-REAL(preci), PARAMETER :: Km = 20.        !(m^2/s)
-REAL(preci), PARAMETER :: Kh = 20.        !(m^2/s)
-
-! Inertia gravity waves.
-!REAL(preci), PARAMETER :: Km = 0.        !(m^2/s)
-!REAL(preci), PARAMETER :: Kh = 0.        !(m^2/s)
 !=================================================
 END MODULE sp_module_constant
 !=================================================

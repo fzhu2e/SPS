@@ -13,13 +13,16 @@ OBJS =	sp_dynamic.o sp_module_boundary.o sp_module_constant.o \
 LIBS =	
 
 F90 = ifort
-F90FLAGS = -O0 -g -w -DDEBUG -parallel
+#F90FLAGS = -O0 -g -w -DDEBUG
+F90FLAGS = -O3 -w
 LDFLAGS =
+CONFIG =  
+#CONFIG = -openmp
 
 all: $(PROG)
 
 $(PROG): $(OBJS)
-	$(F90) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
+	$(F90) $(LDFLAGS) $(CONFIG) -o $@ $(OBJS) $(LIBS)
 
 clean:
 	rm -f $(PROG) $(OBJS) *.mod
@@ -27,7 +30,7 @@ clean:
 .SUFFIXES: $(SUFFIXES) .f90
 
 .f90.o:
-	$(F90) $(F90FLAGS) -c $<
+	$(F90) $(F90FLAGS) $(CONFIG) -c $<
 
 sp_dynamic.o: sp_module_boundary.o sp_module_constant.o sp_module_debug.o \
 	sp_module_initiate.o sp_module_integrate.o sp_module_model.o \
