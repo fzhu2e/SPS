@@ -37,7 +37,7 @@ REAL(preci) :: t_start, t_end, t_lapse, t_left, t_all
 !-------------------------------------------------
 WRITE(*,*) "====================="
 WRITE(*,*) " Initial model..."
-WRITE(*,*) "---------------------"
+WRITE(*,*) "====================="
 WRITE(*,*) " RunCase:         ", RunCase
 WRITE(*,*) " TimeScheme:      ", TimeScheme
 WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
@@ -59,7 +59,7 @@ CALL debug_undef_all(u,v,w,pi_1,theta,theta_0,theta_1,rho_0,pi,pi_0,p_0)
 !-------------------------------------------------
 WRITE(*,*) "====================="
 WRITE(*,*) " Initial case..."
-WRITE(*,*) "---------------------"
+WRITE(*,*) "====================="
 SELECT CASE (RunCase)
 CASE (1)
 	CALL initiate_dc(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
@@ -126,7 +126,7 @@ CALL output(2,u,w,theta_1,pi_1)                   ! finish
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"
-WRITE(*,*) "---------------------"
+WRITE(*,*) "====================="
 WRITE(*,*) " nstep: ", nstep
 WRITE(*,*) " nx/nz: ", nx, nz
 WRITE(*,*) " dx/dz: ", dx, dz
@@ -138,7 +138,7 @@ WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
 WRITE(*,*) " LateralBoundary: ", LateralBoundary
 WRITE(*,*) "---------------------"
 WRITE(*,*) " Km/Kh: ", Km, Kh
-WRITE(*,*) "====================="
+WRITE(*,*) "---------------------"
 WRITE(*,*) " TIME: ", t_all/60./60., "hr"
 WRITE(*,*) "====================="
 WRITE(*,*)

@@ -228,8 +228,6 @@ END SELECT
 !-------------------------------------------------
 CALL set_calc_area_u
 
-IF (ANY(u(imin-1:imax+1,k) == undef)) STOP "P2uPx2_u is WRONG!!!"
-IF (ANY(u(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2uPx2_u is WRONG!!!"
 
 IF (ANY(pi_1(imin:imax+1,k) == undef)) STOP "Ppi_1Px_u is WRONG!!!"
 IF (ANY(rhou_pi(imin:imax+1,k) == undef)) STOP "PrhouPx_u is WRONG!!!"
@@ -245,13 +243,21 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	F_u(i,k) = - 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k) + PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
 	Ppi_1Px_u(i,k) = (pi_1(i + 1,k) - pi_1(i,k))/dx
 	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
-	
-	P2uPx2_u(i,k) = (u(i+1,k) + u(i-1,k) - 2*u(i,k))/dx/dx
-	P2uPz2_u(i,k) = (u(i,k+1) + u(i,k-1) - 2*u(i,k))/dz/dz
-	
-	tend_u(i,k) = tend_u(i,k) + Km*(P2uPx2_u(i,k) + P2uPz2_u(i,k)) ! Add diffusion term.
-	
 END FORALL
+	
+	
+IF (RunCase == 1 .OR. RunCase == 2) THEN
+	IF (ANY(u(imin-1:imax+1,k) == undef)) STOP "P2uPx2_u is WRONG!!!"
+	IF (ANY(u(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2uPx2_u is WRONG!!!"
+	
+	FORALL (i = imin:imax, k = kmin:kmax)
+		P2uPx2_u(i,k) = (u(i+1,k) + u(i-1,k) - 2*u(i,k))/dx/dx
+		P2uPz2_u(i,k) = (u(i,k+1) + u(i,k-1) - 2*u(i,k))/dz/dz
+		
+		tend_u(i,k) = tend_u(i,k) + Km*(P2uPx2_u(i,k) + P2uPz2_u(i,k)) ! Add diffusion term.
+	END FORALL
+END IF
+	
 !-------------------------------------------------
 IF (ANY(ISNAN(F_u(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_u!!!"
 !=================================================
@@ -415,8 +421,6 @@ kmax = kmax + 1
 
 IF (ANY(rhou_v(imin-1:imax,kmin:kmax) == undef) .OR. ANY(rhouw_v(imin-1:imax,kmin:kmax) == undef) .OR. ANY(rhow_pi(imin:imax,kmin-1:kmax) == undef) .OR. ANY(rhoww_pi(imin:imax,kmin-1:kmax) == undef)) STOP "F_w is WRONG!!!"
 
-IF (ANY(w(imin-1:imax+1,kmin:kmax) == undef)) STOP "P2wPx2_u is WRONG!!!"
-IF (ANY(w(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2wPz2_u is WRONG!!!"
 
 IF (ANY(pi_1(imin:imax,kmin-1:kmax) == undef)) STOP "Ppi_1Pz_w is WRONG!!!"
 IF (ANY(rhou_v(imin-1:imax,kmin:kmax) == undef)) STOP "PrhouPx_w is WRONG!!!"
@@ -434,13 +438,20 @@ FORALL( i = imin:imax, k = kmin:kmax)
 
 	Ppi_1Pz_w(i,k) = (pi_1(i,k) - pi_1(i,k - 1))/dz
 	tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
-	
-	P2wPx2_w(i,k) = (w(i+1,k) + w(i-1,k) - 2*w(i,k))/dx/dx
-	P2wPz2_w(i,k) = (w(i,k+1) + w(i,k-1) - 2*w(i,k))/dz/dz
-	
-	tend_w(i,k) = tend_w(i,k) + Km*(P2wPx2_w(i,k) + P2wPz2_w(i,k)) ! Add diffusion term.
-	
 END FORALL
+
+IF (RunCase == 1 .OR. RunCase == 2) THEN
+	IF (ANY(w(imin-1:imax+1,kmin:kmax) == undef)) STOP "P2wPx2_u is WRONG!!!"
+	IF (ANY(w(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2wPz2_u is WRONG!!!"
+	
+	FORALL( i = imin:imax, k = kmin:kmax)
+		P2wPx2_w(i,k) = (w(i+1,k) + w(i-1,k) - 2*w(i,k))/dx/dx
+		P2wPz2_w(i,k) = (w(i,k+1) + w(i,k-1) - 2*w(i,k))/dz/dz
+		
+		tend_w(i,k) = tend_w(i,k) + Km*(P2wPx2_w(i,k) + P2wPz2_w(i,k)) ! Add diffusion term.
+	END FORALL
+END IF
+	
 
 !CALL debug_ascii_output(tend_w)
 !CALL debug_test_boundary(F_w)
@@ -611,19 +622,24 @@ IF (ANY(rho_0_w(imin:imax,kmin:kmax) == undef) .OR. &
 	ANY(PrhowPz_w(imin:imax,kmin:kmax) == undef) .OR. &
 	ANY(PrhowthetaPz_w(imin:imax,kmin:kmax) == undef)) STOP "F_theta is WRONG!!!"
 
-IF (ANY(theta(imin-1:imax,kmin:kmax) == undef)) STOP "P2thetaPx2_w is WRONG!!!"
-IF (ANY(theta(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2thetaPz2_w is WRONG!!!"
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	F_theta(i,k) = - 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k) + PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
 
 	tend_theta(i,k) = F_theta(i,k)
-	
-	P2thetaPx2_w(i,k) = (theta(i+1,k) + theta(i-1,k) - 2*theta(i,k))/dx/dx
-	P2thetaPz2_w(i,k) = (theta(i,k+1) + theta(i,k-1) - 2*theta(i,k))/dz/dz
-	
-	tend_theta(i,k) = F_theta(i,k) + Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k)) ! Add diffusion term.
 END FORALL
+	
+IF (RunCase == 1 .OR. RunCase == 2) THEN
+	IF (ANY(theta(imin-1:imax,kmin:kmax) == undef)) STOP "P2thetaPx2_w is WRONG!!!"
+	IF (ANY(theta(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2thetaPz2_w is WRONG!!!"
+	
+	FORALL (i = imin:imax, k = kmin:kmax)
+		P2thetaPx2_w(i,k) = (theta(i+1,k) + theta(i-1,k) - 2*theta(i,k))/dx/dx
+		P2thetaPz2_w(i,k) = (theta(i,k+1) + theta(i,k-1) - 2*theta(i,k))/dz/dz
+		
+		tend_theta(i,k) = F_theta(i,k) + Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k)) ! Add diffusion term.
+	END FORALL
+END IF
 !-------------------------------------------------
 IF (ANY(ISNAN(F_theta(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
 !=================================================

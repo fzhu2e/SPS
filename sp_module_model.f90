@@ -22,22 +22,22 @@ INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic
 !-------------------------------------------------
 ! 1. Density current.
 !-------------------------------------------------
-!INTEGER, PARAMETER :: RunCase = 1         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-!INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+INTEGER, PARAMETER :: RunCase = 1         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
+INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
+REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
+REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
 !INTEGER, PARAMETER :: nx = 1024                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 128                               ! grid number along z-axis
 !REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
 !REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-!INTEGER, PARAMETER :: nstep = 90000
+REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+INTEGER, PARAMETER :: nstep = 9000
 
-!REAL(preci), PARAMETER :: Km = 75.        !(m^2/s)
-!REAL(preci), PARAMETER :: Kh = 75.        !(m^2/s)
+REAL(preci), PARAMETER :: Km = 75.        !(m^2/s)
+REAL(preci), PARAMETER :: Kh = 75.        !(m^2/s)
 
 !-------------------------------------------------
 ! 2. Thermal bubble.
@@ -62,17 +62,29 @@ INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic
 !-------------------------------------------------
 ! 3. Inertia gravity waves.
 !-------------------------------------------------
-INTEGER, PARAMETER :: RunCase = 3         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
-REAL(preci), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: RunCase = 3         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
+!INTEGER, PARAMETER :: nx = 1200                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 400                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 250.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 25.                       ! (m)
 
-REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-INTEGER, PARAMETER :: nstep = 30000
+!INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-REAL(preci), PARAMETER :: Km = 0.        !(m^2/s)
-REAL(preci), PARAMETER :: Kh = 0.        !(m^2/s)
+!INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+
+!INTEGER, PARAMETER :: nx = 120                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 40                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 2500.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 250.                       ! (m)
+
+!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+!INTEGER, PARAMETER :: nstep = 30000
 
 !-------------------------------------------------
 !REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)

@@ -25,7 +25,8 @@ REAL(preci), PARAMETER :: g = 9.8            ! gravity (m/s^2)
 REAL(preci), PARAMETER :: omega = 7.292E-5
 REAL(preci), PARAMETER :: latitude = 45*PI_math/180.
 REAL(preci), PARAMETER :: f = 2*omega*SIN(latitude)
-REAL(preci), PARAMETER :: cs = 340.          ! speed of sound (m/s)
+!REAL(preci), PARAMETER :: cs = 340.          ! speed of sound (m/s)
+REAL(preci), PARAMETER :: cs = 300.          ! speed of sound (m/s)
 REAL(preci), PARAMETER :: Ts = 300.         ! (K)
 REAL(preci), PARAMETER :: Cp = 1005.4152   ! 0.2403 (cal/g/K) = 0.2403*4.184*1000 (J/kg/K) = 1005.4152 (J/kg/K)
 REAL(preci), PARAMETER :: p0 = 100000.      ! (Pa)

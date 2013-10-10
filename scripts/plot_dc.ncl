@@ -5,11 +5,11 @@ begin
 ;=================================
 ; Settings.
 ;---------------------------------
-;nz = 64
-;nx = 512
+nz = 64
+nx = 512
 
-nz = 128
-nx = 1024
+;nz = 128
+;nx = 1024
 
 
 ;nt = 4
@@ -126,8 +126,8 @@ res@tiMainFontHeightF  = 0.015                    ; change font heights
 ;res@gsnLeftString   = "dx = 100m; dz = 100m; u = 50m/s; w = 0m/s; dt = 1s"               ; add the gsn titles
 ;res@gsnLeftString   = "dx = 100m; dz = 100m; u = 50m/s; w = 0m/s; dt = 0.1s"               ; add the gsn titles
 ;res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 1s"               ; add the gsn titles
-;res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 0.1s"               ; add the gsn titles
-res@gsnLeftString   = "dx = 50m; dz = 50m; dt = 0.1s"               ; add the gsn titles
+res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 0.1s"               ; add the gsn titles
+;res@gsnLeftString   = "dx = 50m; dz = 50m; dt = 0.1s"               ; add the gsn titles
 ;res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 0.05s"               ; add the gsn titles
 ;res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 0.01s"               ; add the gsn titles
 res@gsnLeftStringFontHeightF   = 0.015
