@@ -45,6 +45,8 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: PrhowwPz_w
 
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: P2wPz2_w
+
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PwPz_w
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: F_theta
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: tend_theta
@@ -61,6 +63,8 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: PrhowthetaPz_w
 
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: P2thetaPz2_w
+
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PthetaPz_w
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: Ppi_1Px_u
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: Ppi_1Pz_w
@@ -72,6 +76,9 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: urhotheta_u
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: wrhotheta_w
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: PwrhothetaPz_pi
+
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: urhotheta_w
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PurhothetaPz_pi
 !=================================================
 CONTAINS
 !=================================================
@@ -84,6 +91,7 @@ REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_u
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
 !-------------------------------------------------
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: uPuPx_u, wPuPz_u
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
 INTEGER :: i, k
@@ -228,7 +236,6 @@ END SELECT
 !-------------------------------------------------
 CALL set_calc_area_u
 
-
 IF (ANY(pi_1(imin:imax+1,k) == undef)) STOP "Ppi_1Px_u is WRONG!!!"
 IF (ANY(rhou_pi(imin:imax+1,k) == undef)) STOP "PrhouPx_u is WRONG!!!"
 IF (ANY(rhouu_pi(imin:imax+1,k) == undef)) STOP "PrhouuPx_u is WRONG!!!"
@@ -240,9 +247,17 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	PrhouuPx_u(i,k) = (rhouu_pi(i+1,k) - rhouu_pi(i,k))/dx
 	PrhowPz_u(i,k) = (rhow_v(i,k+1) - rhow_v(i,k))/dz
 	PrhouwPz_u(i,k) = (rhouw_v(i,k+1) - rhouw_v(i,k))/dz
-	F_u(i,k) = - 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k) + PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
+	
+	uPuPx_u(i,k) = 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k))
+	wPuPz_u(i,k) = 1./rho_0_u(i,k)*(PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
+	!PuPz_u(i,k) = 
+	
+	!F_u(i,k) = - 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k) + PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
+	!F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)
+	F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)/OnePlusZsPbPzhat(i,k) + b_pi(k)*u(i,k)*PzsPx(i)/OnePlusZsPbPzhat_u(i,k)
 	Ppi_1Px_u(i,k) = (pi_1(i + 1,k) - pi_1(i,k))/dx
-	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
+	!tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
+	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)/OnePlusZsPbPzhat_u(i,k) +Cp*theta_0_u(i,k)*b_pi(k)*PzsPx(i)/OnePlusZsPbPzhat_u(i,k)
 END FORALL
 	
 	
@@ -276,6 +291,7 @@ REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_w
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_w
 !-------------------------------------------------
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: uPwPx_w, wPwPz_w
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
 INTEGER :: i, k
@@ -428,16 +444,26 @@ IF (ANY(rhouw_v(imin-1:imax,kmin:kmax) == undef)) STOP "PrhouwPx_w is WRONG!!!"
 IF (ANY(rhow_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PrhowPz_w is WRONG!!!"
 IF (ANY(rhoww_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PrhowwPz_w is WRONG!!!"
 
+IF (ANY(w_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PwPz_w is WRONG!!!"
+
 FORALL( i = imin:imax, k = kmin:kmax)
 	PrhouPx_w(i,k) = (rhou_v(i,k) - rhou_v(i-1,k))/dx
 	PrhouwPx_w(i,k) = (rhouw_v(i,k) - rhouw_v(i-1,k))/dx
 	PrhowPz_w(i,k) = (rhow_pi(i,k) - rhow_pi(i,k-1))/dz
 	PrhowwPz_w(i,k) = (rhoww_pi(i,k) - rhoww_pi(i,k-1))/dz
 
-	F_w(i,k) = - 1./rho_0_w(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k) + PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k)) + g*theta_1(i,k)/theta_0(i,k)
+	uPwPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k))
+	wPwPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k))
+
+	PwPz_w(i,k) = (w_pi(i,k) - w_pi(i,k-1))/dz
+
+	!F_w(i,k) = - 1./rho_0_w(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k) + PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k)) + g*theta_1(i,k)/theta_0(i,k)
+	!F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
+	F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k)/OnePlusZsPbPzhat(i,k) + u_w(i,k)*b(k)*PzsPx_pi(i)/OnePlusZsPbPzhat(i,k)*PwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
 
 	Ppi_1Pz_w(i,k) = (pi_1(i,k) - pi_1(i,k - 1))/dz
-	tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
+	!tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
+	tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)/OnePlusZsPbPzhat(i,k)
 END FORALL
 
 IF (RunCase == 1 .OR. RunCase == 2) THEN
@@ -472,6 +498,7 @@ REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_theta
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
 !-------------------------------------------------
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: uPthetaPx_w, wPthetaPz_w
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
 INTEGER :: i, k
@@ -622,9 +649,16 @@ IF (ANY(rho_0_w(imin:imax,kmin:kmax) == undef) .OR. &
 	ANY(PrhowPz_w(imin:imax,kmin:kmax) == undef) .OR. &
 	ANY(PrhowthetaPz_w(imin:imax,kmin:kmax) == undef)) STOP "F_theta is WRONG!!!"
 
+IF (ANY(theta_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PthetaPz_w is WRONG!!!"
 
 FORALL (i = imin:imax, k = kmin:kmax)
-	F_theta(i,k) = - 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k) + PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
+	PthetaPz_w(i,k) = (theta_pi(i,k) - theta_pi(i,k-1))/dz
+
+	uPthetaPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k))
+	wPthetaPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
+	!F_theta(i,k) = - 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k) + PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
+	!F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)
+	F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)/OnePlusZsPbPzhat(i,k) + u_w(i,k)*b(k)*PzsPx_pi(i)/OnePlusZsPbPzhat(i,k)*PthetaPz_w(i,k)
 
 	tend_theta(i,k) = F_theta(i,k)
 END FORALL
@@ -684,6 +718,7 @@ kmax = kmax + 1
 IF (ANY(w(imin:imax,kmin:kmax) == undef) .OR. ANY(rho_0_w(imin:imax,kmin:kmax) == undef) .OR. ANY(theta_0(imin:imax,kmin:kmax) == undef)) STOP "wrhotheta_w is WRONG!!!"
 FORALL (i = imin:imax, k = kmin:kmax)
 	wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
+	urhotheta_w(i,k) = u_w(i,k)*rho_0_w(i,k)*theta_0(i,k)
 END FORALL
 
 ! To pi-grid
@@ -691,10 +726,13 @@ CALL set_calc_area_pi
 
 IF (ANY(urhotheta_u(imin-1:imax,kmin:kmax) == undef)) STOP "PurhothetaPx_pi is WRONG!!!"
 IF (ANY(wrhotheta_w(imin:imax,kmin:kmax+1) == undef)) STOP "PwrhothetaPz_pi is WRONG!!!"
+IF (ANY(urhotheta_w(imin:imax,kmin:kmax+1) == undef)) STOP "PurhothetaPz_pi is WRONG!!!"
 FORALL (i = imin:imax, k = kmin:kmax)
 	PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
 	PwrhothetaPz_pi(i,k) = (wrhotheta_w(i,k + 1) - wrhotheta_w(i,k))/dz
-	F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
+	PurhothetaPz_pi(i,k) = (urhotheta_w(i,k + 1) - urhotheta_w(i,k))/dz
+	!F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
+	F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k)/OnePlusZsPbPzhat_pi(i,k) - b_pi(k)*PzsPx_pi(i)/OnePlusZsPbPzhat_pi(i,k)*PurhothetaPz_pi(i,k))
 	tend_pi(i,k) = F_pi(i,k)
 END FORALL
 !-------------------------------------------------

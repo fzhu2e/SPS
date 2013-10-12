@@ -17,27 +17,28 @@ IMPLICIT NONE
 !-------------------------------------------------
 INTEGER, PARAMETER :: TimeScheme = 3      ! 1. Forward-backward; 2. Leapfrog; 3. Runge-Kutta; 99. Debug
 INTEGER, PARAMETER :: AdvectionScheme = 5 ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order
-INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic
+INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic; 3. Sponge
+
 !=================================================
 !-------------------------------------------------
 ! 1. Density current.
 !-------------------------------------------------
-INTEGER, PARAMETER :: RunCase = 1         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
-REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
-REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+!INTEGER, PARAMETER :: RunCase = 1         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
+!INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
 !INTEGER, PARAMETER :: nx = 1024                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 128                               ! grid number along z-axis
 !REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
 !REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-INTEGER, PARAMETER :: nstep = 9000
+!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+!INTEGER :: nstep = 9000
 
-REAL(preci), PARAMETER :: Km = 75.        !(m^2/s)
-REAL(preci), PARAMETER :: Kh = 75.        !(m^2/s)
+!REAL(preci) :: Km = 75.        !(m^2/s)
+!REAL(preci) :: Kh = 75.        !(m^2/s)
 
 !-------------------------------------------------
 ! 2. Thermal bubble.
@@ -48,50 +49,60 @@ REAL(preci), PARAMETER :: Kh = 75.        !(m^2/s)
 !REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
 !REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
-!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!!REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
+!!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
 !REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-!INTEGER, PARAMETER :: nstep = 10000
+!INTEGER :: nstep = 10000
 
-!REAL(preci), PARAMETER :: Km = 20.        !(m^2/s)
-!REAL(preci), PARAMETER :: Kh = 20.        !(m^2/s)
+!REAL(preci) :: Km = 20.        !(m^2/s)
+!REAL(preci) :: Kh = 20.        !(m^2/s)
 
 !-------------------------------------------------
 ! 3. Inertia gravity waves.
 !-------------------------------------------------
 !INTEGER, PARAMETER :: RunCase = 3         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-!INTEGER, PARAMETER :: nx = 1200                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 400                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 250.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 25.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 1200                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 400                               ! grid number along z-axis
+!!REAL(preci), PARAMETER :: dx = 250.                        ! delta x (m)
+!!REAL(preci), PARAMETER :: dz = 25.                       ! (m)
 
 !INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
 !REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
 !REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-!INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!!REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
+!!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
-!INTEGER, PARAMETER :: nx = 120                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 40                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 2500.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 250.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 120                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 40                               ! grid number along z-axis
+!!REAL(preci), PARAMETER :: dx = 2500.                        ! delta x (m)
+!!REAL(preci), PARAMETER :: dz = 250.                       ! (m)
 
 !REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-!INTEGER, PARAMETER :: nstep = 30000
+!INTEGER :: nstep = 30000
 
+!REAL :: Km, Kh
 !-------------------------------------------------
-!REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
-!REAL(preci), PARAMETER :: ztop = 35000.                     ! (m)
-!REAL(preci), PARAMETER :: dz = ztop/REAL((nz - 1))          ! (m)
-!REAL(preci), PARAMETER :: dz = 1000.                       ! (m)
+! 4. Schar mountain
+!-------------------------------------------------
+INTEGER, PARAMETER :: RunCase = 4
+INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+REAL(preci), PARAMETER :: dx = 250.                        ! delta x (m)
+REAL(preci), PARAMETER :: dz = 210.                       ! (m)
+
 !REAL(preci), PARAMETER :: pi_top = (p_top/p_0)**(R_d/C_pd)
+
+REAL(preci), PARAMETER :: dt = 0.08                               ! delta t (s)
+INTEGER :: nstep = 300000
+
+REAL :: Km, Kh
 !-------------------------------------------------
 INTEGER, PARAMETER :: its = 1
 INTEGER, PARAMETER :: ite = its + nx - 1
@@ -104,6 +115,26 @@ INTEGER, PARAMETER :: ims = its - halo
 INTEGER, PARAMETER :: ime = ite + halo
 INTEGER, PARAMETER :: kms = kts - halo
 INTEGER, PARAMETER :: kme = kte + halo
+
+!-------------------------------------------------
+! Vertical coordinates
+
+REAL(preci), PARAMETER :: ztop = nz*dz                                 ! (m)
+REAL(preci), DIMENSION(ims:ime) :: zs = 0.                             ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime) :: zs_pi = 0.                          ! (m) on pi-grid
+REAL(preci), DIMENSION(ims:ime) :: PzsPx = 0.                          ! (m) on u-grid
+REAL(preci), DIMENSION(kms:kme) :: b = 0.                              !     on w-grid
+REAL(preci), DIMENSION(kms:kme) :: b_pi = 0.                           !     on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat = 0.                  ! (m) on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_pi = 0.               ! (m) on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_u = 0.                ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat = 0.                ! (m) on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_pi = 0.             ! (m) on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_u = 0.              ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat = 1        !     on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_pi = 1     !     on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_u = 1      !     on u-grid
+!-------------------------------------------------
 
 INTEGER :: imin, imax, kmin, kmax
 !=================================================

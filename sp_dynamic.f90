@@ -67,6 +67,8 @@ CASE (2)
 	CALL initiate_tb(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the TB case
 CASE (3)
 	CALL initiate_igw(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
+CASE (4)
+	CALL initiate_Sm(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
@@ -86,18 +88,8 @@ WRITE(*,*)
 !=================================================
 ! Integrate.
 !-------------------------------------------------
-WRITE(*,*) "====================="
-WRITE(*,*) " Integrate..."
-WRITE(*,*) "====================="
-WRITE(*,*) "dx/dz: ", dx, dz
-WRITE(*,*) "   dt: ", dt
-WRITE(*,*) "====================="
-WRITE(*,*)
 
-	!WRITE(*,"(F12.6\)") theta_1(ims:ime-1,kte/2)
-	!WRITE(*,"(F12.6)") theta_1(ime,kte/2)
-
-!CALL debug_ascii_output(w)
+!nstep = 1
 
 t_all = 0.0
 DO i = 1, nstep
@@ -122,7 +114,7 @@ DO i = 1, nstep
 END DO
 !=================================================
 !-------------------------------------------------
-CALL output(2,u,w,theta_1,pi_1)                   ! finish
+CALL output(99,u,w,theta_1,pi_1)                   ! finish
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"

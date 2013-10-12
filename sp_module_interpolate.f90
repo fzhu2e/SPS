@@ -22,6 +22,7 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_v
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0_pi, theta_0_u, theta_0_v
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi, theta_1_u, theta_1_v
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: rho_0_u, rho_0_w, rho_0_v
+REAL(preci), DIMENSION(ims:ime) :: PzsPx_pi
 !=================================================
 CONTAINS
 !=================================================
@@ -49,6 +50,7 @@ CALL debug_undef_all( u_pi,u_w,u_v,                               &
                       theta_0_pi,theta_0_u,theta_0_v,             &
                       theta_1_pi,theta_1_u,theta_1_v,             &
                       rho_0_u,rho_0_w,rho_0_v                     )
+PzsPx_pi = undef
 !CALL debug_ascii_output(u_pi)
 !CALL debug_test_boundary(u_pi)
 !CALL debug_ascii_output(pi_1)
@@ -102,6 +104,11 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	theta_0_pi(i,k) = (theta_0(i,k+1) + theta_0(i,k))/2.
 	theta_1_pi(i,k) = (theta_1(i,k+1) + theta_1(i,k))/2.
 END FORALL
+
+IF (ANY(PzsPx(imin-1:imax) == undef)) STOP "PzsPx_pi is WRONG!!!"
+DO i = imin, imax
+	PzsPx_pi(i) = (PzsPx(i-1) + PzsPx(i))/2.
+END DO
 
 ! To w-grid (pi, rho, u)
 ! w-grid (its + 1:ite, kts + 1:kte)
