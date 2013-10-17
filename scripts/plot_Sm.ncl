@@ -5,61 +5,47 @@ begin
 ;=================================
 ; Settings.
 ;---------------------------------
-;nx = 1200
-;nz = 400
 
-nx = 600
-nz = 200
+nx = 200
+nz = 100
 
-;nx = 300
-;nz = 100
-
-;nx = 120
-;nz = 40
-
+;nx = 400
+;nz = 200
 ;nt = 1
 ;nt = 3
-;nt = 4
-;nt = 10
-;nt = 6
-;nt = 9
 ;nt = 2
-;nt = 1
-;nt = 11
-;nt = 31
+;nt = 5
+nt = 20
 ;nt = 65
-;nt = 83
+;nt = 91
 ;nt = 101
-;nt = 188
-;nt = 161
-nt = 201
-;nt = 301
+;nt = 141
+;nt = 401
 ;nt = 1001
-var = "theta_1"
+;var = "theta_1"
+;var = "pi_1"
+var = "u"
 ;var = "w"
 ;=================================
-;Read data.
+; Read data.
 ;---------------------------------
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
 data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
 ;print(data)
-;last = data(nt-1,:,:)
 ;=================================
 ; Plot.
 ;---------------------------------
-wks = gsn_open_wks ("pdf","igw")                  ; open workstation
-;gsn_define_colormap(wks,"temp_diff_18lev")
+wks = gsn_open_wks ("pdf","Sm")                  ; open workstation
+gsn_define_colormap(wks,"temp_diff_18lev")
 ;gsn_define_colormap(wks,"WhiteYellowOrangeRed")
 ;gsn_define_colormap(wks,"WhiteBlue")
-gsn_define_colormap(wks,"BlueWhiteOrangeRed")
 
 res = True
 
 res@gsnMaximize = True
-;res@gsnPaperOrientation = "portrait"
 res@vpWidthF  = 1.0                    ; change the aspect ratio
-res@vpHeightF = 0.3
+res@vpHeightF = 0.5
 ;res@vpWidthF  = 0.5                    ; change the aspect ratio
 ;res@vpHeightF = 1.0
 ;res@vpXF      = .1                     ; location of where plot starts
@@ -88,19 +74,18 @@ res@lbAutoManage            = False	 ; we control how drawn not plot
 ;res@cnLevels            = (//)
 
 res@gsnSpreadColors = True
-;res@gsnSpreadColorStart = 8
-;res@gsnSpreadColorEnd = 60
+res@gsnSpreadColorStart = 11
+res@gsnSpreadColorEnd = 60
 
-res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
-;res@cnMinLevelValF          = -0.0015
-;res@cnMaxLevelValF          = 0.003
-res@cnMinLevelValF          = -0.0030
-res@cnMaxLevelValF          = 0.0030
-res@cnLevelSpacingF         = 0.0005
+;res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
+;res@cnMinLevelValF          = 0.2
+;res@cnMaxLevelValF          = 1.8
+;res@cnLevelSpacingF         = 0.2
+;res@cnMinLevelValF          = 0.10
+;res@cnMaxLevelValF          = 0.20
+;res@cnLevelSpacingF         = 0.001
 
-;res@cnFillColors = (/7,8,9,10,12,13,14,15,16,17,18,19,20/)
-;res@cnFillColors = (/8,9,10,12,13,14,15,16,17,18,19,20/)
-;res@cnFillColors = (/5,6,7,8,9,10,12,13,14,15,16,17,18,19,20/)
+;res@cnFillColors = ispan(250,10,16)
 
 ; Line
 ;res@cnFillOn = False
@@ -108,8 +93,8 @@ res@cnLevelSpacingF         = 0.0005
 ;res@cnLineLabelsOn = True
 ;res@cnMonoLevelFlag = False
 ;res@cnLevelFlags = "LineAndLabel"
-
-res@tiMainString = "Inertia Gravity Waves"
+  auml    = "a~H-13V2F35~H~FV-2H3~"
+res@tiMainString = "Sch"+auml+"r Mountain"
 ;res@tiXAxisString      = "X"  
 ;res@tiYAxisString      = "Z (height)"
 
@@ -117,7 +102,8 @@ res@tiMainFontHeightF  = 0.015                    ; change font heights
 ;res@tiXAxisFontHeightF  = 0.015                    ; change font heights
 ;res@tiYAxisFontHeightF  = 0.015                    ; change font heights
 
-res@gsnLeftString   = "dx = 500m; dz = 50m; dt = 0.1s"               ; add the gsn titles
+;res@gsnLeftString   = "dx = 50m; dz = 50m; dt = 0.1s"               ; add the gsn titles
+res@gsnLeftString   = "dx = 250m; dz = 210m; dt = 0.12s"               ; add the gsn titles
 res@gsnLeftStringFontHeightF   = 0.015
 
 ;plot = gsn_contour(wks,pi_data,res)
@@ -129,16 +115,11 @@ do i = 0, nt-1
 	;res@gsnCenterStringFontHeightF   = 0.015
 	k = i*100
 	;k = i*1000
-	;res@gsnRightString  = "Step: " + k
-	res@gsnRightString  = "Step: " + i
+	res@gsnRightString  = "Step: " + k
+	;res@gsnRightString  = "Step: " + i
 	res@gsnRightStringFontHeightF   = 0.015
 	plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
 end do
-;tt = 299
-;last = data(tt,:,:)
-;res@gsnRightStringFontHeightF   = 0.015
-;res@gsnRightString  = "Step: " + tt*100
-;plots(0) = gsn_csm_contour(wks,last,res)
 
 ;=================================
 end

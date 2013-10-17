@@ -69,6 +69,8 @@ CASE (3)
 	CALL initiate_igw(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 CASE (4)
 	CALL initiate_Sm(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
+CASE (99)
+	CALL initiate_debug(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the debug vertical coordinates case
 CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
@@ -93,6 +95,7 @@ WRITE(*,*)
 
 t_all = 0.0
 DO i = 1, nstep
+	
 	CALL CPU_TIME(t_start)
 	CALL integrate(i,u,v,w,pi_1,theta,theta_0,theta_1,rho_0) ! main integrate module
 	CALL update_boundary(u,w,pi_1,theta,theta_1)
@@ -101,16 +104,13 @@ DO i = 1, nstep
 	t_left = t_lapse*(nstep - i)/60./60.  ! unit: hour
 	t_all = t_all + t_lapse
 	WRITE(*,"('Step/nStep -- time lapse/left: ',2X,I6,'/ ',I6,' --',F12.6,' sec/',1X,F6.3,' hr')") , i, nstep, t_lapse, t_left
+	
 	!IF (MOD(i,1000) == 0.) THEN
 	!IF (MOD(i,200) == 0.) THEN
-	IF (MOD(i,100) == 0.) THEN
+	!IF (MOD(i,100) == 0.) THEN
 		CALL output(1,u,w,theta_1,pi_1)               ! output the fields at each time step
-	END IF
-	!DO k = kme, kms, -1
-		!WRITE(*,"(F25.20)") theta_1(256,k)
-	!END DO
-	!WRITE(*,"(F12.6\)") theta_1(ims:ime-1,kte/2)
-	!WRITE(*,"(F12.6)") theta_1(ime,kte/2)
+	!END IF
+	
 END DO
 !=================================================
 !-------------------------------------------------

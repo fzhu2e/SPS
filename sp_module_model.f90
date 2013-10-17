@@ -17,7 +17,7 @@ IMPLICIT NONE
 !-------------------------------------------------
 INTEGER, PARAMETER :: TimeScheme = 3      ! 1. Forward-backward; 2. Leapfrog; 3. Runge-Kutta; 99. Debug
 INTEGER, PARAMETER :: AdvectionScheme = 5 ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order
-INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic; 3. Sponge
+INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic;
 
 !=================================================
 !-------------------------------------------------
@@ -85,7 +85,8 @@ INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic; 3. Sponge
 !!REAL(preci), PARAMETER :: dz = 250.                       ! (m)
 
 !REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-!INTEGER :: nstep = 30000
+!!INTEGER :: nstep = 30000
+!INTEGER :: nstep = 200
 
 !REAL :: Km, Kh
 !-------------------------------------------------
@@ -99,10 +100,26 @@ REAL(preci), PARAMETER :: dz = 210.                       ! (m)
 
 !REAL(preci), PARAMETER :: pi_top = (p_top/p_0)**(R_d/C_pd)
 
-REAL(preci), PARAMETER :: dt = 0.08                               ! delta t (s)
-INTEGER :: nstep = 300000
+REAL(preci), PARAMETER :: dt = 0.12                               ! delta t (s)
+!INTEGER :: nstep = 300000
+INTEGER :: nstep = 100
 
 REAL :: Km, Kh
+!-------------------------------------------------
+! 99. Debug vertical coordinates.
+!-------------------------------------------------
+!INTEGER, PARAMETER :: RunCase = 99
+!INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+
+!!REAL(preci), PARAMETER :: pi_top = (p_top/p_0)**(R_d/C_pd)
+
+!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+!INTEGER :: nstep = 90000
+
+!REAL :: Km, Kh
 !-------------------------------------------------
 INTEGER, PARAMETER :: its = 1
 INTEGER, PARAMETER :: ite = its + nx - 1
@@ -123,19 +140,24 @@ REAL(preci), PARAMETER :: ztop = nz*dz                                 ! (m)
 REAL(preci), DIMENSION(ims:ime) :: zs = 0.                             ! (m) on u-grid
 REAL(preci), DIMENSION(ims:ime) :: zs_pi = 0.                          ! (m) on pi-grid
 REAL(preci), DIMENSION(ims:ime) :: PzsPx = 0.                          ! (m) on u-grid
-REAL(preci), DIMENSION(kms:kme) :: b = 0.                              !     on w-grid
-REAL(preci), DIMENSION(kms:kme) :: b_pi = 0.                           !     on pi-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat = 0.                  ! (m) on w-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_pi = 0.               ! (m) on pi-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_u = 0.                ! (m) on u-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat = 0.                ! (m) on w-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_pi = 0.             ! (m) on pi-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_u = 0.              ! (m) on u-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat = 1        !     on w-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_pi = 1     !     on pi-grid
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_u = 1      !     on u-grid
+REAL(preci), DIMENSION(ims:ime) :: PzsPx_pi = 0.                          ! (m) on u-grid
+REAL(preci), DIMENSION(kms:kme) :: b                                   !     on w-grid
+REAL(preci), DIMENSION(kms:kme) :: b_pi                                !     on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat                       ! (m) on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_pi                    ! (m) on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_u                     ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat                     ! (m) on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_pi                  ! (m) on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_u                   ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat            !     on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_pi         !     on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_u          !     on u-grid
 !-------------------------------------------------
-
+REAL(preci), DIMENSION(ims:ime) :: xx      ! distance on u-grid along x-axis (m)
+REAL(preci), DIMENSION(ims:ime) :: xpi     ! distance on pi-grid along x-axis (m)
+REAL(preci), DIMENSION(kms:kme) :: zz      ! height on w-grid along z-axis (m)
+REAL(preci), DIMENSION(kms:kme) :: zpi     ! height on pi-grid along z-axis (m)
+!-------------------------------------------------
 INTEGER :: imin, imax, kmin, kmax
 !=================================================
 

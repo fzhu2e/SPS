@@ -26,6 +26,9 @@ REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_1  ! t
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0  ! theta0
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0  ! rho0
 !-------------------------------------------------
+REAL(preci) :: zcrit_up, zcrit_down, xcrit_left, xcrit_right  ! For sponge layers
+REAL(preci) :: beta
+!-------------------------------------------------
 INTEGER :: i, k
 !=================================================
 ! u-grid
@@ -40,6 +43,39 @@ INTEGER :: i, k
 !END DO
 
 IF (PRESENT(u)) THEN
+	
+	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
+		!zcrit_up = 9000.    ! (m)
+		!!xcrit_left = 15000.    ! (m)
+		!!xcrit_right = 35000.    ! (m)
+		
+		!DO k = kts, kte
+			!IF (zpi(k) >= zcrit_up .AND. zpi(k) <= ztop) THEN
+				!beta = (zpi(k) - zcrit_up)/(ztop - zcrit_up)**2
+				!DO i = its, ite
+					!u(i,k) = (1. - beta)*u(i,k) + beta*u(i,kme+1)
+				!END DO
+			!ELSE
+				!CONTINUE
+			!END IF
+		!END DO
+		
+		!!DO i = its, ite
+			!!IF (xpi(i) <= xcrit_left .AND. xpi(i) >= xx(its)) THEN
+				!!beta = (xcrit_left - xx(i))/(xx(ite) - xx(its))**2
+				!!DO k = kts, kte
+					!!u(i,k) = (1. - beta)*u(i,k) + beta*u(i,its)
+				!!END DO
+			!!IF (xpi(i) >= xcrit_right .AND. xpi(i) <= xx(ite)) THEN
+				!!beta = (xx(i) - xcrit_right)/(xx(ite) - xx(its))**2
+				!!DO k = kts, kte
+					!!u(i,k) = (1. - beta)*u(i,k) + beta*u(i,ite)
+				!!END DO
+			!!ELSE
+				!!CONTINUE
+			!!END IF
+		!!END DO
+	!END IF
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
@@ -81,6 +117,20 @@ END IF
 
 IF (PRESENT(w)) THEN
 	
+	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
+		!zcrit_up = 9000.    ! (m)
+		!DO k = kts, kte
+			!IF (zz(k) >= zcrit_up .AND. zz(k) <= ztop) THEN
+				!beta = (zz(k) - zcrit_up)/(ztop - zcrit_up)**2
+				!DO i = its, ite
+					!w(i,k) = (1. - beta)*w(i,k) + beta*w(i,kme+1)
+				!END DO
+			!ELSE
+				!CONTINUE
+			!END IF
+		!END DO
+	!END IF
+	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
 		w(its:ims:-1,:) = w(its+1:2*its-ims+1,:) ! PwPx = 0.
@@ -94,6 +144,12 @@ IF (PRESENT(w)) THEN
 	
 	w(:,kms:kts) = 0
 	w(:,kte+1:kme) = 0
+
+! Make No Difference!
+	!w(:,kts) = 0
+	!w(:,kte+1) = 0
+	!w(:,kms:kts-1) = w(:,2*kts-kms:kts+1:-1)
+	!w(:,kte+2:kme) = w(:,kte:2+2*kte-kme:-1)
 	
 END IF
 
@@ -108,6 +164,20 @@ END IF
 !END DO
 
 IF (PRESENT(theta)) THEN
+	
+	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
+		!zcrit_up = 9000.    ! (m)
+		!DO k = kts, kte
+			!IF (zz(k) >= zcrit_up .AND. zz(k) <= ztop) THEN
+				!beta = (zz(k) - zcrit_up)/(ztop - zcrit_up)**2
+				!DO i = its, ite
+					!theta(i,k) = (1. - beta)*theta(i,k) + beta*theta(i,kme+1)
+				!END DO
+			!ELSE
+				!CONTINUE
+			!END IF
+		!END DO
+	!END IF
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
@@ -128,6 +198,20 @@ IF (PRESENT(theta)) THEN
 END IF
 
 IF (PRESENT(theta_1)) THEN
+	
+	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
+		!zcrit_up = 9000.    ! (m)
+		!DO k = kts, kte
+			!IF (zz(k) >= zcrit_up .AND. zz(k) <= ztop) THEN
+				!beta = (zz(k) - zcrit_up)/(ztop - zcrit_up)**2
+				!DO i = its, ite
+					!theta_1(i,k) = (1. - beta)*theta_1(i,k) + beta*theta_1(i,kme+1)
+				!END DO
+			!ELSE
+				!CONTINUE
+			!END IF
+		!END DO
+	!END IF
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
@@ -171,6 +255,20 @@ END IF
 ! pi-grid
 IF (PRESENT(pi_1)) THEN
 	
+	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
+		!zcrit_up = 9000.    ! (m)
+		!DO k = kts, kte
+			!IF (zpi(k) >= zcrit_up .AND. zpi(k) <= ztop) THEN
+				!beta = (zpi(k) - zcrit_up)/(ztop - zcrit_up)**2
+				!DO i = its, ite
+					!pi_1(i,k) = (1. - beta)*pi_1(i,k) + beta*pi_1(i,kme+1)
+				!END DO
+			!ELSE
+				!CONTINUE
+			!END IF
+		!END DO
+	!END IF
+	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
 		pi_1(its:ims:-1,:) = pi_1(its+1:2*its-ims+1,:) ! Ppi_1Px = 0.
@@ -204,6 +302,7 @@ IF (PRESENT(rho_0)) THEN
 	rho_0(:,kte+1:kme) = rho_0(:,kte:2*kte-kme+1:-1) ! PuPz = 0
 	
 END IF
+
 !=================================================
 END SUBROUTINE update_boundary
 !=================================================

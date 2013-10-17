@@ -55,9 +55,9 @@ CASE (3)
 	                  ud_u, ud_w, ud_pi_1, ud_theta, ud_theta_1   )
 CASE (99)
 	! Debug mode: advection test.
-	u = 20.
+	u = 10.
 	w = 0.
-	CALL debug_integrate( 1,dt,v,theta_0,rho_0,                       &
+	CALL debug_integrate( 3,dt,v,theta_0,rho_0,                       &
 	                         u,    w,    pi_1,    theta,    theta_1,  &
 	                      ud_u, ud_w, ud_pi_1, ud_theta, ud_theta_1   )
 CASE DEFAULT

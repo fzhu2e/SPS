@@ -242,6 +242,9 @@ IF (ANY(rhouu_pi(imin:imax+1,k) == undef)) STOP "PrhouuPx_u is WRONG!!!"
 IF (ANY(rhow_v(imin:imax,kmin:kmax+1) == undef)) STOP "PrhowPz_u is WRONG!!!"
 IF (ANY(rhouw_v(imin:imax,kmin:kmax+1) == undef)) STOP "PrhouwPz_u is WRONG!!!"
 
+IF (ANY(b_pi(kmin:kmax) == undef) .OR. ANY(PzsPx(imin:imax) == undef) .OR. ANY(OnePlusZsPbPzhat_u(imin:imax,kmin:kmax) == undef)) STOP "F_u is WRONG!!!"
+IF (ANY(pi_1(imin:imax+1,kmin:kmax) == undef)) STOP "Ppi_1Px_u is WRONG!!!"
+
 FORALL (i = imin:imax, k = kmin:kmax)
 	PrhouPx_u(i,k) = (rhou_pi(i+1,k) - rhou_pi(i,k))/dx
 	PrhouuPx_u(i,k) = (rhouu_pi(i+1,k) - rhouu_pi(i,k))/dx
@@ -257,8 +260,13 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)/OnePlusZsPbPzhat(i,k) + b_pi(k)*u(i,k)*PzsPx(i)/OnePlusZsPbPzhat_u(i,k)
 	Ppi_1Px_u(i,k) = (pi_1(i + 1,k) - pi_1(i,k))/dx
 	!tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
-	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)/OnePlusZsPbPzhat_u(i,k) +Cp*theta_0_u(i,k)*b_pi(k)*PzsPx(i)/OnePlusZsPbPzhat_u(i,k)
+	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)/OnePlusZsPbPzhat_u(i,k) + Cp*theta_0_u(i,k)*b_pi(k)*PzsPx(i)/OnePlusZsPbPzhat_u(i,k)
 END FORALL
+!WRITE(*,*) tend_u(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) F_u(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) OnePlusZsPbPzhat(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) b_pi(kmax/2+kmin/2)
+!WRITE(*,*) PzsPx(imax/2+imin/2)
 	
 	
 IF (RunCase == 1 .OR. RunCase == 2) THEN
@@ -445,6 +453,9 @@ IF (ANY(rhow_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PrhowPz_w is WRONG!!!"
 IF (ANY(rhoww_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PrhowwPz_w is WRONG!!!"
 
 IF (ANY(w_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PwPz_w is WRONG!!!"
+IF (ANY(u_w(imin:imax,kmin:kmax) == undef) .OR. ANY(b(kmin:kmax) == undef) .OR. ANY(PzsPx_pi(imin:imax) == undef) .OR. ANY(OnePlusZsPbPzhat(imin:imax,kmin:kmax) == undef)) STOP "F_w is WRONG!!!"
+
+IF (ANY(pi_1(imin:imax,kmin-1:kmax) == undef)) STOP "Ppi_1Pz_w is WRONG!!!"
 
 FORALL( i = imin:imax, k = kmin:kmax)
 	PrhouPx_w(i,k) = (rhou_v(i,k) - rhou_v(i-1,k))/dx
@@ -465,6 +476,11 @@ FORALL( i = imin:imax, k = kmin:kmax)
 	!tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
 	tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)/OnePlusZsPbPzhat(i,k)
 END FORALL
+!WRITE(*,*) F_w(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) tend_w(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) OnePlusZsPbPzhat(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) b(kmax/2+kmin/2)
+!WRITE(*,*) PzsPx_pi(imax/2+imin/2)
 
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	IF (ANY(w(imin-1:imax+1,kmin:kmax) == undef)) STOP "P2wPx2_u is WRONG!!!"
@@ -651,6 +667,8 @@ IF (ANY(rho_0_w(imin:imax,kmin:kmax) == undef) .OR. &
 
 IF (ANY(theta_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PthetaPz_w is WRONG!!!"
 
+IF (ANY(u_w(imin:imax,kmin:kmax) == undef) .OR. ANY(b(kmin:kmax) == undef) .OR. ANY(PzsPx_pi(imin:imax) == undef) .OR. ANY(OnePlusZsPbPzhat(imin:imax,kmin:kmax) == undef)) STOP "F_theta is WRONG!!!"
+
 FORALL (i = imin:imax, k = kmin:kmax)
 	PthetaPz_w(i,k) = (theta_pi(i,k) - theta_pi(i,k-1))/dz
 
@@ -662,6 +680,11 @@ FORALL (i = imin:imax, k = kmin:kmax)
 
 	tend_theta(i,k) = F_theta(i,k)
 END FORALL
+!WRITE(*,*) F_theta(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) tend_theta(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) b(kmax/2+kmin/2)
+!WRITE(*,*) PzsPx_pi(imax/2+imin/2)
+!WRITE(*,*) OnePlusZsPbPzhat(imax/2+imin/2,kmax/2+kmin/2)
 	
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	IF (ANY(theta(imin-1:imax,kmin:kmax) == undef)) STOP "P2thetaPx2_w is WRONG!!!"
@@ -727,6 +750,8 @@ CALL set_calc_area_pi
 IF (ANY(urhotheta_u(imin-1:imax,kmin:kmax) == undef)) STOP "PurhothetaPx_pi is WRONG!!!"
 IF (ANY(wrhotheta_w(imin:imax,kmin:kmax+1) == undef)) STOP "PwrhothetaPz_pi is WRONG!!!"
 IF (ANY(urhotheta_w(imin:imax,kmin:kmax+1) == undef)) STOP "PurhothetaPz_pi is WRONG!!!"
+
+IF (ANY(PzsPx_pi(imin:imax) == undef) .OR. ANY(b_pi(kmin:kmax) == undef) .OR. ANY(OnePlusZsPbPzhat_pi(imin:imax,kmin:kmax) == undef)) STOP "F_pi is WRONG!!!"
 FORALL (i = imin:imax, k = kmin:kmax)
 	PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
 	PwrhothetaPz_pi(i,k) = (wrhotheta_w(i,k + 1) - wrhotheta_w(i,k))/dz
@@ -735,6 +760,10 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k)/OnePlusZsPbPzhat_pi(i,k) - b_pi(k)*PzsPx_pi(i)/OnePlusZsPbPzhat_pi(i,k)*PurhothetaPz_pi(i,k))
 	tend_pi(i,k) = F_pi(i,k)
 END FORALL
+!WRITE(*,*) F_pi(imax/2+imin/2,kmax/2+kmin/2)
+!WRITE(*,*) b_pi(kmax/2+kmin/2)
+!WRITE(*,*) PzsPx_pi(imax/2+imin/2)
+!WRITE(*,*) OnePlusZsPbPzhat_pi(imax/2+imin/2,kmax/2+kmin/2)
 !-------------------------------------------------
 IF (ANY(ISNAN(F_pi(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
 !=================================================
