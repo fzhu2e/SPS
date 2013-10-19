@@ -21,13 +21,13 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: u        ! wind speed along x-axis
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: v        ! wind speed along y-axis
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: w        ! wind speed along z-axis
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_1     ! pi'
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_0 
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0  ! theta = theta_0 + theta'
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1  ! theta'
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: rho_0    ! density
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi 
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_0 
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: p_0
 !-------------------------------------------------
 INTEGER :: i, k
@@ -52,7 +52,7 @@ WRITE(*,"(1X,A9,2F9.2)") " Km/Kh: ", Km, Kh
 WRITE(*,*) "====================="
 WRITE(*,*)
 
-CALL debug_undef_all(u,v,w,pi_1,theta,theta_0,theta_1,rho_0,pi,pi_0,p_0)
+CALL debug_undef_all(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0,pi,p_0)
 !CALL debug_ascii_output(pi)
 !-------------------------------------------------
 ! Initiate.
@@ -62,15 +62,13 @@ WRITE(*,*) " Initial case..."
 WRITE(*,*) "====================="
 SELECT CASE (RunCase)
 CASE (1)
-	CALL initiate_dc(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
+	CALL initiate_dc(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
 CASE (2)
-	CALL initiate_tb(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the TB case
+	CALL initiate_tb(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the TB case
 CASE (3)
-	CALL initiate_igw(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
+	CALL initiate_igw(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 CASE (4)
-	CALL initiate_Sm(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
-CASE (99)
-	CALL initiate_debug(u,v,w,pi_1,theta,theta_0,theta_1,rho_0)  ! initiate the debug vertical coordinates case
+	CALL initiate_Sm(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
@@ -97,19 +95,19 @@ t_all = 0.0
 DO i = 1, nstep
 	
 	CALL CPU_TIME(t_start)
-	CALL integrate(i,u,v,w,pi_1,theta,theta_0,theta_1,rho_0) ! main integrate module
+	CALL integrate(i,u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0) ! main integrate module
 	CALL update_boundary(u,w,pi_1,theta,theta_1)
+	!IF (MOD(i,1000) == 0.) THEN
+	!IF (MOD(i,200) == 0.) THEN
+	IF (MOD(i,100) == 0.) THEN
+		CALL output(1,u,w,theta_1,pi_1)               ! output the fields at each time step
+	END IF
+	
 	CALL CPU_TIME(t_end)
 	t_lapse = t_end - t_start
 	t_left = t_lapse*(nstep - i)/60./60.  ! unit: hour
 	t_all = t_all + t_lapse
 	WRITE(*,"('Step/nStep -- time lapse/left: ',2X,I6,'/ ',I6,' --',F12.6,' sec/',1X,F6.3,' hr')") , i, nstep, t_lapse, t_left
-	
-	!IF (MOD(i,1000) == 0.) THEN
-	!IF (MOD(i,200) == 0.) THEN
-	!IF (MOD(i,100) == 0.) THEN
-		CALL output(1,u,w,theta_1,pi_1)               ! output the fields at each time step
-	!END IF
 	
 END DO
 !=================================================

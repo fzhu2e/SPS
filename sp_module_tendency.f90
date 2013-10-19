@@ -253,14 +253,11 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	
 	uPuPx_u(i,k) = 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k))
 	wPuPz_u(i,k) = 1./rho_0_u(i,k)*(PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
-	!PuPz_u(i,k) = 
-	
-	!F_u(i,k) = - 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k) + PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
-	!F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)
-	F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)/OnePlusZsPbPzhat(i,k) + b_pi(k)*u(i,k)*PzsPx(i)/OnePlusZsPbPzhat_u(i,k)
+
+	F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)
+
 	Ppi_1Px_u(i,k) = (pi_1(i + 1,k) - pi_1(i,k))/dx
-	!tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
-	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)/OnePlusZsPbPzhat_u(i,k) + Cp*theta_0_u(i,k)*b_pi(k)*PzsPx(i)/OnePlusZsPbPzhat_u(i,k)
+	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
 END FORALL
 !WRITE(*,*) tend_u(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) F_u(imax/2+imin/2,kmax/2+kmin/2)
@@ -468,13 +465,10 @@ FORALL( i = imin:imax, k = kmin:kmax)
 
 	PwPz_w(i,k) = (w_pi(i,k) - w_pi(i,k-1))/dz
 
-	!F_w(i,k) = - 1./rho_0_w(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k) + PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k)) + g*theta_1(i,k)/theta_0(i,k)
-	!F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
-	F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k)/OnePlusZsPbPzhat(i,k) + u_w(i,k)*b(k)*PzsPx_pi(i)/OnePlusZsPbPzhat(i,k)*PwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
+	F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
 
 	Ppi_1Pz_w(i,k) = (pi_1(i,k) - pi_1(i,k - 1))/dz
-	!tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
-	tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)/OnePlusZsPbPzhat(i,k)
+	tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
 END FORALL
 !WRITE(*,*) F_w(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) tend_w(imax/2+imin/2,kmax/2+kmin/2)
@@ -674,9 +668,8 @@ FORALL (i = imin:imax, k = kmin:kmax)
 
 	uPthetaPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k))
 	wPthetaPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
-	!F_theta(i,k) = - 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k) + PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
-	!F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)
-	F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)/OnePlusZsPbPzhat(i,k) + u_w(i,k)*b(k)*PzsPx_pi(i)/OnePlusZsPbPzhat(i,k)*PthetaPz_w(i,k)
+	
+	F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)
 
 	tend_theta(i,k) = F_theta(i,k)
 END FORALL
@@ -704,11 +697,12 @@ END SUBROUTINE tendency_theta
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_pi(u,w,rho_0,theta_0,F_pi,tend_pi)
+SUBROUTINE tendency_pi(u,w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 IMPLICIT NONE
 !=================================================
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_pi
@@ -756,8 +750,9 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
 	PwrhothetaPz_pi(i,k) = (wrhotheta_w(i,k + 1) - wrhotheta_w(i,k))/dz
 	PurhothetaPz_pi(i,k) = (urhotheta_w(i,k + 1) - urhotheta_w(i,k))/dz
-	!F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
-	F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k)/OnePlusZsPbPzhat_pi(i,k) - b_pi(k)*PzsPx_pi(i)/OnePlusZsPbPzhat_pi(i,k)*PurhothetaPz_pi(i,k))
+	F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
+	!F_pi(i,k) = - Rd*pi_0(i,k)/Cv/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
+
 	tend_pi(i,k) = F_pi(i,k)
 END FORALL
 !WRITE(*,*) F_pi(imax/2+imin/2,kmax/2+kmin/2)

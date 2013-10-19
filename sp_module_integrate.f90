@@ -17,11 +17,12 @@ IMPLICIT NONE
 !=================================================
 CONTAINS
 !=================================================
-SUBROUTINE integrate(step,u,v,w,pi_1,theta,theta_0,theta_1,rho_0)
+SUBROUTINE integrate(step,u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 IMPLICIT NONE
 !=================================================
 INTEGER, INTENT(IN):: step
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0  ! theta = theta_0 + theta'
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0     ! pi_0
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
 
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
@@ -40,26 +41,14 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: ud_theta_1              ! updated ud_
 SELECT CASE (TimeScheme)
 CASE (1)
 	! Forward-backward Scheme
-	CALL forward_backward( dt,v,theta_0,rho_0,                    &
+	CALL forward_backward( dt,v,theta_0,pi_0,rho_0,               &
 	                          u,   w,   pi_1,   theta,   theta_1, &
 	                       ud_u,ud_w,ud_pi_1,ud_theta,ud_theta_1  )
 CASE (2)
-	! Leapfrog Scheme
-	CALL leapfrog( dt,v,theta_0,rho_0,                         &
-	                  u,    w,    pi_1,    theta,    theta_1,  &
-	               ud_u, ud_w, ud_pi_1, ud_theta, ud_theta_1   )
-CASE (3)
 	! Runge-Kutta Scheme
-	CALL runge_kutta( dt,v,theta_0,rho_0,                         &
+	CALL runge_kutta( dt,v,theta_0,pi_0,rho_0,                    &
 	                     u,    w,    pi_1,    theta,    theta_1,  &
 	                  ud_u, ud_w, ud_pi_1, ud_theta, ud_theta_1   )
-CASE (99)
-	! Debug mode: advection test.
-	u = 10.
-	w = 0.
-	CALL debug_integrate( 3,dt,v,theta_0,rho_0,                       &
-	                         u,    w,    pi_1,    theta,    theta_1,  &
-	                      ud_u, ud_w, ud_pi_1, ud_theta, ud_theta_1   )
 CASE DEFAULT
 	STOP "Wrong time differencing scheme!!!"
 END SELECT

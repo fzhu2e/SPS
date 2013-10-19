@@ -22,9 +22,9 @@ nt = 101
 ;nt = 141
 ;nt = 401
 ;nt = 1001
-var = "theta_1"
+;var = "theta_1"
 ;var = "pi_1"
-;var = "u"
+var = "u"
 ;var = "w"
 ;=================================
 ; Read data.
@@ -37,10 +37,11 @@ pi_data = (data(:,0:nz-2,:) + data(:,1:nz-1,:))/2.
 ;=================================
 ; Plot.
 ;---------------------------------
-wks = gsn_open_wks ("pdf","tb")                  ; open workstation
-gsn_define_colormap(wks,"temp_diff_18lev")
-;gsn_define_colormap(wks,"WhiteYellowOrangeRed")
-;gsn_define_colormap(wks,"WhiteBlue")
+;wks = gsn_open_wks ("pdf","tb")                  ; open workstation
+;wks = gsn_open_wks ("pdf","tb_w")                  ; open workstation
+wks = gsn_open_wks ("pdf","tb_u")                  ; open workstation
+gsn_define_colormap(wks,"temp_diff_18lev")    ; For theta
+;gsn_define_colormap(wks,"BlueWhiteOrangeRed")  ; For u & w
 
 res = True
 
@@ -75,16 +76,19 @@ res@lbAutoManage            = False	 ; we control how drawn not plot
 ;res@cnLevels            = (//)
 
 res@gsnSpreadColors = True
-res@gsnSpreadColorStart = 11
+res@gsnSpreadColorStart = 11    ; For theta
 res@gsnSpreadColorEnd = 60
 
 res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
+; For theta
 res@cnMinLevelValF          = 0.2
 res@cnMaxLevelValF          = 1.8
 res@cnLevelSpacingF         = 0.2
-;res@cnMinLevelValF          = 0.10
-;res@cnMaxLevelValF          = 0.20
-;res@cnLevelSpacingF         = 0.001
+
+; For u & w
+;res@cnMinLevelValF          = - 10
+;res@cnMaxLevelValF          = 10
+;res@cnLevelSpacingF         = 1
 
 ;res@cnFillColors = ispan(250,10,16)
 
