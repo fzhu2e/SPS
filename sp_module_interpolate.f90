@@ -17,6 +17,7 @@ IMPLICIT NONE
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: u_pi, u_w, u_v
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: w_pi, w_u, w_v
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: w_hat, w_hat_pi, w_hat_u, w_hat_v ! Calculated, not interpolated.
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_1_u, pi_1_w, pi_1_v
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_v
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0_pi, theta_0_u, theta_0_v
@@ -44,6 +45,7 @@ INTEGER :: i, k
 !=================================================
 CALL debug_undef_all( u_pi,u_w,u_v,                               &
                       w_pi,w_u,w_v,                               &
+                      w_hat_pi,w_hat_u,w_hat_v,                   &
                       pi_1_u,pi_1_w,pi_1_v,                       &
                       theta_pi,theta_u,theta_v,                   &
                       theta_0_pi,theta_0_u,theta_0_v,             &
@@ -63,12 +65,15 @@ imax = imax + 1
 kmin = kmin - 1
 kmax = kmax + 1
 
+
 IF (ANY(pi_1(imin:imax+1,kmin:kmax) == undef)) STOP "pi_1 is WRONG!!!"
 IF (ANY(rho_0(imin:imax+1,kmin:kmax) == undef)) STOP "rho_0 is WRONG!!!"
 IF (ANY(w(imin:imax+1,kmin:kmax) == undef)) STOP "w_u is WRONG!!!"
 IF (ANY(theta(imin:imax+1,kmin:kmax+1) == undef)) STOP "theta_u is WRONG!!!"
 IF (ANY(theta_0(imin:imax+1,kmin:kmax+1) == undef)) STOP "theta_0_u is WRONG!!!"
 IF (ANY(theta_1(imin:imax+1,kmin:kmax+1) == undef)) STOP "theta_0_u is WRONG!!!"
+
+IF (ANY(b_pi(kmin:kmax) == undef) .OR. ANY(VertA_u(imin:imax) == undef) .OR. ANY(VertB_u(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
 
 FORALL (i = imin:imax, k = kmin:kmax)
 	pi_1_u(i,k) = (pi_1(i,k) + pi_1(i+1,k))/2.
@@ -77,6 +82,8 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	theta_u(i,k) = (theta(i,k) + theta(i+1,k) + theta(i,k+1) + theta(i+1,k+1))/4.
 	theta_0_u(i,k) = (theta_0(i,k) + theta_0(i+1,k) + theta_0(i,k+1) + theta_0(i+1,k+1))/4.
 	theta_1_u(i,k) = (theta_1(i,k) + theta_1(i+1,k) + theta_1(i,k+1) + theta_1(i+1,k+1))/4.
+
+	w_hat_u(i,k) = (w_u(i,k) - u(i,k)*b_pi(k)*VertA_u(i))/VertB_u(i,k)
 END FORALL
 
 
@@ -95,12 +102,16 @@ IF (ANY(theta(imin:imax,kmin:kmax+1) == undef)) STOP "theta_pi is WRONG!!!"
 IF (ANY(theta_0(imin:imax,kmin:kmax+1) == undef)) STOP "theta_0_pi is WRONG!!!"
 IF (ANY(theta_1(imin:imax,kmin:kmax+1) == undef)) STOP "theta_1_pi is WRONG!!!"
 
+IF (ANY(b_pi(kmin:kmax) == undef) .OR. ANY(VertA_pi(imin:imax) == undef) .OR. ANY(VertB_pi(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
+
 FORALL (i = imin:imax, k = kmin:kmax)
 	u_pi(i,k) = (u(i-1,k) + u(i,k))/2.
 	w_pi(i,k) = (w(i,k+1) + w(i,k))/2.
 	theta_pi(i,k) = (theta(i,k+1) + theta(i,k))/2.
 	theta_0_pi(i,k) = (theta_0(i,k+1) + theta_0(i,k))/2.
 	theta_1_pi(i,k) = (theta_1(i,k+1) + theta_1(i,k))/2.
+
+	w_hat_pi(i,k) = (w_pi(i,k) - u_pi(i,k)*b_pi(k)*VertA_pi(i))/VertB_pi(i,k)
 END FORALL
 
 ! To w-grid (pi, rho, u)
@@ -116,10 +127,14 @@ IF (ANY(pi_1(imin:imax,kmin-1:kmax) == undef)) STOP "pi_1_w is WRONG!!!"
 IF (ANY(rho_0(imin:imax,kmin-1:kmax) == undef)) STOP "rho_0_w is WRONG!!!"
 IF (ANY(u(imin-1:imax,kmin-1:kmax) == undef)) STOP "u_w is WRONG!!!"
 
+IF (ANY(b(kmin:kmax) == undef) .OR. ANY(VertA_pi(imin:imax) == undef) .OR. ANY(VertB_w(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
+
 FORALL (i = imin:imax, k = kmin:kmax)
 	pi_1_w(i,k) = (pi_1(i,k-1) + pi_1(i,k))/2.
 	rho_0_w(i,k) = (rho_0(i,k-1) + rho_0(i,k))/2.
 	u_w(i,k) = (u(i,k) + u(i-1,k) + u(i,k-1) + u(i-1,k-1))/4.
+
+	w_hat(i,k) = (w(i,k) - u_w(i,k)*b(k)*VertA_pi(i))/VertB_w(i,k)
 END FORALL
 
 ! To v(virtual)-grid (pi, rho, u, w, theta)
@@ -139,6 +154,7 @@ IF (ANY(theta(imin:imax+1,kmin:kmax) == undef)) STOP "theta_v is WRONG!!!"
 IF (ANY(theta_0(imin:imax+1,kmin:kmax) == undef)) STOP "theta_0_v is WRONG!!!"
 IF (ANY(theta_1(imin:imax+1,kmin:kmax) == undef)) STOP "theta_1_v is WRONG!!!"
 
+IF (ANY(b(kmin:kmax) == undef) .OR. ANY(VertA_u(imin:imax) == undef) .OR. ANY(VertB_v(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
 FORALL (i = imin:imax, k = kmin:kmax)
 	pi_1_v(i,k) = (pi_1(i,k) + pi_1(i + 1,k) + pi_1(i,k - 1) + pi_1(i + 1,k - 1))/4.
 	rho_0_v(i,k) = (rho_0(i,k) + rho_0(i + 1,k) + rho_0(i,k - 1) + rho_0(i + 1,k - 1))/4.
@@ -147,6 +163,8 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	theta_v(i,k) = (theta(i,k) + theta(i + 1,k))/2.
 	theta_0_v(i,k) = (theta_0(i,k) + theta_0(i + 1,k))/2.
 	theta_1_v(i,k) = (theta_1(i,k) + theta_1(i + 1,k))/2.
+
+	w_hat_v(i,k) = (w_v(i,k) - u_v(i,k)*b(k)*VertA_u(i))/VertB_v(i,k)
 END FORALL
 
 !CALL debug_ascii_output(w)

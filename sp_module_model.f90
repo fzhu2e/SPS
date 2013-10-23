@@ -44,15 +44,15 @@ INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic;
 ! 2. Thermal bubble.
 !-------------------------------------------------
 !INTEGER, PARAMETER :: RunCase = 2         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
+!!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
-!!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
-!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!!REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
-!!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
 !REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
 !INTEGER :: nstep = 10000
@@ -64,37 +64,31 @@ INTEGER, PARAMETER :: LateralBoundary = 2 ! 1. Wall; 2. Periodic;
 ! 3. Inertia gravity waves.
 !-------------------------------------------------
 INTEGER, PARAMETER :: RunCase = 3         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-!INTEGER, PARAMETER :: nx = 1200                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 400                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 250.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 25.                       ! (m)
 
-INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
-REAL(preci), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-!INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
-
-!INTEGER, PARAMETER :: nx = 120                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 40                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 2500.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 250.                       ! (m)
+INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
+REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
 REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-INTEGER :: nstep = 30000
-!INTEGER :: nstep = 100
+!INTEGER :: nstep = 30000
+!INTEGER :: nstep = 40000
+INTEGER :: nstep = 1
 
 REAL :: Km, Kh
 !-------------------------------------------------
 ! 4. Schar mountain
 !-------------------------------------------------
 !INTEGER, PARAMETER :: RunCase = 4
-!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
 !REAL(preci), PARAMETER :: dx = 250.                        ! delta x (m)
 !REAL(preci), PARAMETER :: dz = 210.                       ! (m)
 
@@ -102,7 +96,8 @@ REAL :: Km, Kh
 
 !REAL(preci), PARAMETER :: dt = 0.12                               ! delta t (s)
 !!INTEGER :: nstep = 300000
-!INTEGER :: nstep = 100
+!INTEGER :: nstep = 10000
+!!INTEGER :: nstep = 300
 
 !REAL :: Km, Kh
 !-------------------------------------------------
@@ -125,18 +120,29 @@ REAL(preci), PARAMETER :: ztop = nz*dz                                 ! (m)
 REAL(preci), DIMENSION(ims:ime) :: zs = 0.                             ! (m) on u-grid
 REAL(preci), DIMENSION(ims:ime) :: zs_pi = 0.                          ! (m) on pi-grid
 REAL(preci), DIMENSION(ims:ime) :: PzsPx = 0.                          ! (m) on u-grid
-REAL(preci), DIMENSION(ims:ime) :: PzsPx_pi = 0.                          ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime) :: PzsPx_pi = 0.                       ! (m) on pi-grid
 REAL(preci), DIMENSION(kms:kme) :: b                                   !     on w-grid
 REAL(preci), DIMENSION(kms:kme) :: b_pi                                !     on pi-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat                       ! (m) on w-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_pi                    ! (m) on pi-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_u                     ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: z_hat_v                     ! (m) on v-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat                     ! (m) on w-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_pi                  ! (m) on pi-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_u                   ! (m) on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: PbPzhat_v                   ! (m) on v-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat            !     on w-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_pi         !     on pi-grid
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: OnePlusZsPbPzhat_u          !     on u-grid
+REAL(preci), DIMENSION(ims:ime) :: VertA_u = 0.                        !  Vertical Variation A on u-grid
+REAL(preci), DIMENSION(ims:ime) :: VertA_pi = 0.                       !  Vertical Variation A on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: VertB_u = 1.                !  Vertical Variation B on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: VertB_w = 1.                !  Vertical Variation B on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: VertB_pi = 1.               !  Vertical Variation B on pi-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: VertB_v = 1.                !  Vertical Variation B on v-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: VertC_u = 0.                !  Vertical Variation C on u-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: VertC_w = 0.                !  Vertical Variation C on w-grid
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: VertC_pi = 0.               !  Vertical Variation C on pi-gridi
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime) :: xx      ! distance on u-grid along x-axis (m)
 REAL(preci), DIMENSION(ims:ime) :: xpi     ! distance on pi-grid along x-axis (m)

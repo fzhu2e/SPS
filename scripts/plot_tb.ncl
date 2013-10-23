@@ -6,11 +6,11 @@ begin
 ; Settings.
 ;---------------------------------
 
-nx = 200
-nz = 100
+;nx = 200
+;nz = 100
 
-;nx = 400
-;nz = 200
+nx = 400
+nz = 200
 ;nt = 1
 ;nt = 3
 ;nt = 2
@@ -22,9 +22,9 @@ nt = 101
 ;nt = 141
 ;nt = 401
 ;nt = 1001
-;var = "theta_1"
+var = "theta_1"
 ;var = "pi_1"
-var = "u"
+;var = "u"
 ;var = "w"
 ;=================================
 ; Read data.
@@ -37,9 +37,9 @@ pi_data = (data(:,0:nz-2,:) + data(:,1:nz-1,:))/2.
 ;=================================
 ; Plot.
 ;---------------------------------
-;wks = gsn_open_wks ("pdf","tb")                  ; open workstation
+wks = gsn_open_wks ("pdf","tb")                  ; open workstation
 ;wks = gsn_open_wks ("pdf","tb_w")                  ; open workstation
-wks = gsn_open_wks ("pdf","tb_u")                  ; open workstation
+;wks = gsn_open_wks ("pdf","tb_u")                  ; open workstation
 gsn_define_colormap(wks,"temp_diff_18lev")    ; For theta
 ;gsn_define_colormap(wks,"BlueWhiteOrangeRed")  ; For u & w
 
