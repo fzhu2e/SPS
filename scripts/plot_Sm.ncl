@@ -6,10 +6,10 @@ begin
 ; Settings.
 ;---------------------------------
 
-;nx = 200
-;nz = 100
-nx = 400
-nz = 200
+nx = 200
+nz = 100
+;nx = 400
+;nz = 200
 
 ;nx = 400
 ;nz = 200
@@ -18,11 +18,11 @@ nz = 200
 ;nt = 2
 ;nt = 5
 ;nt = 20
-;nt = 65
+nt = 65
 ;nt = 91
 ;nt = 101
 ;nt = 141
-nt = 301
+;nt = 301
 ;nt = 401
 ;nt = 1001
 ;var = "theta_1"
@@ -61,8 +61,8 @@ res@tmYROn = False
 
 
 ; LabelBar
-res@cnFillOn = True
-res@cnLineLabelsOn = False
+res@cnFillOn = False
+res@cnLineLabelsOn = True
 res@cnInfoLabelOn = False
 ;res@pmLabelBarDisplayMode   = "Always" ; turn on color bar
 res@pmLabelBarSide          = "Bottom" ; put it on the bottom of plot
@@ -80,10 +80,10 @@ res@gsnSpreadColors = True
 res@gsnSpreadColorStart = 11
 res@gsnSpreadColorEnd = 60
 
-;res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
-;res@cnMinLevelValF          = 0.2
-;res@cnMaxLevelValF          = 1.8
-;res@cnLevelSpacingF         = 0.2
+res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
+;res@cnMinLevelValF          = -2
+;res@cnMaxLevelValF          = 2
+res@cnLevelSpacingF         = 0.2
 ;res@cnMinLevelValF          = 0.10
 ;res@cnMaxLevelValF          = 0.20
 ;res@cnLevelSpacingF         = 0.001

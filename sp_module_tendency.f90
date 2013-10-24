@@ -110,6 +110,9 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: whatPthetaPzhat_w
 
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: PurhothetaPzhat_pi
 
+!-------------------------------------------------
+
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: temp_1, temp_2
 !=================================================
 CONTAINS
 !=================================================
@@ -207,7 +210,7 @@ imax = imax + 1
 kmin = kmin - 1
 kmax = kmax + 1
 
-!IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
+IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
 IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_hat_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
 FORALL (i = imin:imax, k = kmin:kmax)
 	rhow_v(i,k) = rho_0_v(i,k)*w_v(i,k)
@@ -218,7 +221,7 @@ END FORALL
 
 SELECT CASE (AdvectionScheme)
 CASE (2)
-	!IF (ANY(rhow_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax)== undef)) STOP "rhouw_v is WRONG!!!"
+	IF (ANY(rhow_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax)== undef)) STOP "rhouw_v is WRONG!!!"
 	IF (ANY(rhowhat_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax)== undef)) STOP "rhouw_v is WRONG!!!"
 	FORALL (i = imin:imax, k = kmin:kmax)
 		rhouw_v(i,k) = rhow_v(i,k)*u_v(i,k)
@@ -268,7 +271,7 @@ CASE (5)
 		rhouw_v(i,k) = rhouw_v(i,k) - ABS(w_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
-		rhouwhat_v(i,k) = rhouw_v(i,k) - ABS(w_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
+		rhouwhat_v(i,k) = rhouwhat_v(i,k) - ABS(w_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 	END FORALL
 
 CASE (6)
@@ -303,39 +306,45 @@ IF (ANY(pi_1(imin:imax+1,kmin:kmax) == undef)) STOP "Ppi_1Px_u is WRONG!!!"
 IF (ANY(rhowhat_v(imin:imax,kmin:kmax+1) == undef)) STOP "PrhowhatPzhat_u is WRONG!!!"
 IF (ANY(rhouwhat_v(imin:imax,kmin:kmax+1) == undef)) STOP "PrhouwhatPzhat_u is WRONG!!!"
 
-FORALL (i = imin:imax, k = kmin:kmax)
-
-	PrhouPx_u(i,k) = (rhou_pi(i+1,k) - rhou_pi(i,k))/dx
-	PrhouuPx_u(i,k) = (rhouu_pi(i+1,k) - rhouu_pi(i,k))/dx
-	PrhowPz_u(i,k) = (rhow_v(i,k+1) - rhow_v(i,k))/dz
-	PrhouwPz_u(i,k) = (rhouw_v(i,k+1) - rhouw_v(i,k))/dz
+!FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
+		PrhouPx_u(i,k) = (rhou_pi(i+1,k) - rhou_pi(i,k))/dx
+		PrhouuPx_u(i,k) = (rhouu_pi(i+1,k) - rhouu_pi(i,k))/dx
+		PrhowPz_u(i,k) = (rhow_v(i,k+1) - rhow_v(i,k))/dz
+		PrhouwPz_u(i,k) = (rhouw_v(i,k+1) - rhouw_v(i,k))/dz
+		
+		uPuPx_u(i,k) = 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k))
+		wPuPz_u(i,k) = 1./rho_0_u(i,k)*(PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
 	
-	uPuPx_u(i,k) = 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k))
-	wPuPz_u(i,k) = 1./rho_0_u(i,k)*(PrhouwPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
-
-	Ppi_1Px_u(i,k) = (pi_1(i + 1,k) - pi_1(i,k))/dx
-
+		Ppi_1Px_u(i,k) = (pi_1(i + 1,k) - pi_1(i,k))/dx
 	
-	F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)
-	tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
+		IF (VertCoords == 1) THEN
+			F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)
+			tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
+			
+		ELSE IF (VertCoords == 2) THEN
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
+		
+			Ppi_1Pz_u(i,k) = (pi_1_v(i,k+1) - pi_1_v(i,k))/dz
+			
+			PrhowhatPzhat_u(i,k) = (rhowhat_v(i,k+1) - rhowhat_v(i,k))/dz
+			PrhouwhatPzhat_u(i,k) = (rhouwhat_v(i,k+1) - rhouwhat_v(i,k))/dz
+		
+			whatPuPzhat_u(i,k) = 1./rho_0_u(i,k)*(PrhouwhatPzhat_u(i,k) - u(i,k)*PrhowhatPzhat_u(i,k))
+			
+			PuPzhat_u(i,k) = (u_v(i,k+1) - u_v(i,k))/dz
+		
+			F_u(i,k) = - uPuPx_u(i,k) + u(i,k)*VertC_u(i,k)*PuPzhat_u(i,k) - whatPuPzhat_u(i,k)
+			tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*(Ppi_1Px_u(i,k) - VertC_u(i,k)*Ppi_1Pz_u(i,k))
 
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-
-	!Ppi_1Pz_u(i,k) = (pi_1_v(i,k+1) - pi_1_v(i,k))/dz
-	
-	!PrhowhatPzhat_u(i,k) = (rhowhat_v(i,k+1) - rhowhat_v(i,k))/dz
-	!PrhouwhatPzhat_u(i,k) = (rhouwhat_v(i,k+1) - rhouwhat_v(i,k))/dz
-
-	!whatPuPzhat_u(i,k) = 1./rho_0_u(i,k)*(PrhouwhatPzhat_u(i,k) - u(i,k)*PrhowhatPzhat_u(i,k))
-	
-	!PuPzhat_u(i,k) = (u_v(i,k+1) - u_v(i,k))/dz
-
-	!F_u(i,k) = - uPuPx_u(i,k) + u(i,k)*VertC_u(i,k)*PuPzhat_u(i,k) - whatPuPzhat_u(i,k)
-	!tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*(Ppi_1Px_u(i,k) - VertC_u(i,k)*Ppi_1Pz_u(i,k))
-	
-
-END FORALL
+		ELSE
+			STOP "WRONG vertical coordinates!!!"
+		END IF
+	END DO
+END DO
+!END FORALL
 !WRITE(*,*) tend_u(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) F_u(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) OnePlusZsPbPzhat(imax/2+imin/2,kmax/2+kmin/2)
@@ -558,36 +567,46 @@ IF (ANY(u_w(imin:imax,kmin:kmax) == undef) .OR. ANY(b(kmin:kmax) == undef) .OR. 
 
 IF (ANY(pi_1(imin:imax,kmin-1:kmax) == undef)) STOP "Ppi_1Pz_w is WRONG!!!"
 
-FORALL( i = imin:imax, k = kmin:kmax)
-	PrhouPx_w(i,k) = (rhou_v(i,k) - rhou_v(i-1,k))/dx
-	PrhouwPx_w(i,k) = (rhouw_v(i,k) - rhouw_v(i-1,k))/dx
-	PrhowPz_w(i,k) = (rhow_pi(i,k) - rhow_pi(i,k-1))/dz
-	PrhowwPz_w(i,k) = (rhoww_pi(i,k) - rhoww_pi(i,k-1))/dz
+!FORALL( i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
+		PrhouPx_w(i,k) = (rhou_v(i,k) - rhou_v(i-1,k))/dx
+		PrhouwPx_w(i,k) = (rhouw_v(i,k) - rhouw_v(i-1,k))/dx
+		PrhowPz_w(i,k) = (rhow_pi(i,k) - rhow_pi(i,k-1))/dz
+		PrhowwPz_w(i,k) = (rhoww_pi(i,k) - rhoww_pi(i,k-1))/dz
 
-	uPwPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k))
-	wPwPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k))
+		uPwPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k))
+		wPwPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k))
 
-	PwPz_w(i,k) = (w_pi(i,k) - w_pi(i,k-1))/dz
+		PwPz_w(i,k) = (w_pi(i,k) - w_pi(i,k-1))/dz
 
-	Ppi_1Pz_w(i,k) = (pi_1(i,k) - pi_1(i,k - 1))/dz
+		Ppi_1Pz_w(i,k) = (pi_1(i,k) - pi_1(i,k - 1))/dz
 
-	F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
-	tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
+		IF (VertCoords == 1) THEN
+			F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
+			tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
+	
+		ELSE IF (VertCoords == 2) THEN
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
 
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
+			PrhowhatPzhat_w(i,k) = (rhowhat_pi(i,k) - rhowhat_pi(i,k-1))/dz
+			PrhowhatwPzhat_w(i,k) = (rhowhatw_pi(i,k) - rhowhatw_pi(i,k-1))/dz
 
-	!PrhowhatPzhat_w(i,k) = (rhowhat_pi(i,k) - rhowhat_pi(i,k-1))/dz
-	!PrhowhatwPzhat_w(i,k) = (rhowhatw_pi(i,k) - rhowhatw_pi(i,k-1))/dz
+			PwPzhat_w(i,k) = (w_pi(i,k) - w_pi(i,k-1))/dz
 
-	!PwPzhat_w(i,k) = (w_pi(i,k) - w_pi(i,k-1))/dz
+			whatPwPzhat_w(i,k) = 1./rho_0_w(i,k)*(PrhowhatwPzhat_w(i,k) - w(i,k)*PrhowhatPzhat_w(i,k))
 
-	!whatPwPzhat_w(i,k) = 1./rho_0_w(i,k)*(PrhowhatwPzhat_w(i,k) - w(i,k)*PrhowhatPzhat_w(i,k))
+			F_w(i,k) = - uPwPx_w(i,k) + u_w(i,k)*VertC_w(i,k)*PwPzhat_w(i,k) - whatPwPzhat_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
+			tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)/VertB_w(i,k)
 
-	!F_w(i,k) = - uPwPx_w(i,k) + u_w(i,k)*VertC_w(i,k)*PwPzhat_w(i,k) - whatPwPzhat_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
-	!tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)/VertB_w(i,k)
+		ELSE
+			STOP "WRONG vertical coordinates!!!"
+		END IF
 
-END FORALL
+	END DO
+END DO
+!END FORALL
 !WRITE(*,*) F_w(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) tend_w(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) OnePlusZsPbPzhat(imax/2+imin/2,kmax/2+kmin/2)
@@ -800,24 +819,43 @@ IF (ANY(theta_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PthetaPz_w is WRONG!!!"
 
 IF (ANY(u_w(imin:imax,kmin:kmax) == undef) .OR. ANY(b(kmin:kmax) == undef) .OR. ANY(PzsPx_pi(imin:imax) == undef) .OR. ANY(OnePlusZsPbPzhat(imin:imax,kmin:kmax) == undef)) STOP "F_theta is WRONG!!!"
 
-FORALL (i = imin:imax, k = kmin:kmax)
-
-	uPthetaPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k))
-	wPthetaPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
+!FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
+		uPthetaPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k))
+		wPthetaPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
 	
-	F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)
-	tend_theta(i,k) = F_theta(i,k)
+		IF (VertCoords == 1) THEN
+			F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)
+			tend_theta(i,k) = F_theta(i,k)
 
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
+		ELSE IF (VertCoords == 2) THEN
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
 
-	!PthetaPzhat_w(i,k) = (theta_pi(i,k) - theta_pi(i,k-1))/dz
-	!whatPthetaPzhat_w(i,k) = 1./rho_0_w(i,k)*(PrhowhatthetaPzhat_w(i,k) - theta(i,k)*PrhowhatPzhat_w(i,k))
+			PrhowhatthetaPzhat_w(i,k) = (rhowhattheta_pi(i,k) - rhowhattheta_pi(i,k-1))/dz
+			PrhowhatPzhat_w(i,k) = (rhowhat_pi(i,k) - rhowhat_pi(i,k-1))/dz
 
-	!F_theta(i,k) = - uPthetaPx_w(i,k) + u_w(i,k)*VertC_w(i,k)*PthetaPzhat_w(i,k) - whatPthetaPzhat_w(i,k)
-	!tend_theta(i,k) = F_theta(i,k)
+			PthetaPzhat_w(i,k) = (theta_pi(i,k) - theta_pi(i,k-1))/dz
+			whatPthetaPzhat_w(i,k) = 1./rho_0_w(i,k)*(PrhowhatthetaPzhat_w(i,k) - theta(i,k)*PrhowhatPzhat_w(i,k))
+		
+			F_theta(i,k) = - uPthetaPx_w(i,k) + u_w(i,k)*VertC_w(i,k)*PthetaPzhat_w(i,k) - whatPthetaPzhat_w(i,k)
+			tend_theta(i,k) = F_theta(i,k)
 
-END FORALL
+			!temp_1(i,k) = wPthetaPz_w(i,k)
+			!temp_2(i,k) = whatPthetaPzhat_w(i,k)
+			!IF (temp_1(i,k) /= temp_2(i,k)) THEN
+				!WRITE(*,*) temp_1(i,k), temp_2(i,k)
+				!STOP "tend_theta is WRONG!!!"
+			!END IF
+
+		ELSE
+			STOP "WRONG vertical coordinates!!!"
+		END IF
+
+	END DO
+END DO
+!END FORALL
 !WRITE(*,*) F_theta(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) tend_theta(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) b(kmax/2+kmin/2)
@@ -891,23 +929,34 @@ IF (ANY(wrhotheta_w(imin:imax,kmin:kmax+1) == undef)) STOP "PwrhothetaPz_pi is W
 IF (ANY(urhotheta_w(imin:imax,kmin:kmax+1) == undef)) STOP "PurhothetaPz_pi is WRONG!!!"
 
 IF (ANY(PzsPx_pi(imin:imax) == undef) .OR. ANY(b_pi(kmin:kmax) == undef) .OR. ANY(OnePlusZsPbPzhat_pi(imin:imax,kmin:kmax) == undef)) STOP "F_pi is WRONG!!!"
-FORALL (i = imin:imax, k = kmin:kmax)
-	PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
-	PwrhothetaPz_pi(i,k) = (wrhotheta_w(i,k + 1) - wrhotheta_w(i,k))/dz
-	PurhothetaPz_pi(i,k) = (urhotheta_w(i,k + 1) - urhotheta_w(i,k))/dz
 
-	F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
-	tend_pi(i,k) = F_pi(i,k)
-
-	!-------------------------------------------------
-	! Below is for terrain vertical coordinates
-
-	!PurhothetaPzhat_pi(i,k) = (urhotheta_w(i,k+1) - urhotheta_w(i,k))/dz
-
-	!F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) - VertC_pi(i,k)*PurhothetaPzhat_pi(i,k) + PwrhothetaPz_pi(i,k)/VertB_pi(i,k))
-	!tend_pi(i,k) = F_pi(i,k)
-
-END FORALL
+!FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
+		PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
+		PwrhothetaPz_pi(i,k) = (wrhotheta_w(i,k + 1) - wrhotheta_w(i,k))/dz
+		PurhothetaPz_pi(i,k) = (urhotheta_w(i,k + 1) - urhotheta_w(i,k))/dz
+		
+		IF (VertCoords == 1) THEN
+			
+			F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
+			tend_pi(i,k) = F_pi(i,k)
+		
+		ELSE IF (VertCoords == 2) THEN
+			!-------------------------------------------------
+			! Below is for terrain vertical coordinates
+		
+			PurhothetaPzhat_pi(i,k) = (urhotheta_w(i,k+1) - urhotheta_w(i,k))/dz
+		
+			F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) - VertC_pi(i,k)*PurhothetaPzhat_pi(i,k) + PwrhothetaPz_pi(i,k)/VertB_pi(i,k))
+			tend_pi(i,k) = F_pi(i,k)
+			
+		ELSE
+			STOP "WRONG vertical coordinates!!!"
+		END IF
+	END DO
+END DO
+!END FORALL
 !WRITE(*,*) F_pi(imax/2+imin/2,kmax/2+kmin/2)
 !WRITE(*,*) b_pi(kmax/2+kmin/2)
 !WRITE(*,*) PzsPx_pi(imax/2+imin/2)

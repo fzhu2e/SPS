@@ -318,7 +318,7 @@ DO k = kts, kte + 1 ! Update boundary.
 		theta(i,k) = theta_0(i,k) + theta_1(i,k)   ! <= I want this.
 	END DO
 END DO
-CALL debug_ascii_output(theta_1)
+!CALL debug_ascii_output(theta_1)
 
 ! pi-grid
 pi_0(its+1:ite,kts) = 1.

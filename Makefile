@@ -14,7 +14,8 @@ LIBS =
 
 F90 = ifort
 #F90FLAGS = -O0 -g -w -DDEBUG
-F90FLAGS = -O3 -w
+#F90FLAGS = -O3 -w 
+F90FLAGS = -O3 -w -fp-model precise
 LDFLAGS =
 CONFIG =  
 #CONFIG = -openmp

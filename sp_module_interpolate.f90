@@ -86,7 +86,6 @@ FORALL (i = imin:imax, k = kmin:kmax)
 	w_hat_u(i,k) = (w_u(i,k) - u(i,k)*b_pi(k)*VertA_u(i))/VertB_u(i,k)
 END FORALL
 
-
 ! To pi-grid (u, w, theta)
 ! pi-grid (its + 1:ite, kts:kte)
 CALL set_calc_area_pi
