@@ -31,59 +31,16 @@ REAL(preci) :: beta
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
-! u-grid
-!DO i = ims, its
-!DO i = ite, ime
-	!WRITE(*,*) i
-!END DO
-!WRITE(*,*) "----------------------------"
-!DO i = ite + ims - its - 1, ite - 1
-!DO i = its + 1, its + ime - ite + 1
-	!WRITE(*,*) i
-!END DO
 
 IF (PRESENT(u)) THEN
-	
-	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
-		!zcrit_up = 9000.    ! (m)
-		!!xcrit_left = 15000.    ! (m)
-		!!xcrit_right = 35000.    ! (m)
-		
-		!DO k = kts, kte
-			!IF (zpi(k) >= zcrit_up .AND. zpi(k) <= ztop) THEN
-				!beta = (zpi(k) - zcrit_up)/(ztop - zcrit_up)**2
-				!DO i = its, ite
-					!u(i,k) = (1. - beta)*u(i,k) + beta*u(i,kme+1)
-				!END DO
-			!ELSE
-				!CONTINUE
-			!END IF
-		!END DO
-		
-		!!DO i = its, ite
-			!!IF (xpi(i) <= xcrit_left .AND. xpi(i) >= xx(its)) THEN
-				!!beta = (xcrit_left - xx(i))/(xx(ite) - xx(its))**2
-				!!DO k = kts, kte
-					!!u(i,k) = (1. - beta)*u(i,k) + beta*u(i,its)
-				!!END DO
-			!!IF (xpi(i) >= xcrit_right .AND. xpi(i) <= xx(ite)) THEN
-				!!beta = (xx(i) - xcrit_right)/(xx(ite) - xx(its))**2
-				!!DO k = kts, kte
-					!!u(i,k) = (1. - beta)*u(i,k) + beta*u(i,ite)
-				!!END DO
-			!!ELSE
-				!!CONTINUE
-			!!END IF
-		!!END DO
-	!END IF
-	
+	CALL set_area_u
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		u(ims:its,:) = 0
-		u(ite:ime,:) = 0
+		u(ims:imin,:) = 0
+		u(imax:ime,:) = 0
 	CASE (2)
-		u(ims:its,:) = u(ite+ims-its-1:ite-1,:)
-		u(ite:ime,:) = u(its+1:its+ime-ite+1,:)
+		u(ims:imin,:) = u(ite+ims-its-1:ite-1,:)
+		u(imax:ime,:) = u(its+1:its+ime-ite+1,:)
 	CASE (4)
 		DO i = ims, its
 			u(i,:) = u(its+1,:)
@@ -110,43 +67,7 @@ IF (PRESENT(u)) THEN
 	
 END IF
 
-!DO k = kms, kts - 1
-!DO k = kte+1, kme
-	!WRITE(*,*) k
-!END DO
-!WRITE(*,*) "----------------------------"
-!DO k = 2*kts - kms - 1, kts, - 1
-!DO k = kte, 2*kte - kme + 1, - 1
-	!WRITE(*,*) k
-!END DO
-
-! w-grid
-
-!DO i = ims, its
-!DO i = ite + 1, ime
-	!WRITE(*,*) i
-!END DO
-!WRITE(*,*) "----------------------------"
-!DO i = ite + ims - its, ite
-!DO i = its + 1, its + ime - ite
-	!WRITE(*,*) i
-!END DO
-
 IF (PRESENT(w)) THEN
-	
-	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
-		!zcrit_up = 9000.    ! (m)
-		!DO k = kts, kte
-			!IF (zz(k) >= zcrit_up .AND. zz(k) <= ztop) THEN
-				!beta = (zz(k) - zcrit_up)/(ztop - zcrit_up)**2
-				!DO i = its, ite
-					!w(i,k) = (1. - beta)*w(i,k) + beta*w(i,kme+1)
-				!END DO
-			!ELSE
-				!CONTINUE
-			!END IF
-		!END DO
-	!END IF
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
@@ -178,40 +99,10 @@ IF (PRESENT(w)) THEN
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
-
-! Make No Difference!
-	!w(:,kts) = 0
-	!w(:,kte+1) = 0
-	!w(:,kms:kts-1) = w(:,2*kts-kms:kts+1:-1)
-	!w(:,kte+2:kme) = w(:,kte:2+2*kte-kme:-1)
 	
 END IF
 
-!DO k = kms, kts - 1
-!DO k = kte + 2, kme
-	!WRITE(*,*) k
-!END DO
-!WRITE(*,*) "----------------------------"
-!DO k = 2*kts - kms, kts + 1, - 1
-!DO k = kte, 2*kte - kme + 2, - 1
-	!WRITE(*,*) k
-!END DO
-
 IF (PRESENT(theta)) THEN
-	
-	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
-		!zcrit_up = 9000.    ! (m)
-		!DO k = kts, kte
-			!IF (zz(k) >= zcrit_up .AND. zz(k) <= ztop) THEN
-				!beta = (zz(k) - zcrit_up)/(ztop - zcrit_up)**2
-				!DO i = its, ite
-					!theta(i,k) = (1. - beta)*theta(i,k) + beta*theta(i,kme+1)
-				!END DO
-			!ELSE
-				!CONTINUE
-			!END IF
-		!END DO
-	!END IF
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
@@ -249,20 +140,6 @@ IF (PRESENT(theta)) THEN
 END IF
 
 IF (PRESENT(theta_1)) THEN
-	
-	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
-		!zcrit_up = 9000.    ! (m)
-		!DO k = kts, kte
-			!IF (zz(k) >= zcrit_up .AND. zz(k) <= ztop) THEN
-				!beta = (zz(k) - zcrit_up)/(ztop - zcrit_up)**2
-				!DO i = its, ite
-					!theta_1(i,k) = (1. - beta)*theta_1(i,k) + beta*theta_1(i,kme+1)
-				!END DO
-			!ELSE
-				!CONTINUE
-			!END IF
-		!END DO
-	!END IF
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
@@ -337,20 +214,6 @@ END IF
 
 ! pi-grid
 IF (PRESENT(pi_1)) THEN
-	
-	!IF (RunCase == 4) THEN ! Nonreflecting Boundary Conditions at z_hat >= 9000m
-		!zcrit_up = 9000.    ! (m)
-		!DO k = kts, kte
-			!IF (zpi(k) >= zcrit_up .AND. zpi(k) <= ztop) THEN
-				!beta = (zpi(k) - zcrit_up)/(ztop - zcrit_up)**2
-				!DO i = its, ite
-					!pi_1(i,k) = (1. - beta)*pi_1(i,k) + beta*pi_1(i,kme+1)
-				!END DO
-			!ELSE
-				!CONTINUE
-			!END IF
-		!END DO
-	!END IF
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)

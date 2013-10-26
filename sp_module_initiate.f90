@@ -35,8 +35,6 @@ REAL(preci), PARAMETER :: x_c = 25.55*1000.  ! (m)
 REAL(preci), PARAMETER :: z_c = 3.0*1000.     ! (m)
 REAL(preci), PARAMETER :: r_x = 4*1000.  ! (m)
 REAL(preci), PARAMETER :: r_z = 2*1000.  ! (m)
-
-REAL(preci), PARAMETER :: Ts = 300.    ! (K)
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
@@ -47,53 +45,33 @@ REAL(preci) :: L
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
-CALL debug_undef_all(pi_0,pi,theta_1_pi,theta_0,pi,theta_pi)
-xx = undef
-xpi = undef
-zz = undef
-zpi = undef
-!=================================================
-! 0. Calculate xx(its:ite), xpi(its+1:ite), zz(kts:kte+1), zpi(kts:kte).
+CALL debug_undef_all(pi,theta_1_pi,theta_pi)
+
+CALL initiate_grid
 !-------------------------------------------------
-xx(its) = 0.
-DO i = its + 1, ite
-	xx(i) = dx*(i - its)
-	xpi(i) = (xx(i-1) + xx(i))/2.
-END DO
-!WRITE(*,*) xpi
-!WRITE(*,*) xx
-
-DO k = kts, kte + 1
-	zz(k) = dz*(k - kts)
-END DO
-DO k = kts, kte
-	zpi(k) = (zz(k) + zz(k + 1))/2.
-END DO
-!WRITE(*,*) zz
-!WRITE(*,*) zpi
-!=================================================
-! 1. u, w, pi_1, theta, theta_0, theta_1, rho_0
+! theta_0, pi_0, rho_0
 !-------------------------------------------------
-! u-grid
-u(its+1:ite-1,kts:kte) = 0.              ! <= I want this.
+CALL initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+!-------------------------------------------------
+! u (on u-grid)
+!-------------------------------------------------
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		u(i,k) = 0.
+	END DO
+END DO
 
-! w-grid
-w(its+1:ite,kts+1:kte) = 0.              ! <= I want this.
-!theta_0(its+1:ite,kts+1:kte) = Ts        ! <= I want this.
-theta_0(its+1:ite,kts:kte+1) = Ts        ! <= I want this. Update boundary.
-
-! Vertical boundary condition
-!theta_0(:,kts-1) = theta_0(:,kts+1) ! Ptheta_0Pz = 0.
-!theta_0(:,kts) = theta_0(:,kts+1) ! Ptheta_0Pz = 0.
-!theta_0(:,kte+2) = theta_0(:,kte) ! Ptheta_0Pz = 0.
-!theta_0(:,kte+1) = theta_0(:,kte) ! Ptheta_0Pz = 0.
-! Lateral boundary condition
-!theta_0(its,:) = theta_0(its+1,:) ! Ptheta_0Px = 0.
-!theta_0(ite+1,:) = theta_0(ite,:) ! Ptheta_0Px = 0.
-
-!DO k = kts + 1, kte
-DO k = kts, kte + 1 ! Update boundary.
-	DO i = its + 1, ite
+!-------------------------------------------------
+! w (on w-grid)
+!-------------------------------------------------
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		w(i,k) = 0.
+!-------------------------------------------------
+! theta_1, theta (on w-grid)
+!-------------------------------------------------
 		L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c)/r_x/r_x + (zz(k) - z_c)*(zz(k) - z_c)/r_z/r_z)
 		IF (L <= 1.) THEN
 			theta_1(i,k) = - 15./2.*(COS(PI_math*L) + 1.)  ! <= I want this.
@@ -103,22 +81,13 @@ DO k = kts, kte + 1 ! Update boundary.
 		theta(i,k) = theta_0(i,k) + theta_1(i,k)   ! <= I want this.
 	END DO
 END DO
-!theta_1(its+1:ite,kte+1) = 0. ! Update boundary.
 
-! pi-grid
-pi_0(its+1:ite,kts) = 1.
-theta_0_pi(its:ite+1,kts:kte+1) = Ts
-rho_0(its+1:ite,kts) = p0/Rd/theta_0(its+1:ite,kts)*pi_0(its+1:ite,kts)*pi_0(its+1:ite,kts)**(Cp/Rd)     ! <= I want this.
-DO k = kts + 1, kte
-	DO i = its + 1, ite
-		pi_0(i,k) = pi_0(i,k-1) - g/Cp/theta_0_pi(i,k)*dz                ! <= I want this.
-		rho_0(i,k) = p0/Rd/theta_0_pi(i,k)*pi_0(i,k)*pi_0(i,k)**(Cp/Rd)     ! <= I want this.
-	END DO
-END DO
-pi(its+1:ite,kte) = pi_0(its+1:ite,kte)
-pi_1(its+1:ite,kte) = 0.
-DO k = kte - 1, kts, - 1
-	DO i = its + 1, ite
+!-------------------------------------------------
+! pi_1 (on pi-grid)
+!-------------------------------------------------
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
 		L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c)/r_x/r_x + (zpi(k) - z_c)*(zpi(k) - z_c)/r_z/r_z)
 		IF (L <= 1.) THEN
 			theta_1_pi(i,k) = - 15./2.*(COS(PI_math*L) + 1.)  ! <= I want this.
@@ -126,26 +95,9 @@ DO k = kte - 1, kts, - 1
 			theta_1_pi(i,k) = 0.
 		END IF
 		theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
-		pi(i,k) = pi(i,k+1) + g/Cp/theta_pi(i,k)*dz                      ! <= I want this.
-		pi_1(i,k) = pi(i,k) - pi_0(i,k)                                  ! <= I want this.
+		pi_1(i,k) = 0.
 	END DO
 END DO
-
-!WRITE(*,*) pi(256,:)
-!WRITE(*,*) pi_0(256,:)
-!WRITE(*,*) rho_0(256,:)
-
-! Vertical boundary condition
-!rho_0(:,kts-1) = rho_0(:,kts) ! Prho_0Pz = 0.
-!rho_0(:,kte+1) = rho_0(:,kte) ! Prho_0Pz = 0.
-! Lateral boundary condition
-!rho_0(its,:) = rho_0(its+1,:) ! Prho_0Px = 0.
-!rho_0(ite+1,:) = rho_0(ite,:) ! Prho_0Px = 0.
-
-!=================================================
-!CALL debug_ascii_output(theta_1)
-!CALL debug_ascii_output(theta_1_pi)
-!CALL debug_ascii_output(pi_1)
 !=================================================
 END SUBROUTINE initiate_dc
 !=================================================
@@ -169,8 +121,6 @@ REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
 REAL(preci), PARAMETER :: x_c = 10.0*1000. ! (m)
 REAL(preci), PARAMETER :: z_c = 2.0*1000.  ! (m)
 REAL(preci), PARAMETER :: R = 2.0*1000.    ! (m)
-
-REAL(preci), PARAMETER :: Ts = 300.    ! (K)
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
@@ -181,65 +131,49 @@ REAL(preci) :: L
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
-CALL debug_undef_all(pi_0,pi,theta_1_pi,theta_0,pi,theta_pi)
-xx = undef
-xpi = undef
-zz = undef
-zpi = undef
-!=================================================
-! 0. Calculate xx(its:ite), xpi(its+1:ite), zz(kts:kte+1), zpi(kts:kte).
+CALL debug_undef_all(pi,theta_1_pi,theta_pi)
+
+CALL initiate_grid
 !-------------------------------------------------
-xx(its) = 0.
-DO i = its + 1, ite
-	xx(i) = dx*(i - its)
-	xpi(i) = (xx(i-1) + xx(i))/2.
-END DO
-
-DO k = kts, kte + 1
-	zz(k) = dz*(k - kts)
-END DO
-DO k = kts, kte
-	zpi(k) = (zz(k) + zz(k + 1))/2.
-END DO
-!=================================================
-! 1. u, w, pi_1, theta, theta_0, theta_1, rho_0
+! theta_0, pi_0, rho_0
 !-------------------------------------------------
-! u-grid
-u(its+1:ite-1,kts:kte) = 0.              ! <= I want this.
+CALL initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+!-------------------------------------------------
+! u (on u-grid)
+!-------------------------------------------------
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		u(i,k) = 0.
+	END DO
+END DO
 
-! w-grid
-w(its+1:ite,kts+1:kte) = 0.              ! <= I want this.
-!theta_0(its+1:ite,kts+1:kte) = Ts        ! <= I want this.
-theta_0(its+1:ite,kts:kte+1) = Ts        ! <= I want this. Update boundary.
-
-DO k = kts, kte + 1 ! Update boundary.
-	DO i = its + 1, ite
+!-------------------------------------------------
+! w (on w-grid)
+!-------------------------------------------------
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		w(i,k) = 0.
+!-------------------------------------------------
+! theta_1, theta (on w-grid)
+!-------------------------------------------------
 		L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c) + (zz(k) - z_c)*(zz(k) - z_c))
 		theta_1(i,k) = 2.*MAX(0.,1. - L/R)
-		theta(i,k) = theta_0(i,k) + theta_1(i,k)   ! <= I want this.
+		theta(i,k) = theta_0(i,k) + theta_1(i,k)
 	END DO
 END DO
-!theta_1(its+1:ite,kte+1) = 0. ! Update boundary.
 
-! pi-grid
-pi_0(its+1:ite,kts) = 1.
-theta_0_pi(its:ite+1,kts:kte+1) = Ts
-rho_0(its+1:ite,kts) = p0/Rd/theta_0(its+1:ite,kts)*pi_0(its+1:ite,kts)*pi_0(its+1:ite,kts)**(Cp/Rd)     ! <= I want this.
-DO k = kts + 1, kte
-	DO i = its + 1, ite
-		pi_0(i,k) = pi_0(i,k-1) - g/Cp/theta_0_pi(i,k)*dz                ! <= I want this.
-		rho_0(i,k) = p0/Rd/theta_0_pi(i,k)*pi_0(i,k)*pi_0(i,k)**(Cp/Rd)     ! <= I want this.
-	END DO
-END DO
-pi(its+1:ite,kte) = pi_0(its+1:ite,kte)
-pi_1(its+1:ite,kte) = 0.
-DO k = kte - 1, kts, - 1
-	DO i = its + 1, ite
+!-------------------------------------------------
+! pi_1 (on pi-grid)
+!-------------------------------------------------
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
 		L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c) + (zpi(k) - z_c)*(zpi(k) - z_c))
 		theta_1_pi(i,k) = 2.*MAX(0.,1. - L/R)
 		theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
-		pi(i,k) = pi(i,k+1) + g/Cp/theta_pi(i,k)*dz                      ! <= I want this.
-		pi_1(i,k) = pi(i,k) - pi_0(i,k)                                  ! <= I want this.
+		pi_1(i,k) = 0.
 	END DO
 END DO
 !=================================================
@@ -265,9 +199,6 @@ REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
 REAL(preci), PARAMETER :: x_c = 100.0*1000. ! (m)
 REAL(preci), PARAMETER :: H = 10.0*1000.    ! (m)
 REAL(preci), PARAMETER :: a = 5.0*1000.     ! (m)
-REAL(preci), PARAMETER :: N0 = 0.01         ! (s-1)
-
-REAL(preci), PARAMETER :: Ts = 300.    ! (K)
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
@@ -278,93 +209,51 @@ REAL(preci) :: L
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
-CALL debug_undef_all(pi_0,pi,theta_1_pi,theta_0_pi,theta_pi)
-xx = undef
-xpi = undef
-zz = undef
-zpi = undef
-!=================================================
-! 0. Calculate xx(its:ite), xpi(its+1:ite), zz(kts:kte+1), zpi(kts:kte).
+CALL debug_undef_all(pi,theta_1_pi,theta_pi)
+
+CALL initiate_grid
 !-------------------------------------------------
-xx(its) = 0.
-DO i = its + 1, ite
-	xx(i) = dx*(i - its)
-	xpi(i) = (xx(i-1) + xx(i))/2.
-END DO
-
-DO k = kts, kte + 1
-	zz(k) = dz*(k - kts)
-END DO
-DO k = kts, kte
-	zpi(k) = (zz(k) + zz(k + 1))/2.
-END DO
-!=================================================
-! 1. u, w, pi_1, theta, theta_0, theta_1, rho_0
+! theta_0, pi_0, rho_0
 !-------------------------------------------------
-! u-grid
-u(its+1:ite-1,kts:kte) = 20.              ! <= I want this.
-!u(its+1:ite-1,kts:kte) = 0.              ! <= I want this.
+CALL initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+!-------------------------------------------------
+! u (on u-grid)
+!-------------------------------------------------
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		u(i,k) = 20.
+	END DO
+END DO
 
-! w-grid
-w(its+1:ite,kts+1:kte) = 0.              ! <= I want this.
-
-DO k = kts, kte + 1 ! Update boundary.
-	DO i = its + 1, ite
-		theta_0(i,k) = Ts*EXP(N0*N0/g*zz(k))        ! <= I want this. Update boundary.
-		!theta_0(i,k) = Ts
+!-------------------------------------------------
+! w (on w-grid)
+!-------------------------------------------------
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		w(i,k) = 0.
+!-------------------------------------------------
+! theta_1, theta (on w-grid)
+!-------------------------------------------------
 		L = SIN(PI_math*zz(k)/H)/(1. + (xx(i) - x_c)*(xx(i) - x_c)/a/a)
 		theta_1(i,k) = 0.01*L
-		!theta_1(i,k) = 0.
 		theta(i,k) = theta_0(i,k) + theta_1(i,k)   ! <= I want this.
 	END DO
 END DO
-!CALL debug_ascii_output(theta_1)
 
-! pi-grid
-pi_0(its+1:ite,kts) = 1.
-DO k = kts, kte
-	DO i = its + 1, ite
-		theta_0_pi(i,k) = Ts*EXP(N0*N0/g*zpi(k))        ! <= I want this. Update boundary.
-		!theta_0_pi(i,k) = Ts
-		!pi_0(i,k) = 1 + g*g/Cp/N0/N0/Ts*(EXP(- N0*N0*zpi(k)/g) - EXP(- N0*N0*zs_pi(i)/g))
-		pi_0(i,k+1) = pi_0(i,k) - g/Cp/theta_0_pi(i,k)*dz                ! <= I want this.
-		!pi_0(i,k) = 1 + g*g/Cp/N0/N0/Ts*(EXP(- N0*N0*zpi(k)/g) - 1)
-		rho_0(i,k) = p0/Rd/theta_0_pi(i,k)*pi_0(i,k)*pi_0(i,k)**(Cp/Rd)     ! <= I want this.
-	END DO
-END DO
-!CALL debug_ascii_output(pi_0)
-pi(its+1:ite,kte) = pi_0(its+1:ite,kte)
-!pi(its+1:ite,kte+1) = pi_0(its+1:ite,kte+1)
-pi_1(its+1:ite,kte) = 0.
-!DO k = kte - 1, kts, - 1
-DO k = kte, kts, - 1
-	DO i = its + 1, ite
+!-------------------------------------------------
+! pi_1 (on pi-grid)
+!-------------------------------------------------
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
 		L = SIN(PI_math*zpi(k)/H)/(1. + (xpi(i) - x_c)*(xpi(i) - x_c)/a/a)
 		theta_1_pi(i,k) = 0.01*L
-		!theta_1_pi(i,k) = 0.
 		theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
-		pi(i,k) = pi(i,k+1) + g/Cp/theta_pi(i,k)*dz                      ! <= I want this.
-		!pi(i,k) = 1 - g/Cp/theta_pi*zpi(k)
-		pi_1(i,k) = pi(i,k) - pi_0(i,k)                                  ! <= I want this.
+		pi_1(i,k) = 0.
 	END DO
 END DO
-!CALL debug_ascii_output(pi_0)
-!CALL debug_ascii_output(pi_1)
-!CALL debug_ascii_output(pi)
-!WRITE(*,*) "----------------u---------------------"
-!CALL debug_test_boundary(u)
-!WRITE(*,*) "----------------w---------------------"
-!CALL debug_test_boundary(w)
-!WRITE(*,*) "----------------theta---------------------"
-!CALL debug_test_boundary(theta)
-!WRITE(*,*) "----------------theta_0---------------------"
-!CALL debug_test_boundary(theta_0)
-!WRITE(*,*) "----------------theta_1---------------------"
-!CALL debug_test_boundary(theta_1)
-!WRITE(*,*) "----------------pi_1---------------------"
-!CALL debug_test_boundary(pi_1)
-!WRITE(*,*) "----------------rho_0---------------------"
-!CALL debug_test_boundary(rho_0)
 !=================================================
 END SUBROUTINE initiate_igw
 !=================================================
@@ -564,6 +453,135 @@ DO k = kte - 1, kts, - 1
 END DO
 !=================================================
 END SUBROUTINE initiate_Sm
+!=================================================
+
+!=================================================
+! Initiate Grid Position
+!=================================================
+SUBROUTINE initiate_grid
+IMPLICIT NONE
+!-------------------------------------------------
+INTEGER :: i, k
+!=================================================
+! Undefine variations.
+!-------------------------------------------------
+xx = undef
+xpi = undef
+zz = undef
+zpi = undef
+!-------------------------------------------------
+
+CALL set_area_u
+DO i = imin, imax
+	xx(i) = dx*(i - its)
+END DO
+
+CALL set_area_pi
+DO i = imin, imax
+	xpi(i) = (xx(i-1) + xx(i))/2.
+END DO
+
+CALL set_area_w
+DO k = kmin, kmax
+	zz(k) = dz*(k - kts)
+END DO
+
+CALL set_area_pi
+DO k = kmin, kmax
+	zpi(k) = (zz(k) + zz(k + 1))/2.
+END DO
+
+!-------------------------------------------------
+! Unit Test
+!-------------------------------------------------
+!WRITE(*,*) xx
+!WRITE(*,*) xpi
+!WRITE(*,*) zz
+!WRITE(*,*) zpi
+!=================================================
+END SUBROUTINE initiate_grid
+!=================================================
+
+!=================================================
+! Initiate Basic State Atmosphere
+!=================================================
+SUBROUTINE initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+IMPLICIT NONE
+!-------------------------------------------------
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0_pi
+!-------------------------------------------------
+REAL(preci), PARAMETER :: Ts = 300.         ! (K)
+REAL(preci), PARAMETER :: N0 = 0.01         ! (s-1)
+!-------------------------------------------------
+INTEGER :: i, k
+!=================================================
+! Undefine variations.
+!-------------------------------------------------
+CALL debug_undef_all(theta_0,pi_0,rho_0)
+CALL debug_undef_all(theta_0_pi)
+
+!-------------------------------------------------
+! theta_0 (on w-grid)
+!-------------------------------------------------
+CALL set_area_w
+
+DO i = imin, imax
+	DO k = kmin, kmax
+		IF (RunCase == 1 .OR. RunCase == 2) THEN
+			theta_0(i,k) = Ts
+		ELSE IF (RunCase == 3) THEN
+			theta_0(i,k) = Ts*EXP(N0*N0/g*zz(k))
+		ELSE IF (RunCase == 4) THEN
+			theta_0(i,k) = (Ts - 20.)*EXP(N0*N0/g*zz(k))
+		ELSE
+			STOP "WRONG RunCase!!!"
+		END IF
+	END DO
+END DO
+
+!-------------------------------------------------
+! theta_0_pi, pi_0 (on pi-grid)
+!-------------------------------------------------
+CALL set_area_pi
+
+DO i = imin, imax
+	DO k = kmin, kmax
+		IF (RunCase == 1 .OR. RunCase == 2) THEN
+			theta_0_pi(i,k) = Ts
+			pi_0(i,k) = 1. - g*zpi(k)/2./Cp/theta_0_pi(i,k)
+		ELSE IF (RunCase == 3) THEN
+			theta_0_pi(i,k) = Ts*EXP(N0*N0/g*zpi(k))
+			pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zpi(k)/g) - 1.)
+		ELSE IF (RunCase == 4) THEN
+			theta_0_pi(i,k) = (Ts - 20.)*EXP(N0*N0/g*zpi(k))
+		ELSE
+			STOP "WRONG RunCase!!!"
+		END IF
+	END DO
+!-------------------------------------------------
+! rho_0 (on pi-grid)
+!-------------------------------------------------
+	DO k = kmin, kmax
+		rho_0(i,k) = p0/Rd/theta_0_pi(i,k)*pi_0(i,k)*pi_0(i,k)**(Cp/Rd)
+	END DO
+END DO
+
+!=================================================
+END SUBROUTINE initiate_basic_state
+!=================================================
+
+!=================================================
+! Initiate Terrain
+!=================================================
+SUBROUTINE initiate_terrain
+IMPLICIT NONE
+!=================================================
+
+!=================================================
+END SUBROUTINE initiate_terrain
 !=================================================
 
 !=================================================

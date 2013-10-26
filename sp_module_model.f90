@@ -19,7 +19,7 @@ INTEGER, PARAMETER :: TimeScheme = 2       ! 1. Forward-backward; 2. Runge-Kutta
 INTEGER, PARAMETER :: AdvectionScheme = 5  ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order;
 INTEGER, PARAMETER :: LateralBoundary = 2  ! 1. Wall; 2. Periodic; 3. Sponge; 4. Open;
 INTEGER, PARAMETER :: UpperBoundary = 1    ! 1. Wall; 3. Sponge; 4. Open; 
-INTEGER, PARAMETER :: VertCoords = 2       ! 1. Height; 2. Terrain;
+INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height; 2. Terrain;
 
 !=================================================
 !-------------------------------------------------
@@ -78,8 +78,8 @@ REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
 REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
 REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-!INTEGER :: nstep = 30000
-INTEGER :: nstep = 1000
+INTEGER :: nstep = 30000
+!INTEGER :: nstep = 1000
 
 REAL :: Km, Kh
 !-------------------------------------------------
@@ -194,6 +194,43 @@ imax = ite - 1
 kmin = kts + 1
 kmax = kte
 END SUBROUTINE set_calc_area_v
+!=================================================
+
+!=================================================
+! Arakawa-C grid.
+! Set calculate area of u-grid, w-grid, pi-grid, and v-grid.
+!=================================================
+SUBROUTINE set_area_u
+IMPLICIT NONE
+imin = its
+imax = ite
+kmin = kts
+kmax = kte
+END SUBROUTINE set_area_u
+
+SUBROUTINE set_area_w
+IMPLICIT NONE
+imin = its + 1
+imax = ite
+kmin = kts
+kmax = kte + 1
+END SUBROUTINE set_area_w
+
+SUBROUTINE set_area_pi
+IMPLICIT NONE
+imin = its + 1
+imax = ite
+kmin = kts
+kmax = kte
+END SUBROUTINE set_area_pi
+
+SUBROUTINE set_area_v
+IMPLICIT NONE
+imin = its
+imax = ite
+kmin = kts
+kmax = kte + 1
+END SUBROUTINE set_area_v
 !=================================================
 
 
