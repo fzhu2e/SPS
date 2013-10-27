@@ -113,6 +113,7 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: PurhothetaPzhat_pi
 !-------------------------------------------------
 
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: temp_1, temp_2
+INTEGER, PARAMETER :: expand = 1
 !=================================================
 CONTAINS
 !=================================================
@@ -136,47 +137,58 @@ INTEGER :: i, k
 !-------------------------------------------------
 ! pi-grid - Middle-vars can be calculated on boundaries.
 !-------------------------------------------------
-CALL set_calc_area_pi
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_pi
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_pi
+CALL set_area_expand(expand)
 
 IF (ANY(rho_0(imin:imax,kmin:kmax) == undef) .OR. ANY(u_pi(imin:imax,kmin:kmax) == undef)) STOP "rhou_pi is WRONG!!!"
-FORALL(i = imin:imax, k = kmin:kmax)
-	rhou_pi(i,k) = rho_0(i,k)*u_pi(i,k)
-END FORALL
+DO i = imin, imax
+	DO k = kmin, kmax
+		rhou_pi(i,k) = rho_0(i,k)*u_pi(i,k)
+	END DO
+END DO
 
 SELECT CASE (AdvectionScheme)
 
 CASE (2)
 	IF (ANY(rhou_pi(imin:imax,kmin:kmax) == undef) .OR. ANY(u_pi(imin:imax,kmin:kmax) == undef)) STOP "rhouu_pi is WRONG!!!"
-	FORALL(i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		rhouu_pi(i,k) = rhou_pi(i,k)*u_pi(i,k)
-	END FORALL
+	END DO
+END DO
 
 CASE (3)
 	IF (ANY(u(imin-2:imax+1,kmin:kmax) == undef)) STOP "rhouu_pi is WRONG!!!"
-	FORALL(i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i-1,k) + u(i,k)
 		fb(i,k) = u(i-2,k) + u(i+1,k)
 		fc(i,k) = u(i,k) - u(i-1,k)
 		fd(i,k) = u(i+1,k) - u(i-2,k)
 		rhouu_pi(i,k) = rho_0(i,k)*(u_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(u_pi(i,k))/12.*(3*fc(i,k) - fd(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (4)
 	IF (ANY(u(imin-2:imax+1,kmin:kmax) == undef)) STOP "rhouu_pi is WRONG!!!"
-	FORALL(i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i-1,k) + u(i,k)
 		fb(i,k) = u(i-2,k) + u(i+1,k)
 		rhouu_pi(i,k) = rho_0(i,k)*(u_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (5)
 	IF (ANY(u(imin-3:imax+2,kmin:kmax) == undef)) STOP "rhouu_pi is WRONG!!!"
-	FORALL(i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i-1,k) + u(i,k)
 		fb(i,k) = u(i-2,k) + u(i+1,k)
 		fc(i,k) = u(i-3,k) + u(i+2,k)
@@ -185,16 +197,19 @@ CASE (5)
 		fe(i,k) = u(i+1,k) - u(i-2,k)
 		ff(i,k) = u(i+2,k) - u(i-3,k)
 		rhouu_pi(i,k) = rhouu_pi(i,k) - ABS(u_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
-	END FORALL
+	END DO
+END DO
 
 CASE (6)
 	IF (ANY(u(imin-3:imax+2,kmin:kmax) == undef)) STOP "rhouu_pi is WRONG!!!"
-	FORALL(i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i-1,k) + u(i,k)
 		fb(i,k) = u(i-2,k) + u(i+1,k)
 		fc(i,k) = u(i-3,k) + u(i+2,k)
 		rhouu_pi(i,k) = rho_0(i,k)*u_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-	END FORALL
+	END DO
+END DO
 
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
@@ -203,36 +218,43 @@ END SELECT
 !-------------------------------------------------
 ! v(virtual)-grid
 !-------------------------------------------------
-CALL set_calc_area_v
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_v
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_v
+CALL set_area_expand(expand)
 
 IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
 IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_hat_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
-FORALL (i = imin:imax, k = kmin:kmax)
-	rhow_v(i,k) = rho_0_v(i,k)*w_v(i,k)
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhat_v(i,k) = rho_0_v(i,k)*w_hat_v(i,k)
-END FORALL
+DO i = imin, imax
+	DO k = kmin, kmax
+		rhow_v(i,k) = rho_0_v(i,k)*w_v(i,k)
+		!---------------------------------------------------
+		! Below is for terrain vertical coordinates
+		rhowhat_v(i,k) = rho_0_v(i,k)*w_hat_v(i,k)
+	END DO
+END DO
 
 SELECT CASE (AdvectionScheme)
 CASE (2)
 	IF (ANY(rhow_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax)== undef)) STOP "rhouw_v is WRONG!!!"
 	IF (ANY(rhowhat_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax)== undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		rhouw_v(i,k) = rhow_v(i,k)*u_v(i,k)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhouwhat_v(i,k) = rhowhat_v(i,k)*u_v(i,k)
-	END FORALL
+	END DO
+END DO
 
 CASE (3)
 	IF (ANY(u(imin:imax,kmin-2:kmax+1) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i,k) + u(i,k-1)
 		fb(i,k) = u(i,k+1) + u(i,k-2)
 		fc(i,k) = u(i,k) - u(i,k-1)
@@ -241,22 +263,26 @@ CASE (3)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhouwhat_v(i,k) = rho_0_v(i,k)*(w_hat_v(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(w_hat_v(i,k))/12.*(3*fc(i,k) - fd(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (4)
 	IF (ANY(u(imin:imax,kmin-2:kmax+1) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i,k) + u(i,k-1)
 		fb(i,k) = u(i,k+1) + u(i,k-2)
 		rhouw_v(i,k) = rho_0_v(i,k)*(w_v(i,k)/12.*(7*fa(i,k) - fb(i,k)))
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhouwhat_v(i,k) = rho_0_v(i,k)*(w_hat_v(i,k)/12.*(7*fa(i,k) - fb(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (5)
 	IF (ANY(u(imin:imax,kmin-3:kmax+2) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i,k) + u(i,k-1)
 		fb(i,k) = u(i,k+1) + u(i,k-2)
 		fc(i,k) = u(i,k+2) + u(i,k-3)
@@ -272,11 +298,13 @@ CASE (5)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhouwhat_v(i,k) = rhouwhat_v(i,k) - ABS(w_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
-	END FORALL
+	END DO
+END DO
 
 CASE (6)
 	IF (ANY(u(imin:imax,kmin-3:kmax+2) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = u(i,k) + u(i,k-1)
 		fb(i,k) = u(i,k+1) + u(i,k-2)
 		fc(i,k) = u(i,k+2) + u(i,k-3)
@@ -284,7 +312,8 @@ CASE (6)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhouwhat_v(i,k) = rho_0_v(i,k)*w_hat_v(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-	END FORALL
+	END DO
+END DO
 
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
@@ -292,11 +321,12 @@ END SELECT
 !-------------------------------------------------
 ! u-grid
 !-------------------------------------------------
-CALL set_calc_area_u
+!CALL set_calc_area_u
+CALL set_area_u
 
-IF (ANY(pi_1(imin:imax+1,k) == undef)) STOP "Ppi_1Px_u is WRONG!!!"
-IF (ANY(rhou_pi(imin:imax+1,k) == undef)) STOP "PrhouPx_u is WRONG!!!"
-IF (ANY(rhouu_pi(imin:imax+1,k) == undef)) STOP "PrhouuPx_u is WRONG!!!"
+IF (ANY(pi_1(imin:imax+1,kmin:kmax) == undef)) STOP "Ppi_1Px_u is WRONG!!!"
+IF (ANY(rhou_pi(imin:imax+1,kmin:kmax) == undef)) STOP "PrhouPx_u is WRONG!!!"
+IF (ANY(rhouu_pi(imin:imax+1,kmin:kmax) == undef)) STOP "PrhouuPx_u is WRONG!!!"
 IF (ANY(rhow_v(imin:imax,kmin:kmax+1) == undef)) STOP "PrhowPz_u is WRONG!!!"
 IF (ANY(rhouw_v(imin:imax,kmin:kmax+1) == undef)) STOP "PrhouwPz_u is WRONG!!!"
 
@@ -356,12 +386,14 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	IF (ANY(u(imin-1:imax+1,k) == undef)) STOP "P2uPx2_u is WRONG!!!"
 	IF (ANY(u(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2uPx2_u is WRONG!!!"
 	
-	FORALL (i = imin:imax, k = kmin:kmax)
-		P2uPx2_u(i,k) = (u(i+1,k) + u(i-1,k) - 2*u(i,k))/dx/dx
-		P2uPz2_u(i,k) = (u(i,k+1) + u(i,k-1) - 2*u(i,k))/dz/dz
-		
-		tend_u(i,k) = tend_u(i,k) + Km*(P2uPx2_u(i,k) + P2uPz2_u(i,k)) ! Add diffusion term.
-	END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			P2uPx2_u(i,k) = (u(i+1,k) + u(i-1,k) - 2*u(i,k))/dx/dx
+			P2uPz2_u(i,k) = (u(i,k+1) + u(i,k-1) - 2*u(i,k))/dz/dz
+			
+			tend_u(i,k) = tend_u(i,k) + Km*(P2uPx2_u(i,k) + P2uPz2_u(i,k)) ! Add diffusion term.
+		END DO
+	END DO
 END IF
 	
 !-------------------------------------------------
@@ -393,17 +425,21 @@ INTEGER :: i, k
 !-------------------------------------------------
 ! v(virtual)-grid
 !-------------------------------------------------
-CALL set_calc_area_v
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_v
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_v
+CALL set_area_expand(expand)
 
 IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax) == undef)) STOP "rhou_v is WRONG!!!"
-FORALL (i = imin:imax, k = kmin:kmax)
-	rhou_v(i,k) = rho_0_v(i,k)*u_v(i,k)
-END FORALL
+DO i = imin, imax
+	DO k = kmin, kmax
+		rhou_v(i,k) = rho_0_v(i,k)*u_v(i,k)
+	END DO
+END DO
 
 SELECT CASE (AdvectionScheme)
 CASE (2)
@@ -411,25 +447,30 @@ CASE (2)
 
 CASE (3)
 	IF (ANY(w(imin-1:imax+2,kmin:kmax) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i+1,k)
 		fb(i,k) = w(i-1,k) + w(i+2,k)
 		fc(i,k) = w(i+1,k) - w(i,k)
 		fd(i,k) = w(i+2,k) - w(i-1,k)
 		rhouw_v(i,k) = rho_0_v(i,k)*(u_v(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(u_v(i,k))/12.*(3*fc(i,k) - fd(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (4)
 	IF (ANY(w(imin-1:imax+2,kmin:kmax) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i+1,k)
 		fb(i,k) = w(i-1,k) + w(i+2,k)
 		rhouw_v(i,k) = rho_0_v(i,k)*(u_v(i,k)/12.*(7*fa(i,k) - fb(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (5)
 	IF (ANY(w(imin-2:imax+3,kmin:kmax) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i+1,k)
 		fb(i,k) = w(i-1,k) + w(i+2,k)
 		fc(i,k) = w(i-2,k) + w(i+3,k)
@@ -438,16 +479,19 @@ CASE (5)
 		fe(i,k) = w(i+2,k) - w(i-1,k)
 		ff(i,k) = w(i+3,k) - w(i-2,k)
 		rhouw_v(i,k) = rhouw_v(i,k) - ABS(u_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
-	END FORALL
+	END DO
+END DO
 
 CASE (6)
 	IF (ANY(w(imin-2:imax+3,kmin:kmax) == undef)) STOP "rhouw_v is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i+1,k)
 		fb(i,k) = w(i-1,k) + w(i+2,k)
 		fc(i,k) = w(i-2,k) + w(i+3,k)
 		rhouw_v(i,k) = rho_0_v(i,k)*u_v(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-	END FORALL
+	END DO
+END DO
 	
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
@@ -455,37 +499,44 @@ END SELECT
 !-------------------------------------------------
 ! pi-grid
 !-------------------------------------------------
-CALL set_calc_area_pi
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_pi
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_pi
+CALL set_area_expand(expand)
 
 IF (ANY(rho_0(imin:imax,kmin:kmax) == undef) .OR. ANY(w_pi(imin:imax,kmin:kmax) == undef)) STOP "rhow_pi is WRONG!!!"
-FORALL (i = imin:imax, k = kmin:kmax)
-	rhow_pi(i,k) = rho_0(i,k)*w_pi(i,k)
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhat_pi(i,k) = rho_0(i,k)*w_hat_pi(i,k)
-END FORALL
+DO i = imin, imax
+	DO k = kmin, kmax
+		rhow_pi(i,k) = rho_0(i,k)*w_pi(i,k)
+		!---------------------------------------------------
+		! Below is for terrain vertical coordinates
+		rhowhat_pi(i,k) = rho_0(i,k)*w_hat_pi(i,k)
+	END DO
+END DO
 
 SELECT CASE (AdvectionScheme)
 
 CASE (2)
 	!IF (ANY(rhow_pi(imin:imax,kmin:kmax) == undef) .OR. ANY(w_pi(imin:imax,kmin:kmax) == undef)) STOP "rhoww_pi is WRONG!!!"
 	IF (ANY(rhowhat_pi(imin:imax,kmin:kmax) == undef) .OR. ANY(w_pi(imin:imax,kmin:kmax) == undef)) STOP "rhowhatw_pi is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		rhoww_pi(i,k) = rhow_pi(i,k)*w_pi(i,k)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhowhatw_pi(i,k) = rhowhat_pi(i,k)*w_pi(i,k)
-	END FORALL
+	END DO
+END DO
 
 CASE (3)
 	IF (ANY(w(imin:imax,kmin-1:kmax+2) == undef)) STOP "rhoww_pi is WRONG!!!"
 	IF (ANY(w_hat_pi(imin:imax,kmin:kmax) == undef)) STOP "rhowhatw_pi is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i,k+1)
 		fb(i,k) = w(i,k-1) + w(i,k+2)
 		fc(i,k) = w(i,k+1) - w(i,k)
@@ -494,24 +545,28 @@ CASE (3)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhowhatw_pi(i,k) = rho_0(i,k)*(w_hat_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(w_hat_pi(i,k))/12.*(3*fc(i,k) - fd(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (4)
 	IF (ANY(w(imin:imax,kmin-1:kmax+2) == undef)) STOP "rhoww_pi is WRONG!!!"
 	IF (ANY(w_hat_pi(imin:imax,kmin:kmax) == undef)) STOP "rhoww_pi is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i,k+1)
 		fb(i,k) = w(i,k-1) + w(i,k+2)
 		rhoww_pi(i,k) = rho_0(i,k)*(w_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)))
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhowhatw_pi(i,k) = rho_0(i,k)*(w_hat_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)))
-	END FORALL
+	END DO
+END DO
 
 CASE (5)
 	IF (ANY(w(imin:imax,kmin-2:kmax+3) == undef)) STOP "rhoww_pi is WRONG!!!"
 	IF (ANY(w_hat_pi(imin:imax,kmin:kmax) == undef)) STOP "rhoww_pi is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i,k+1)
 		fb(i,k) = w(i,k-1) + w(i,k+2)
 		fc(i,k) = w(i,k-2) + w(i,k+3)
@@ -527,12 +582,14 @@ CASE (5)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhoww_pi(i,k) = rhoww_pi(i,k) - ABS(w_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
-	END FORALL
+	END DO
+END DO
 
 CASE (6)
 	IF (ANY(w(imin:imax,kmin-2:kmax+3) == undef)) STOP "rhoww_pi is WRONG!!!"
 	IF (ANY(w_hat_pi(imin:imax,kmin:kmax) == undef)) STOP "rhoww_pi is WRONG!!!"
-	FORALL (i = imin:imax, k = kmin:kmax)
+DO i = imin, imax
+	DO k = kmin, kmax
 		fa(i,k) = w(i,k) + w(i,k+1)
 		fb(i,k) = w(i,k-1) + w(i,k+2)
 		fc(i,k) = w(i,k-2) + w(i,k+3)
@@ -540,7 +597,8 @@ CASE (6)
 		!---------------------------------------------------
 		! Below is for terrain vertical coordinates
 		rhowhatw_pi(i,k) = rho_0(i,k)*w_hat_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-	END FORALL
+	END DO
+END DO
 
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
@@ -548,10 +606,11 @@ END SELECT
 !-------------------------------------------------
 ! w-grid 
 !-------------------------------------------------
-CALL set_calc_area_w
+!CALL set_calc_area_w
 ! ATTENTION: The calculated area includes the boundary layers.
-kmin = kmin - 1
-kmax = kmax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_w
 
 IF (ANY(rhou_v(imin-1:imax,kmin:kmax) == undef) .OR. ANY(rhouw_v(imin-1:imax,kmin:kmax) == undef) .OR. ANY(rhow_pi(imin:imax,kmin-1:kmax) == undef) .OR. ANY(rhoww_pi(imin:imax,kmin-1:kmax) == undef)) STOP "F_w is WRONG!!!"
 
@@ -617,12 +676,14 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	IF (ANY(w(imin-1:imax+1,kmin:kmax) == undef)) STOP "P2wPx2_u is WRONG!!!"
 	IF (ANY(w(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2wPz2_u is WRONG!!!"
 	
-	FORALL( i = imin:imax, k = kmin:kmax)
-		P2wPx2_w(i,k) = (w(i+1,k) + w(i-1,k) - 2*w(i,k))/dx/dx
-		P2wPz2_w(i,k) = (w(i,k+1) + w(i,k-1) - 2*w(i,k))/dz/dz
-		
-		tend_w(i,k) = tend_w(i,k) + Km*(P2wPx2_w(i,k) + P2wPz2_w(i,k)) ! Add diffusion term.
-	END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			P2wPx2_w(i,k) = (w(i+1,k) + w(i-1,k) - 2*w(i,k))/dx/dx
+			P2wPz2_w(i,k) = (w(i,k+1) + w(i,k-1) - 2*w(i,k))/dz/dz
+			
+			tend_w(i,k) = tend_w(i,k) + Km*(P2wPx2_w(i,k) + P2wPz2_w(i,k)) ! Add diffusion term.
+		END DO
+	END DO
 END IF
 	
 
@@ -656,42 +717,51 @@ INTEGER :: i, k
 !-------------------------------------------------
 ! v(virtual)-grid
 !-------------------------------------------------
-CALL set_calc_area_v
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_v
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_v
+CALL set_area_expand(expand)
 
 SELECT CASE (AdvectionScheme)
 
 CASE (2)
 	IF (ANY(rhou_v(imin:imax,kmin:kmax) == undef) .OR. ANY(theta_v(imin:imax,kmin:kmax) == undef)) STOP "rhoutheta_v is WRONG!!!"
-	FORALL( i = imin:imax, k = kmin:kmax)
-		rhoutheta_v(i,k) = rhou_v(i,k)*theta_v(i,k)
-	END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			rhoutheta_v(i,k) = rhou_v(i,k)*theta_v(i,k)
+		END DO
+	END DO
 
 CASE (3)
 	IF (ANY(theta(imin-1:imax+2,kmin:kmax) == undef)) STOP "rouutheta_v is WRONG!!!"
-	FORALL( i = imin:imax, k = kmin:kmax)
+	DO i = imin, imax
+		DO k = kmin, kmax
 		fa(i,k) = theta(i,k) + theta(i+1,k)
 		fb(i,k) = theta(i-1,k) + theta(i+2,k)
 		fc(i,k) = theta(i+1,k) - theta(i,k)
 		fd(i,k) = theta(i+2,k) - theta(i-1,k)
 		rhoutheta_v(i,k) = rho_0_v(i,k)*(u_v(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(u_v(i,k))/12.*(3*fc(i,k) - fd(i,k)))
-	END FORALL
+		END DO
+	END DO
 
 CASE (4)
 	IF (ANY(theta(imin-1:imax+2,kmin:kmax) == undef)) STOP "rouutheta_v is WRONG!!!"
-	FORALL( i = imin:imax, k = kmin:kmax)
+	DO i = imin, imax
+		DO k = kmin, kmax
 		fa(i,k) = theta(i,k) + theta(i+1,k)
 		fb(i,k) = theta(i-1,k) + theta(i+2,k)
 		rhoutheta_v(i,k) = rho_0_v(i,k)*(u_v(i,k)/12.*(7*fa(i,k) - fb(i,k)))
-	END FORALL
+		END DO
+	END DO
 
 CASE (5)
 	IF (ANY(theta(imin-1:imax+2,kmin:kmax) == undef)) STOP "rouutheta_v is WRONG!!!"
-	FORALL( i = imin:imax, k = kmin:kmax)
+	DO i = imin, imax
+		DO k = kmin, kmax
 		fa(i,k) = theta(i,k) + theta(i+1,k)
 		fb(i,k) = theta(i-1,k) + theta(i+2,k)
 		fc(i,k) = theta(i-2,k) + theta(i+3,k)
@@ -700,16 +770,19 @@ CASE (5)
 		fe(i,k) = theta(i+2,k) - theta(i-1,k)
 		ff(i,k) = theta(i+3,k) - theta(i-2,k)
 		rhoutheta_v(i,k) = rhoutheta_v(i,k) - ABS(u_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
-	END FORALL
+		END DO
+	END DO
 
 CASE (6)
 	IF (ANY(theta(imin-1:imax+2,kmin:kmax) == undef)) STOP "rouutheta_v is WRONG!!!"
-	FORALL( i = imin:imax, k = kmin:kmax)
+	DO i = imin, imax
+		DO k = kmin, kmax
 		fa(i,k) = theta(i,k) + theta(i+1,k)
 		fb(i,k) = theta(i-1,k) + theta(i+2,k)
 		fc(i,k) = theta(i-2,k) + theta(i+3,k)
 		rhoutheta_v(i,k) = rho_0_v(i,k)*u_v(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-	END FORALL
+		END DO
+	END DO
 
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
@@ -717,78 +790,90 @@ END SELECT
 !-------------------------------------------------
 ! pi-grid
 !-------------------------------------------------
-CALL set_calc_area_pi
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_pi
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_pi
+CALL set_area_expand(expand)
 
 SELECT CASE (AdvectionScheme)
 CASE (2)
 IF (ANY(rhow_pi(imin:imax,kmin:kmax) == undef)) STOP "rhowtheta_pi is WRONG!!!"
-FORALL( i = imin:imax, k = kmin:kmax)
-	rhowtheta_pi(i,k) = rhow_pi(i,k)*theta_pi(i,k)
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhattheta_pi(i,k) = rhowhat_pi(i,k)*theta_pi(i,k)
-END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			rhowtheta_pi(i,k) = rhow_pi(i,k)*theta_pi(i,k)
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
+			rhowhattheta_pi(i,k) = rhowhat_pi(i,k)*theta_pi(i,k)
+		END DO
+	END DO
 
 CASE (3)
 IF (ANY(theta(imin:imax,kmin-1:kmax+2) == undef)) STOP "rhowtheta_pi is WRONG!!!"
-FORALL( i = imin:imax, k = kmin:kmax)
-	fa(i,k) = theta(i,k+1) + theta(i,k)
-	fb(i,k) = theta(i,k+2) + theta(i,k-1)
-	fc(i,k) = theta(i,k+1) - theta(i,k)
-	fd(i,k) = theta(i,k+2) - theta(i,k-1)
-	rhowtheta_pi(i,k) = rho_0(i,k)*(w_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(w_pi(i,k))/12.*(3*fc(i,k) - fd(i,k)))
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhattheta_pi(i,k) = rho_0(i,k)*(w_hat_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(w_hat_pi(i,k))/12.*(3*fc(i,k) - fd(i,k)))
-END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			fa(i,k) = theta(i,k+1) + theta(i,k)
+			fb(i,k) = theta(i,k+2) + theta(i,k-1)
+			fc(i,k) = theta(i,k+1) - theta(i,k)
+			fd(i,k) = theta(i,k+2) - theta(i,k-1)
+			rhowtheta_pi(i,k) = rho_0(i,k)*(w_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(w_pi(i,k))/12.*(3*fc(i,k) - fd(i,k)))
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
+			rhowhattheta_pi(i,k) = rho_0(i,k)*(w_hat_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)) - ABS(w_hat_pi(i,k))/12.*(3*fc(i,k) - fd(i,k)))
+		END DO
+	END DO
 
 CASE (4)
 IF (ANY(theta(imin:imax,kmin-1:kmax+2) == undef)) STOP "rhowtheta_pi is WRONG!!!"
-FORALL( i = imin:imax, k = kmin:kmax)
-	fa(i,k) = theta(i,k+1) + theta(i,k)
-	fb(i,k) = theta(i,k+2) + theta(i,k-1)
-	rhowtheta_pi(i,k) = rho_0(i,k)*(w_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)))
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhattheta_pi(i,k) = rho_0(i,k)*(w_hat_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)))
-END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			fa(i,k) = theta(i,k+1) + theta(i,k)
+			fb(i,k) = theta(i,k+2) + theta(i,k-1)
+			rhowtheta_pi(i,k) = rho_0(i,k)*(w_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)))
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
+			rhowhattheta_pi(i,k) = rho_0(i,k)*(w_hat_pi(i,k)/12.*(7*fa(i,k) - fb(i,k)))
+		END DO
+	END DO
 
 CASE (5)
 IF (ANY(theta(imin:imax,kmin-2:kmax+3) == undef)) STOP "rhowtheta_pi is WRONG!!!"
-FORALL( i = imin:imax, k = kmin:kmax)
-	fa(i,k) = theta(i,k+1) + theta(i,k)
-	fb(i,k) = theta(i,k+2) + theta(i,k-1)
-	fc(i,k) = theta(i,k+3) + theta(i,k-2)
-	rhowtheta_pi(i,k) = rho_0(i,k)*w_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhattheta_pi(i,k) = rho_0(i,k)*w_hat_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-
-	fd(i,k) = theta(i,k+1) - theta(i,k)
-	fe(i,k) = theta(i,k+2) - theta(i,k-1)
-	ff(i,k) = theta(i,k+3) - theta(i,k-2)
-	rhowtheta_pi(i,k) = rhowtheta_pi(i,k) - ABS(w_hat_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhattheta_pi(i,k) = rhowhattheta_pi(i,k) - ABS(w_hat_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
-END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			fa(i,k) = theta(i,k+1) + theta(i,k)
+			fb(i,k) = theta(i,k+2) + theta(i,k-1)
+			fc(i,k) = theta(i,k+3) + theta(i,k-2)
+			rhowtheta_pi(i,k) = rho_0(i,k)*w_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
+			rhowhattheta_pi(i,k) = rho_0(i,k)*w_hat_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+		
+			fd(i,k) = theta(i,k+1) - theta(i,k)
+			fe(i,k) = theta(i,k+2) - theta(i,k-1)
+			ff(i,k) = theta(i,k+3) - theta(i,k-2)
+			rhowtheta_pi(i,k) = rhowtheta_pi(i,k) - ABS(w_hat_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
+			rhowhattheta_pi(i,k) = rhowhattheta_pi(i,k) - ABS(w_hat_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
+		END DO
+	END DO
 
 CASE (6)
 IF (ANY(theta(imin:imax,kmin-2:kmax+3) == undef)) STOP "rhowtheta_pi is WRONG!!!"
-FORALL( i = imin:imax, k = kmin:kmax)
-	fa(i,k) = theta(i,k+1) + theta(i,k)
-	fb(i,k) = theta(i,k+2) + theta(i,k-1)
-	fc(i,k) = theta(i,k+3) + theta(i,k-2)
-	rhowtheta_pi(i,k) = rho_0(i,k)*w_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-	!---------------------------------------------------
-	! Below is for terrain vertical coordinates
-	rhowhattheta_pi(i,k) = rho_0(i,k)*w_hat_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			fa(i,k) = theta(i,k+1) + theta(i,k)
+			fb(i,k) = theta(i,k+2) + theta(i,k-1)
+			fc(i,k) = theta(i,k+3) + theta(i,k-2)
+			rhowtheta_pi(i,k) = rho_0(i,k)*w_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			!---------------------------------------------------
+			! Below is for terrain vertical coordinates
+			rhowhattheta_pi(i,k) = rho_0(i,k)*w_hat_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+		END DO
+	END DO
 
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
@@ -796,18 +881,21 @@ END SELECT
 !-------------------------------------------------
 ! w-grid - Theta on kts and kte+1 should also be updated.
 !-------------------------------------------------
-CALL set_calc_area_w
-! ATTENTION: The calculated area includes the boundary layers.
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_w
+!! ATTENTION: The calculated area includes the boundary layers.
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_w
 
 IF (ANY(rhoutheta_v(imin-1:imax,kmin:kmax) == undef)) STOP "PrhouthetaPx_w is WRONG!!!"
 IF (ANY(rhowtheta_pi(imin:imax,kmin-1:kmax) == undef)) STOP "PrhowthetaPz_w is WRONG!!!"
 
-FORALL (i = imin:imax, k = kmin:kmax)
-	PrhouthetaPx_w(i,k) = (rhoutheta_v(i,k) - rhoutheta_v(i-1,k))/dx
-	PrhowthetaPz_w(i,k) = (rhowtheta_pi(i,k) - rhowtheta_pi(i,k-1))/dz
-END FORALL
+DO i = imin, imax
+	DO k = kmin, kmax
+		PrhouthetaPx_w(i,k) = (rhoutheta_v(i,k) - rhoutheta_v(i-1,k))/dx
+		PrhowthetaPz_w(i,k) = (rhowtheta_pi(i,k) - rhowtheta_pi(i,k-1))/dz
+	END DO
+END DO
 
 IF (ANY(rho_0_w(imin:imax,kmin:kmax) == undef) .OR. &
 	ANY(PrhouthetaPx_w(imin:imax,kmin:kmax) == undef) .OR. &
@@ -866,12 +954,15 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	IF (ANY(theta(imin-1:imax,kmin:kmax) == undef)) STOP "P2thetaPx2_w is WRONG!!!"
 	IF (ANY(theta(imin:imax,kmin-1:kmax+1) == undef)) STOP "P2thetaPz2_w is WRONG!!!"
 	
-	FORALL (i = imin:imax, k = kmin:kmax)
-		P2thetaPx2_w(i,k) = (theta(i+1,k) + theta(i-1,k) - 2*theta(i,k))/dx/dx
-		P2thetaPz2_w(i,k) = (theta(i,k+1) + theta(i,k-1) - 2*theta(i,k))/dz/dz
-		
-		tend_theta(i,k) = F_theta(i,k) + Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k)) ! Add diffusion term.
-	END FORALL
+	DO i = imin, imax
+		DO k = kmin, kmax
+			P2thetaPx2_w(i,k) = (theta(i+1,k) + theta(i-1,k) - 2*theta(i,k))/dx/dx
+			P2thetaPz2_w(i,k) = (theta(i,k+1) + theta(i,k-1) - 2*theta(i,k))/dz/dz
+			
+			tend_theta(i,k) = F_theta(i,k) + Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k)) ! Add diffusion term.
+		END DO
+	END DO
+
 END IF
 !-------------------------------------------------
 IF (ANY(ISNAN(F_theta(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
@@ -895,34 +986,43 @@ INTEGER :: i, k
 ! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)
 !-------------------------------------------------
 ! u-grid
-CALL set_calc_area_u
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_u
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_u
+CALL set_area_expand(expand)
 
 IF (ANY(u(imin:imax,kmin:kmax) == undef) .OR. ANY(rho_0_u(imin:imax,kmin:kmax) == undef) .OR. ANY(theta_0_u(imin:imax,kmin:kmax) == undef)) STOP "urhotheta_u is WRONG!!!"
-FORALL (i = imin:imax, k = kmin:kmax)
-	urhotheta_u(i,k) = u(i,k)*rho_0_u(i,k)*theta_0_u(i,k)
-END FORALL
+DO i = imin, imax
+	DO k = kmin, kmax
+		urhotheta_u(i,k) = u(i,k)*rho_0_u(i,k)*theta_0_u(i,k)
+	END DO
+END DO
 
 ! w-grid
-CALL set_calc_area_w
-! ATTENTION: The calculated area includes the boundary layers.
-imin = imin - 1
-imax = imax + 1
-kmin = kmin - 1
-kmax = kmax + 1
+!CALL set_calc_area_w
+!! ATTENTION: The calculated area includes the boundary layers.
+!imin = imin - 1
+!imax = imax + 1
+!kmin = kmin - 1
+!kmax = kmax + 1
+CALL set_area_w
+CALL set_area_expand(expand)
 
 IF (ANY(w(imin:imax,kmin:kmax) == undef) .OR. ANY(rho_0_w(imin:imax,kmin:kmax) == undef) .OR. ANY(theta_0(imin:imax,kmin:kmax) == undef)) STOP "wrhotheta_w is WRONG!!!"
-FORALL (i = imin:imax, k = kmin:kmax)
-	wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
-	urhotheta_w(i,k) = u_w(i,k)*rho_0_w(i,k)*theta_0(i,k)
-END FORALL
+DO i = imin, imax
+	DO k = kmin, kmax
+		wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
+		urhotheta_w(i,k) = u_w(i,k)*rho_0_w(i,k)*theta_0(i,k)
+	END DO
+END DO
 
 ! To pi-grid
-CALL set_calc_area_pi
+!CALL set_calc_area_pi
+CALL set_area_pi
 
 IF (ANY(urhotheta_u(imin-1:imax,kmin:kmax) == undef)) STOP "PurhothetaPx_pi is WRONG!!!"
 IF (ANY(wrhotheta_w(imin:imax,kmin:kmax+1) == undef)) STOP "PwrhothetaPz_pi is WRONG!!!"
