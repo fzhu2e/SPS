@@ -88,13 +88,13 @@ END DO
 CALL set_area_pi
 DO i = imin, imax
 	DO k = kmin, kmax
-		L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c)/r_x/r_x + (zpi(k) - z_c)*(zpi(k) - z_c)/r_z/r_z)
-		IF (L <= 1.) THEN
-			theta_1_pi(i,k) = - 15./2.*(COS(PI_math*L) + 1.)  ! <= I want this.
-		ELSE
-			theta_1_pi(i,k) = 0.
-		END IF
-		theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
+		!L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c)/r_x/r_x + (zpi(k) - z_c)*(zpi(k) - z_c)/r_z/r_z)
+		!IF (L <= 1.) THEN
+			!theta_1_pi(i,k) = - 15./2.*(COS(PI_math*L) + 1.)  ! <= I want this.
+		!ELSE
+			!theta_1_pi(i,k) = 0.
+		!END IF
+		!theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
 		pi_1(i,k) = 0.
 	END DO
 END DO
@@ -170,9 +170,9 @@ END DO
 CALL set_area_pi
 DO i = imin, imax
 	DO k = kmin, kmax
-		L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c) + (zpi(k) - z_c)*(zpi(k) - z_c))
-		theta_1_pi(i,k) = 2.*MAX(0.,1. - L/R)
-		theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
+		!L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c) + (zpi(k) - z_c)*(zpi(k) - z_c))
+		!theta_1_pi(i,k) = 2.*MAX(0.,1. - L/R)
+		!theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
 		pi_1(i,k) = 0.
 	END DO
 END DO
@@ -238,7 +238,7 @@ DO i = imin, imax
 !-------------------------------------------------
 		L = SIN(PI_math*zz(k)/H)/(1. + (xx(i) - x_c)*(xx(i) - x_c)/a/a)
 		theta_1(i,k) = 0.01*L
-		theta(i,k) = theta_0(i,k) + theta_1(i,k)   ! <= I want this.
+		theta(i,k) = theta_0(i,k) + theta_1(i,k)
 	END DO
 END DO
 
@@ -248,9 +248,9 @@ END DO
 CALL set_area_pi
 DO i = imin, imax
 	DO k = kmin, kmax
-		L = SIN(PI_math*zpi(k)/H)/(1. + (xpi(i) - x_c)*(xpi(i) - x_c)/a/a)
-		theta_1_pi(i,k) = 0.01*L
-		theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
+		!L = SIN(PI_math*zpi(k)/H)/(1. + (xpi(i) - x_c)*(xpi(i) - x_c)/a/a)
+		!theta_1_pi(i,k) = 0.01*L
+		!theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
 		pi_1(i,k) = 0.
 	END DO
 END DO
@@ -543,7 +543,7 @@ DO i = imin, imax
 END DO
 
 !-------------------------------------------------
-! theta_0_pi, pi_0 (on pi-grid)
+! pi_0, rho_0, rho_0 (on pi-grid)
 !-------------------------------------------------
 CALL set_area_pi
 
@@ -557,14 +557,10 @@ DO i = imin, imax
 			pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zpi(k)/g) - 1.)
 		ELSE IF (RunCase == 4) THEN
 			theta_0_pi(i,k) = (Ts - 20.)*EXP(N0*N0/g*zpi(k))
+			pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zpi(k)/g) - EXP(-N0*N0*zs(i)/g))
 		ELSE
 			STOP "WRONG RunCase!!!"
 		END IF
-	END DO
-!-------------------------------------------------
-! rho_0 (on pi-grid)
-!-------------------------------------------------
-	DO k = kmin, kmax
 		rho_0(i,k) = p0/Rd/theta_0_pi(i,k)*pi_0(i,k)*pi_0(i,k)**(Cp/Rd)
 	END DO
 END DO

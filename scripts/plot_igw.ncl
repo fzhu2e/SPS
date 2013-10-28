@@ -11,6 +11,9 @@ begin
 nx = 300
 nz = 100
 
+;nx = 150
+;nz = 50
+
 ;nx = 120
 ;nz = 40
 
@@ -20,14 +23,14 @@ nz = 100
 ;nt = 10
 ;nt = 11
 ;nt = 16
-;nt = 31
+nt = 31
 ;nt = 65
 ;nt = 83
 ;nt = 101
 ;nt = 188
 ;nt = 161
 ;nt = 201
-nt = 301
+;nt = 301
 ;nt = 311
 ;nt = 401
 ;nt = 1001
@@ -41,6 +44,8 @@ var = "theta_1"
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
 data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
+;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nzm,nxm/),"double")
+data@_FillValue = -9999.
 ;print(data)
 ;last = data(nt-1,:,:)
 ;=================================

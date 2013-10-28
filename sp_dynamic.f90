@@ -27,9 +27,6 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0  ! theta = theta_0 + theta'
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1  ! theta'
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: rho_0    ! density
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi 
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: p_0
-!-------------------------------------------------
 INTEGER :: i, k
 REAL(preci) :: t_start, t_end, t_lapse, t_left, t_all
 !=================================================
@@ -52,7 +49,7 @@ WRITE(*,"(1X,A9,2F9.2)") " Km/Kh: ", Km, Kh
 WRITE(*,*) "====================="
 WRITE(*,*)
 
-CALL debug_undef_all(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0,pi,p_0)
+CALL debug_undef_all(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 !CALL debug_ascii_output(pi)
 !-------------------------------------------------
 ! Initiate.
@@ -89,6 +86,7 @@ WRITE(*,*)
 ! Integrate.
 !-------------------------------------------------
 
+!nstep = 0
 !nstep = 1
 
 t_all = 0.0

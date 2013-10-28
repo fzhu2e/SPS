@@ -17,7 +17,7 @@ F90 = ifort
 #F90FLAGS = -O3 -w 
 F90FLAGS = -O3 -w -fp-model precise
 LDFLAGS =
-CONFIG =  
+CONFIG =
 #CONFIG = -openmp
 
 all: $(PROG)

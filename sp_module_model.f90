@@ -45,43 +45,48 @@ INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height; 2. Terrain;
 !-------------------------------------------------
 ! 2. Thermal bubble.
 !-------------------------------------------------
-INTEGER, PARAMETER :: RunCase = 2         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
-REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+!INTEGER, PARAMETER :: RunCase = 2         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
+!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
-!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!!REAL(preci), PARAMETER :: dx = 50.                        ! delta x (m)
+!!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
-REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-INTEGER :: nstep = 10000
+!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+!INTEGER :: nstep = 10000
 
-REAL(preci) :: Km = 20.        !(m^2/s)
-REAL(preci) :: Kh = 20.        !(m^2/s)
+!REAL(preci) :: Km = 20.        !(m^2/s)
+!REAL(preci) :: Kh = 20.        !(m^2/s)
 
 !-------------------------------------------------
 ! 3. Inertia gravity waves.
 !-------------------------------------------------
-!INTEGER, PARAMETER :: RunCase = 3         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
+INTEGER, PARAMETER :: RunCase = 3         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
 
-!!INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
-!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!!REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
-!!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(preci), PARAMETER :: dx = 500.                        ! delta x (m)
+!REAL(preci), PARAMETER :: dz = 50.                       ! (m)
 
 !INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
 !REAL(preci), PARAMETER :: dx = 1000.                        ! delta x (m)
 !REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
-!REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
-!INTEGER :: nstep = 30000
-!!INTEGER :: nstep = 1000
+INTEGER, PARAMETER :: nx = 150                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 50                               ! grid number along z-axis
+REAL(preci), PARAMETER :: dx = 2000.                        ! delta x (m)
+REAL(preci), PARAMETER :: dz = 200.                       ! (m)
 
-!REAL :: Km, Kh
+REAL(preci), PARAMETER :: dt = 0.1                               ! delta t (s)
+INTEGER :: nstep = 30000
+INTEGER :: nstep = 1000
+
+REAL :: Km, Kh
 !-------------------------------------------------
 ! 4. Schar mountain
 !-------------------------------------------------
