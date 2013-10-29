@@ -228,7 +228,7 @@ CALL set_area_v
 CALL set_area_expand(expand)
 
 IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_v(imin:imax,kmin:kmax) == undef) .OR. ANY(u_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
-IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_hat_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
+!IF (ANY(rho_0_v(imin:imax,kmin:kmax) == undef) .OR. ANY(w_hat_v(imin:imax,kmin:kmax) == undef)) STOP "rhow_v or rhouw_v is WRONG!!!"
 DO i = imin, imax
 	DO k = kmin, kmax
 		rhow_v(i,k) = rho_0_v(i,k)*w_v(i,k)

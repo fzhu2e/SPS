@@ -38,7 +38,6 @@ REAL(preci), PARAMETER :: r_z = 2*1000.  ! (m)
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0_pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
 REAL(preci) :: L
@@ -51,7 +50,7 @@ CALL initiate_grid
 !-------------------------------------------------
 ! theta_0, pi_0, rho_0
 !-------------------------------------------------
-CALL initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+CALL initiate_basic_state(theta_0,pi_0,rho_0)
 !-------------------------------------------------
 ! u (on u-grid)
 !-------------------------------------------------
@@ -124,7 +123,6 @@ REAL(preci), PARAMETER :: R = 2.0*1000.    ! (m)
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0_pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
 REAL(preci) :: L
@@ -137,7 +135,7 @@ CALL initiate_grid
 !-------------------------------------------------
 ! theta_0, pi_0, rho_0
 !-------------------------------------------------
-CALL initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+CALL initiate_basic_state(theta_0,pi_0,rho_0)
 !-------------------------------------------------
 ! u (on u-grid)
 !-------------------------------------------------
@@ -202,7 +200,6 @@ REAL(preci), PARAMETER :: a = 5.0*1000.     ! (m)
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0_pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
 REAL(preci) :: L
@@ -215,7 +212,7 @@ CALL initiate_grid
 !-------------------------------------------------
 ! theta_0, pi_0, rho_0
 !-------------------------------------------------
-CALL initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+CALL initiate_basic_state(theta_0,pi_0,rho_0)
 !-------------------------------------------------
 ! u (on u-grid)
 !-------------------------------------------------
@@ -287,12 +284,11 @@ REAL(preci), PARAMETER :: Ts = 280.             ! (K)
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0_pi
 REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
 INTEGER :: i, k 
 !=================================================
-CALL debug_undef_all(pi_0,pi,theta_1_pi,theta_0_pi,theta_pi)
+CALL debug_undef_all(pi_0,pi,theta_1_pi,theta_pi)
 xx = undef
 xpi = undef
 zz = undef
@@ -505,23 +501,25 @@ END SUBROUTINE initiate_grid
 !=================================================
 ! Initiate Basic State Atmosphere
 !=================================================
-SUBROUTINE initiate_basic_state(theta_0,pi_0,rho_0,theta_0_pi)
+SUBROUTINE initiate_basic_state(theta_0,pi_0,rho_0)
 IMPLICIT NONE
 !-------------------------------------------------
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0_pi
 !-------------------------------------------------
 REAL(preci), PARAMETER :: Ts = 300.         ! (K)
 REAL(preci), PARAMETER :: N0 = 0.01         ! (s-1)
+!-------------------------------------------------
+REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_0_w
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
 ! Undefine variations.
 !-------------------------------------------------
 CALL debug_undef_all(theta_0,pi_0,rho_0)
-CALL debug_undef_all(theta_0_pi)
+CALL debug_undef_all(theta_0_pi,theta_0_u,theta_0_v)
+CALL debug_undef_all(rho_0_u,rho_0_w,rho_0_v)
 
 !-------------------------------------------------
 ! theta_0 (on w-grid)
@@ -532,13 +530,25 @@ DO i = imin, imax
 	DO k = kmin, kmax
 		IF (RunCase == 1 .OR. RunCase == 2) THEN
 			theta_0(i,k) = Ts
+			pi_0_w(i,k) = 1. - g*zz(k)/2./Cp/Ts
 		ELSE IF (RunCase == 3) THEN
 			theta_0(i,k) = Ts*EXP(N0*N0/g*zz(k))
+			pi_0_w(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zz(k)/g) - 1.)
 		ELSE IF (RunCase == 4) THEN
 			theta_0(i,k) = (Ts - 20.)*EXP(N0*N0/g*zz(k))
+			pi_0_w(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zz(k)/g) - EXP(-N0*N0*zs(i)/g))
 		ELSE
 			STOP "WRONG RunCase!!!"
 		END IF
+		rho_0_w(i,k) = p0/Rd/theta_0(i,k)*pi_0_w(i,k)*pi_0_w(i,k)**(Cp/Rd)
+	END DO
+END DO
+
+CALL set_area_v
+DO i = imin, imax
+	DO k = kmin, kmax
+		theta_0_v(i,k) = theta_0(imin+1,k)
+		rho_0_v(i,k) = rho_0_w(imin+1,k)
 	END DO
 END DO
 
@@ -551,7 +561,7 @@ DO i = imin, imax
 	DO k = kmin, kmax
 		IF (RunCase == 1 .OR. RunCase == 2) THEN
 			theta_0_pi(i,k) = Ts
-			pi_0(i,k) = 1. - g*zpi(k)/2./Cp/theta_0_pi(i,k)
+			pi_0(i,k) = 1. - g*zpi(k)/2./Cp/Ts
 		ELSE IF (RunCase == 3) THEN
 			theta_0_pi(i,k) = Ts*EXP(N0*N0/g*zpi(k))
 			pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zpi(k)/g) - 1.)
@@ -562,6 +572,14 @@ DO i = imin, imax
 			STOP "WRONG RunCase!!!"
 		END IF
 		rho_0(i,k) = p0/Rd/theta_0_pi(i,k)*pi_0(i,k)*pi_0(i,k)**(Cp/Rd)
+	END DO
+END DO
+
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		theta_0_u(i,k) = theta_0_pi(imin+1,k)
+		rho_0_u(i,k) = rho_0(imin+1,k)
 	END DO
 END DO
 

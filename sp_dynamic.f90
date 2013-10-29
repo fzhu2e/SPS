@@ -39,6 +39,7 @@ WRITE(*,*) " RunCase:         ", RunCase
 WRITE(*,*) " TimeScheme:      ", TimeScheme
 WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
 WRITE(*,*) " LateralBoundary: ", LateralBoundary
+WRITE(*,*) " UpperBoundary:   ", UpperBoundary
 WRITE(*,*) "---------------------"
 WRITE(*,*) " nstep: ", nstep
 WRITE(*,*) " nx/nz: ", nx, nz
@@ -50,7 +51,7 @@ WRITE(*,*) "====================="
 WRITE(*,*)
 
 CALL debug_undef_all(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
-!CALL debug_ascii_output(pi)
+!CALL debug_ascii_output(u)
 !-------------------------------------------------
 ! Initiate.
 !-------------------------------------------------
@@ -69,9 +70,13 @@ CASE (4)
 CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
-!CALL debug_test_boundary(rho_0)
-!CALL debug_test_boundary(theta_0)
-CALL update_boundary(u,w,pi_1,theta,theta_1,theta_0,rho_0)
+
+CALL update_boundary(u,w,pi_1,theta,theta_1,                  &
+                     theta_0,theta_0_pi,theta_0_u,theta_0_v,  &
+                     rho_0,rho_0_w,rho_0_u,rho_0_v            )
+
+!CALL debug_ascii_output(u)
+
 CALL output(0,u,w,theta_1,pi_1)                               ! output the initial fields
 WRITE(*,*) "====================="
 WRITE(*,*)
@@ -89,7 +94,7 @@ WRITE(*,*)
 !nstep = 0
 !nstep = 1
 
-t_all = 0.0
+t_all = 0.
 DO i = 1, nstep
 	
 	CALL CPU_TIME(t_start)
@@ -124,6 +129,7 @@ WRITE(*,*) " RunCase:         ", RunCase
 WRITE(*,*) " TimeScheme:      ", TimeScheme
 WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
 WRITE(*,*) " LateralBoundary: ", LateralBoundary
+WRITE(*,*) " UpperBoundary:   ", UpperBoundary
 WRITE(*,*) "---------------------"
 WRITE(*,*) " Km/Kh: ", Km, Kh
 WRITE(*,*) "---------------------"
