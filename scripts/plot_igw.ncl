@@ -34,10 +34,10 @@ nt = 301
 ;nt = 311
 ;nt = 401
 ;nt = 1001
-var = "theta_1"
+;var = "theta_1"
 ;var = "pi_1"
 ;var = "u"
-;var = "w"
+var = "w"
 ;=================================
 ;Read data.
 ;---------------------------------
@@ -121,8 +121,8 @@ res@tiMainFontHeightF  = 0.015                    ; change font heights
 ;res@tiXAxisFontHeightF  = 0.015                    ; change font heights
 ;res@tiYAxisFontHeightF  = 0.015                    ; change font heights
 
-res@gsnLeftString   = "dx = 500m; dz = 50m; dt = 0.1s"               ; add the gsn titles
-;res@gsnLeftString   = "dx = 1000m; dz = 100m; dt = 0.1s"               ; add the gsn titles
+;res@gsnLeftString   = "dx = 500m; dz = 50m; dt = 0.1s"               ; add the gsn titles
+res@gsnLeftString   = "dx = 1000m; dz = 100m; dt = 0.1s"               ; add the gsn titles
 ;res@gsnLeftString   = "dx = 2500m; dz = 250m; dt = 0.1s"               ; add the gsn titles
 res@gsnLeftStringFontHeightF   = 0.015
 

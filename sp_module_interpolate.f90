@@ -65,7 +65,8 @@ CALL debug_undef_all( u_pi,u_w,u_v,                               &
 CALL set_area_u
 CALL set_area_expand(expand)
 
-IF (ANY(pi_1(imin:imax+1,kmin:kmax) == undef)) STOP "pi_1 is WRONG!!!"
+!CALL debug_ascii_output(pi_1)
+IF (ANY(pi_1(imin:imax+1,kmin:kmax) == undef)) STOP "pi_1_u is WRONG!!!"
 IF (ANY(w(imin:imax+1,kmin:kmax) == undef)) STOP "w_u is WRONG!!!"
 IF (ANY(theta(imin:imax+1,kmin:kmax+1) == undef)) STOP "theta_u is WRONG!!!"
 IF (ANY(theta_1(imin:imax+1,kmin:kmax+1) == undef)) STOP "theta_0_u is WRONG!!!"

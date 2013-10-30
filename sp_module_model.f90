@@ -101,8 +101,8 @@ REAL :: Km, Kh
 !!REAL(preci), PARAMETER :: pi_top = (p_top/p_0)**(R_d/C_pd)
 
 !REAL(preci), PARAMETER :: dt = 0.12                               ! delta t (s)
-!INTEGER :: nstep = 300000
-!!INTEGER :: nstep = 10000
+!!INTEGER :: nstep = 300000
+!INTEGER :: nstep = 10000
 !!INTEGER :: nstep = 1000
 !!INTEGER :: nstep = 300
 

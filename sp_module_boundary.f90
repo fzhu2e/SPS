@@ -39,7 +39,6 @@ INTEGER :: i, k
 !=================================================
 
 IF (PRESENT(u)) THEN
-	CALL set_area_u
 	SELECT CASE (LateralBoundary)
 	CASE (1)
 		!u(ims:imin,:) = 0
@@ -514,9 +513,9 @@ SUBROUTINE no_flux_scalar_lateral_pi(scalar)
 IMPLICIT NONE
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
-CALL set_area_u
-scalar(:,ims:imin-1) = scalar(:,2*imin-ims-1:imin:-1)
-scalar(:,imax+1:ime) = scalar(:,imax:2*imax-ime+1:-1)
+CALL set_area_pi
+scalar(ims:imin-1,:) = scalar(2*imin-ims-1:imin:-1,:)
+scalar(imax+1:ime,:) = scalar(imax:2*imax-ime+1:-1,:)
 END SUBROUTINE no_flux_scalar_lateral_pi
 !=================================================
 
@@ -526,8 +525,8 @@ IMPLICIT NONE
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
 CALL set_area_u
-scalar(:,ims:imin-1) = scalar(:,2*imin-ims:imin+1:-1)
-scalar(:,imax+1:ime) = scalar(:,imax-1:2*imax-ime:-1)
+scalar(ims:imin-1,:) = scalar(2*imin-ims:imin+1:-1,:)
+scalar(imax+1:ime,:) = scalar(imax-1:2*imax-ime:-1,:)
 END SUBROUTINE no_flux_scalar_lateral_u
 !=================================================
 
@@ -539,10 +538,10 @@ IMPLICIT NONE
 REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
 CALL set_area_u
-vector(:,ims:imin-1) = - vector(:,2*imin-ims:imin+1:-1)
-vector(:,imax+1:ime) = - vector(:,imax-1:2*imax-ime:-1)
-vector(:,imin) = 0.
-vector(:,imax) = 0.
+vector(ims:imin-1,:) = - vector(2*imin-ims:imin+1:-1,:)
+vector(imax+1:ime,:) = - vector(imax-1:2*imax-ime:-1,:)
+vector(imin,:) = 0.
+vector(imax,:) = 0.
 END SUBROUTINE no_flux_vector_lateral_u
 !=================================================
 
