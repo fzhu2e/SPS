@@ -278,7 +278,6 @@ REAL(preci), PARAMETER :: a0 = 5.0*1000.        ! (m)
 REAL(preci), PARAMETER :: x_c = 25.0*1000.        ! (m)
 REAL(preci), PARAMETER :: lambda0 = 4.0*1000.   ! (m)
 REAL(preci), PARAMETER :: N0 = 0.01             ! (s-1)
-REAL(preci), PARAMETER :: sh = 3.0*1000.        ! (m)
 
 REAL(preci), PARAMETER :: Ts = 280.             ! (K)
 !-------------------------------------------------
@@ -288,163 +287,54 @@ REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
 INTEGER :: i, k 
 !=================================================
-CALL debug_undef_all(pi_0,pi,theta_1_pi,theta_pi)
-xx = undef
-xpi = undef
-zz = undef
-zpi = undef
-
-CALL debug_undef_all(z_hat,z_hat_pi,z_hat_u,                                 &
-                     PbPzhat,PbPzhat_pi,PbPzhat_u,                           &
-                     OnePlusZsPbPzhat,OnePlusZsPbPzhat_pi,OnePlusZsPbPzhat_u )
+! To initiate:
+! zs(i), zs_pi(i), PzsPx(i), PzsPx_pi(i)
+! u(i,k), w(i,k)
+! theta_0(i,k), pi_0(i,k), rho_0(i,k)
+! theta(i,k), theta_1(i,k), pi_1(i,k)
+!=================================================
+CALL initiate_grid
+!-------------------------------------------------
 zs = undef
 zs_pi = undef
 PzsPx = undef
 PzsPx_pi = undef
-b = undef
-b_pi = undef
 
-CALL debug_undef_all(VertB_u,VertB_w,VertB_pi,VertB_v,VertC_u,VertC_w,VertC_pi)
-VertA_u = undef
-VertA_pi = undef
-!=================================================
-! 0. Calculate xx(its:ite), xpi(its+1:ite), zz(kts:kte+1), zpi(kts:kte),
-!              zs(its:ite), zs_pi(its+1:ite), b(kts:kte+1), b_pi(kts:kte).
-!
-!              zs(x) = h0 exp[-(x/a0)^2] cos(pi x/lambda0)
-!              b(x) = sinh((ztop - zz)/sh)/sinh(ztop/sh)
+CALL set_area_u
+DO i = imin, imax
+	zs(i) = h0*EXP(-((xx(i) - x_c)/a0)**2)*COS(PI_math*(xx(i) - x_c)/lambda0)**2
+	PzsPx(i) = - 2*h0*EXP(-((xx(i) - x_c)/a0)**2)*COS(PI_math*(xx(i) - x_c)/lambda0)*((xx(i) - x_c)/a0**2*COS(PI_math*(xx(i) - x_c)/lambda0) + PI_math/lambda0*SIN(PI_math*(xx(i) - x_c)/lambda0))
+END DO
+
+CALL set_area_pi
+DO i = imin, imax
+	zs_pi(i) = h0*EXP(-((xpi(i) - x_c)/a0)**2)*COS(PI_math*(xpi(i) - x_c)/lambda0)**2
+	PzsPx_pi(i) = (zs(i) - zs(i-1))/dx
+END DO
 !-------------------------------------------------
-
-! Along x-axis
-!DO i = its, ite
-DO i = its - 1, ite + 1  ! update boundary
-	xx(i) = dx*(i - its)                                                              ! on u-grid
-	zs(i) = h0*EXP(-((xx(i) - x_c)/a0)**2)*COS(PI_math*(xx(i) - x_c)/lambda0)**2      ! on u-grid
-	!zs(i) = h0*EXP(-((xx(i) - x_c)/a0)**2)
-END DO
-
-!DO i = its + 1, ite
-!DO i = its, ite + 1 ! update boundary
-DO i = its, ite + 2 ! update boundary
-	xpi(i) = (xx(i-1) + xx(i))/2.                                                     ! on pi-grid
-	zs_pi(i) = h0*EXP(-((xpi(i) - x_c)/a0)**2)*COS(PI_math*(xpi(i) - x_c)/lambda0)**2 ! on pi-grid
-	!zs_pi(i) = h0*EXP(-((xpi(i) - x_c)/a0)**2)
-END DO
-
-! Along z-axis
-!DO k = kts, kte + 1
-DO k = kts - 1, kte + 1
-	zz(k) = dz*(k - kts)                                             ! on w-grid
-	b(k) = SINH((ztop - zz(k))/sh)/SINH(ztop/sh)                     ! on w-grid
-END DO
-
-!DO k = kts, kte
-DO k = kts - 1, kte + 1
-	zpi(k) = (zz(k) + zz(k + 1))/2.                                  ! on pi-grid
-	b_pi(k) = SINH((ztop - zpi(k))/sh)/SINH(ztop/sh)                 ! on pi-grid
-END DO
-!=================================================
-! 1. Topography: 
-!    z_hat(i,k) = zz(k) + zs(i)*sinh((ztop - zz(k))/sh)/sinh(ztop/sh)       ! on w-grid
-!    Calculate PzsPx(its:ite), PzsPx_pi(its+1:ite), 
-!              z_hat(its+1:ite,kts:kte+1), PbPzhat(its+1:ite,kts:kte+1), OnePlusZsPbPzhat(its+1:ite,kts:kte+1)
-!              z_hat_pi(its+1:ite,kts:kte), PbPzhat_pi(its+1:ite,kts:kte), OnePlusZsPbPzhat_pi(its+1:ite,kts:kte)
+CALL initiate_vertcoords
+CALL initiate_basic_state(theta_0,pi_0,rho_0)
 !-------------------------------------------------
-IF (ANY(xx(its-1:ite+1) == undef)) STOP "PzsPx is WRONG!!!"
-DO i = its-1, ite + 1 ! update boundary
-	!PzsPx(i) = - 2*h0*EXP(-((xx(i) - x_c)/a0)**2)*COS(PI_math*(xx(i) - x_c)/lambda0)*((xx(i) - x_c)/a0**2*COS(PI_math*(xx(i) - x_c)/lambda0) + PI_math/lambda0*SIN(PI_math*(xx(i) - x_c)/lambda0)) ! on u-grid
-	PzsPx(i) = (zs_pi(i+1) - zs_pi(i))/dx
-	VertA_u(i) = PzsPx(i)
-END DO
-DO i = its, ite + 1 ! update boundary
-	PzsPx_pi(i) = (zs(i) - zs(i-1))/dx  ! on pi-grid
-	VertA_pi(i) = PzsPx(i)
-END DO
-	
-IF (ANY(zz(kts:kte+1) == undef) .OR. ANY(zs_pi(its+1:ite) == undef) .OR. ANY(b(kts:kte+1) == undef)) STOP "z_hat is WRONG!!!"
-!DO i = its+1, ite
-DO i = its, ite+1  ! update boundary
-	DO k = kts, kte + 1
-		z_hat(i,k) = zz(k) + zs_pi(i)*b(k)                                   ! on w-grid
-		PbPzhat(i,k) = - COSH((ztop - z_hat(i,k))/sh)/SINH(ztop/sh)/sh       ! on w-grid
-		OnePlusZsPbPzhat(i,k) = 1 + zs_pi(i)*PbPzhat(i,k)                    ! on w-grid
-		VertB_w(i,k) = OnePlusZsPbPzhat(i,k)
-		VertC_w(i,k) = b(k)*VertA_pi(i)/VertB_w(i,k)
-	END DO
-END DO
-	
-! On v-grid:  Update boundary
-DO i = its, ite
-	DO k = kts, kte + 1
-		z_hat_v(i,k) = zz(k) + zs(i)*b(k)                                   ! on w-grid
-		PbPzhat_v(i,k) = - COSH((ztop - z_hat_v(i,k))/sh)/SINH(ztop/sh)/sh       ! on w-grid
-		VertB_v(i,k) = 1 + zs(i)*PbPzhat_v(i,k)
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		u(i,k) = 10.
 	END DO
 END DO
 
-IF (ANY(zpi(kts:kte) == undef) .OR. ANY(zs_pi(its:ite+1) == undef) .OR. ANY(b_pi(kts:kte) == undef)) STOP "z_hat_pi is WRONG!!!"
-DO i = its, ite + 1     ! update boundary
-	!DO k = kts, kte
-	DO k = kts-1, kte+1 ! update boundary
-		z_hat_pi(i,k) = zpi(k) + zs_pi(i)*b_pi(k)                            ! on pi-grid
-		PbPzhat_pi(i,k) = - COSH((ztop - z_hat_pi(i,k))/sh)/SINH(ztop/sh)/sh ! on pi-grid
-		OnePlusZsPbPzhat_pi(i,k) = 1 + zs_pi(i)*PbPzhat_pi(i,k)              ! on pi-grid
-		VertB_pi(i,k) = OnePlusZsPbPzhat_pi(i,k)
-		VertC_pi(i,k) = b_pi(k)*VertA_pi(i)/VertB_pi(i,k)
-	END DO
-END DO
-		
-IF (ANY(z_hat_pi(its:ite+1,kts:kte) == undef)) STOP "z_hat_u is WRONG!!!"
-DO i = its, ite
-	!DO k = kts, kte
-	DO k = kts-1, kte+1  ! update boundary
-		z_hat_u(i,k) = (z_hat_pi(i,k) + z_hat_pi(i+1,k))/2                   ! on u-grid
-		PbPzhat_u(i,k) = - COSH((ztop - z_hat_u(i,k))/sh)/SINH(ztop/sh)/sh   ! on u-grid
-		OnePlusZsPbPzhat_u(i,k) = 1 + zs(i)*PbPzhat_u(i,k)                   ! on u-grid
-		VertB_u(i,k) = OnePlusZsPbPzhat_u(i,k)
-		VertC_u(i,k) = b_pi(k)*VertA_u(i)/VertB_u(i,k)
-	END DO
-END DO
-
-OPEN(1, FILE="./output/modelvar_zhat.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(1) z_hat(its:ite,kts:kte)
-CLOSE(1)
-!=================================================
-! 2. u, w, pi_1, theta, theta_0, theta_1, rho_0
-!-------------------------------------------------
-! u-grid
-u(its+1:ite-1,kts:kte) = 10.              ! <= I want this.
-!u(its+1:ite-1,kts:kte) = 0.              ! <= I want this.
-
-! w-grid
-w(its+1:ite,kts+1:kte) = 0.              ! <= I want this.
-
-DO k = kts, kte + 1 ! Update boundary.
-	DO i = its + 1, ite
-		theta_0(i,k) = Ts*EXP(N0*N0/g*zz(k))        ! <= I want this. Update boundary.
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		w(i,k) = 0.
 		theta_1(i,k) = 0.
-		theta(i,k) = theta_0(i,k) + theta_1(i,k)   ! <= I want this.
+		theta(i,k) = theta_0(i,k)
 	END DO
 END DO
 
-! pi-grid
-pi_0(its+1:ite,kts) = 1.
-DO k = kts, kte
-	DO i = its + 1, ite
-		theta_0_pi(i,k) = Ts*EXP(N0*N0/g*zpi(k))        ! <= I want this. Update boundary.
-		pi_0(i,k+1) = pi_0(i,k) - g/Cp/theta_pi(i,k)*dz
-		rho_0(i,k) = p0/Rd/theta_0_pi(i,k)*pi_0(i,k)*pi_0(i,k)**(Cp/Rd)     ! <= I want this.
-	END DO
-END DO
-!CALL debug_ascii_output(pi_0)
-pi(its+1:ite,kte) = pi_0(its+1:ite,kte)
-pi_1(its+1:ite,kte) = 0.
-DO k = kte - 1, kts, - 1
-	DO i = its + 1, ite
-		theta_1_pi(i,k) = 0.
-		theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
-		pi(i,k) = pi(i,k+1) + g/Cp/theta_pi(i,k)*dz                      ! <= I want this.
-		pi_1(i,k) = pi(i,k) - pi_0(i,k)                                  ! <= I want this.
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
+		pi_1(i,k) = 0.
 	END DO
 END DO
 !=================================================
@@ -500,6 +390,12 @@ END SUBROUTINE initiate_grid
 
 !=================================================
 ! Initiate Basic State Atmosphere
+! 
+! To initiate:
+! 
+! theta_0, pi_0, rho_0
+! theta_0_pi, theta_0_u, theta_0_v
+! rho_0_u, rho_0_w, rho_0_v
 !=================================================
 SUBROUTINE initiate_basic_state(theta_0,pi_0,rho_0)
 IMPLICIT NONE
@@ -535,8 +431,8 @@ DO i = imin, imax
 			theta_0(i,k) = Ts*EXP(N0*N0/g*zz(k))
 			pi_0_w(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zz(k)/g) - 1.)
 		ELSE IF (RunCase == 4) THEN
-			theta_0(i,k) = (Ts - 20.)*EXP(N0*N0/g*zz(k))
-			pi_0_w(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zz(k)/g) - EXP(-N0*N0*zs(i)/g))
+			theta_0(i,k) = (Ts - 20.)*EXP(N0*N0/g*z_hat(i,k))
+			pi_0_w(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*z_hat(i,k)/g) - EXP(-N0*N0*zs(i)/g))
 		ELSE
 			STOP "WRONG RunCase!!!"
 		END IF
@@ -566,8 +462,8 @@ DO i = imin, imax
 			theta_0_pi(i,k) = Ts*EXP(N0*N0/g*zpi(k))
 			pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zpi(k)/g) - 1.)
 		ELSE IF (RunCase == 4) THEN
-			theta_0_pi(i,k) = (Ts - 20.)*EXP(N0*N0/g*zpi(k))
-			pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*zpi(k)/g) - EXP(-N0*N0*zs(i)/g))
+			theta_0_pi(i,k) = (Ts - 20.)*EXP(N0*N0/g*z_hat_pi(i,k))
+			pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*z_hat_pi(i,k)/g) - EXP(-N0*N0*zs(i)/g))
 		ELSE
 			STOP "WRONG RunCase!!!"
 		END IF
@@ -588,14 +484,103 @@ END SUBROUTINE initiate_basic_state
 !=================================================
 
 !=================================================
-! Initiate Terrain
+! Initiate Vertical Coordinates
+! 
+! To initiate:
+! b(k), b_pi(k), VertA_u(i), VertA_pi(i)
+! z_hat(i,k), z_hat_pi(i,k), z_hat_u(i,k), z_hat_v(i,k)  =  zz(k) + b(k)*zs(i)
+! PbPzhat(i,k), PbPzhat_pi(i,k), PbPzhat_u(i,k), PbPhat_v(i,k)
+! VertA_u(i), VertA_pi(i) = PzsPx(i)
+! VertB_u(i,k), VertB_pi(i,k), VertB_u(i,k), VertB_v(i,k)
+! VertC_u(i,k), VertC_pi(i,k), VertC_u(i,k), VertC_v(i,k)
 !=================================================
-SUBROUTINE initiate_terrain
+SUBROUTINE initiate_vertcoords
 IMPLICIT NONE
+REAL(preci), PARAMETER :: sh = 3.0*1000.        ! (m)
+!-------------------------------------------------
+INTEGER :: i, k
 !=================================================
+VertA_u = undef
+VertA_pi = undef
+
+CALL set_area_u
+DO i = imin, imax
+	VertA_u(i) = PzsPx(i)
+END DO
+
+CALL set_area_pi
+DO i = imin, imax
+	VertA_pi(i) = PzsPx_pi(i)
+END DO
+!-------------------------------------------------
+b = undef
+b_pi = undef
+
+CALL set_area_w
+DO k = kmin, kmax
+	b(k) = SINH((ztop - zz(k))/sh)/SINH(ztop/sh)
+END DO
+
+CALL set_area_pi
+DO k = kmin, kmax
+	b_pi(k) = SINH((ztop - zpi(k))/sh)/SINH(ztop/sh)
+END DO
+!-------------------------------------------------
+CALL debug_undef_all(z_hat,z_hat_pi,z_hat_u,z_hat_v)
+CALL debug_undef_all(PbPzhat,PbPzhat_pi,PbPzhat_u,PbPzhat_v)
+CALL debug_undef_all(VertB_w,VertB_pi,VertB_u,VertB_v)
+CALL debug_undef_all(VertC_w,VertC_pi,VertC_u,VertC_v)
+
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		z_hat(i,k) = zz(k) + zs_pi(i)*b(k)
+		PbPzhat(i,k) = - COSH((ztop - z_hat(i,k))/sh)/SINH(ztop/sh)/sh
+		VertB_w(i,k) = 1 + zs_pi(i)*PbPzhat(i,k)
+		VertC_w(i,k) = b(k)*VertA_pi(i)/VertB_w(i,k)
+	END DO
+END DO
+
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
+		z_hat_pi(i,k) = zpi(k) + zs_pi(i)*b_pi(k)
+		PbPzhat_pi(i,k) = - COSH((ztop - z_hat_pi(i,k))/sh)/SINH(ztop/sh)/sh
+		VertB_pi(i,k) = 1 + zs_pi(i)*PbPzhat_pi(i,k)
+		VertC_pi(i,k) = b_pi(k)*VertA_pi(i)/VertB_pi(i,k)
+	END DO
+END DO
+
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		z_hat_u(i,k) = zpi(k) + zs(i)*b_pi(k)
+		PbPzhat_u(i,k) = - COSH((ztop - z_hat_u(i,k))/sh)/SINH(ztop/sh)/sh
+		VertB_u(i,k) = 1 + zs(i)*PbPzhat_u(i,k)
+		VertC_u(i,k) = b_pi(k)*VertA_u(i)/VertB_u(i,k)
+	END DO
+END DO
+
+CALL set_area_v
+DO i = imin, imax
+	DO k = kmin, kmax
+		z_hat_v(i,k) = zz(k) + zs(i)*b(k)
+		PbPzhat_v(i,k) = - COSH((ztop - z_hat_v(i,k))/sh)/SINH(ztop/sh)/sh
+		VertB_v(i,k) = 1 + zs(i)*PbPzhat_v(i,k)
+		VertC_v(i,k) = b(k)*VertA_u(i)/VertB_v(i,k)
+	END DO
+END DO
+
+OPEN(1, FILE="./output/modelvar_xpi.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(1) xpi(its:ite)
+CLOSE(1)
+
+OPEN(1, FILE="./output/modelvar_zhat.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(1) z_hat(its:ite,kts:kte)
+CLOSE(1)
 
 !=================================================
-END SUBROUTINE initiate_terrain
+END SUBROUTINE initiate_vertcoords
 !=================================================
 
 !=================================================

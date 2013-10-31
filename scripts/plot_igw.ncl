@@ -34,16 +34,18 @@ nt = 301
 ;nt = 311
 ;nt = 401
 ;nt = 1001
-;var = "theta_1"
+var = "theta_1"
+;var = "theta"
 ;var = "pi_1"
 ;var = "u"
-var = "w"
+;var = "w"
 ;=================================
 ;Read data.
 ;---------------------------------
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
 data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
+;data_1 = cbinread("../output/modelvar_theta_1.bin",(/nt,nz,nx/),"double")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nzm,nxm/),"double")
 data@_FillValue = -9999.
 ;print(data)

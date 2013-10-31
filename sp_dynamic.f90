@@ -115,7 +115,7 @@ DO i = 1, nstep
 END DO
 !=================================================
 !-------------------------------------------------
-CALL output(99,u,w,theta_1,pi_1)                   ! finish
+CALL output(99,u,w,theta_1,pi_1,theta)                   ! finish
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"

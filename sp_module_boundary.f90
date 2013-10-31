@@ -41,35 +41,20 @@ INTEGER :: i, k
 IF (PRESENT(u)) THEN
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		!u(ims:imin,:) = 0
-		!u(imax:ime,:) = 0
 		CALL no_flux_vector_lateral_u(u)
 	CASE (2)
-		!u(ims:imin,:) = u(ite+ims-its-1:ite-1,:)
-		!u(imax:ime,:) = u(its+1:its+ime-ite+1,:)
 		CALL periodic_lateral_u(u)
-	CASE (4)
-		DO i = ims, its
-			u(i,:) = u(its+1,:)
-		END DO
-		DO i = ite, ime
-			u(i,:) = u(ite-1,:)
-		END DO
+	CASE (3)
+		CALL open_lateral_u(u)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	!u(:,kms:kts-1) = u(:,2*kts-kms-1:kts:-1) ! PuPz = 0
 	CALL no_flux_scalar_bottom_pi(u)
 
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		!u(:,kte+1:kme) = u(:,kte:2*kte-kme+1:-1) ! PuPz = 0
 		CALL no_flux_scalar_top_pi(u)
-	CASE (4)
-		DO k = kte+1, kme
-			u(:,k) = u(:,kte) ! PuPz = 0
-		END DO
 	CASE DEFAULT
 		STOP "Wrong vertical boundary scheme!!!"
 	END SELECT
@@ -80,35 +65,20 @@ IF (PRESENT(w)) THEN
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		!w(its:ims:-1,:) = w(its+1:2*its-ims+1,:) ! PwPx = 0.
-		!w(ite+1:ime,:) = w(ite:2*ite-ime+1:-1,:) ! PwPx = 0.
 		CALL no_flux_scalar_lateral_pi(w)
 	CASE (2)
-		!w(ims:its,:) = w(ite+ims-its:ite,:)
-		!w(ite+1:ime,:) = w(its+1:its+ime-ite,:)
 		CALL periodic_lateral_pi(w)
-	CASE (4)
-		DO i = ims, its
-			w(i,:) = w(its+1,:)
-		END DO
-		DO i = ite, ime
-			w(i,:) = w(ite,:)
-		END DO
+	CASE (3)
+		CALL open_lateral_pi(w)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	!w(:,kms:kts) = 0  ! Lower boundary is always a wall.
 	CALL no_flux_vector_bottom_w(w)
 
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		!w(:,kte+1:kme) = 0
 		CALL no_flux_vector_top_w(w)
-	CASE (4)
-		DO k = kte+1, kme
-			w(:,k) = w(:,kte)
-		END DO
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -119,37 +89,20 @@ IF (PRESENT(theta)) THEN
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		!theta(its:ims:-1,:) = theta(its+1:2*its-ims+1,:) ! PthetaPx = 0.
-		!theta(ite+1:ime,:) = theta(ite:2*ite-ime+1:-1,:) ! PthetaPx = 0.
 		CALL no_flux_scalar_lateral_pi(theta)
 	CASE (2)
-		!theta(ims:its,:) = theta(ite+ims-its:ite,:)
-		!theta(ite+1:ime,:) = theta(its+1:its+ime-ite,:)
 		CALL periodic_lateral_pi(theta)
-	CASE (4)
-		DO i = ims, its
-			theta(i,:) = theta(its+1,:)
-		END DO
-		DO i = ite+1, ime
-			theta(i,:) = theta(ite,:)
-		END DO
+	CASE (3)
+		CALL open_lateral_pi(theta)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	!theta(:,kts) = theta(:,kts+1) ! PthetaPz = 0.
-	!theta(:,kms:kts-1) = theta(:,2*kts-kms:kts+1:-1)
 	CALL no_flux_scalar_bottom_w(theta)
 
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		!theta(:,kte+1) = theta(:,kte) ! PthetaPz = 0.
-		!theta(:,kte+2:kme) = theta(:,kte:2*kte-kme+2:-1)
 		CALL no_flux_scalar_top_w(theta)
-	CASE (4)
-		DO k = kte+2, kme
-			theta(:,k) = theta(:,kte+1)
-		END DO
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -160,36 +113,19 @@ IF (PRESENT(theta_1)) THEN
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		!theta_1(its:ims:-1,:) = theta_1(its+1:2*its-ims+1,:) ! Ptheta_1Px = 0.
-		!theta_1(ite+1:ime,:) = theta_1(ite:2*ite-ime+1:-1,:) ! Ptheta_1Px = 0.
 		CALL no_flux_scalar_lateral_pi(theta_1)
 	CASE (2)
-		!theta_1(ims:its,:) = theta_1(ite+ims-its:ite,:)
-		!theta_1(ite+1:ime,:) = theta_1(its+1:its+ime-ite,:)
 		CALL periodic_lateral_pi(theta_1)
-	CASE (4)
-		DO i = ims, its
-			theta_1(i,:) = theta_1(its+1,:)
-		END DO
-		DO i = ite+1, ime
-			theta_1(i,:) = theta_1(ite,:)
-		END DO
+	CASE (3)
+		CALL open_lateral_pi(theta_1)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	!theta_1(:,kts) = theta_1(:,kts+1) ! Ptheta_1Pz = 0.
-	!theta_1(:,kms:kts-1) = theta_1(:,2*kts-kms:kts+1:-1)
-	!theta_1(:,kte+1) = theta_1(:,kte) ! Ptheta_1Pz = 0.
 	CALL no_flux_scalar_bottom_w(theta_1)
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(theta_1)
-		!theta_1(:,kte+2:kme) = theta_1(:,kte:2*kte-kme+2:-1)
-	CASE (4)
-		DO k = kte+2, kme
-			theta_1(:,k) = theta_1(:,kte+1)
-		END DO
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -201,36 +137,19 @@ IF (PRESENT(theta_0)) THEN
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		!theta_0(its:ims:-1,:) = theta_0(its+1:2*its-ims+1,:) ! Ptheta_0Px = 0.
-		!theta_0(ite+1:ime,:) = theta_0(ite:2*ite-ime+1:-1,:) ! Ptheta_0Px = 0.
 		CALL no_flux_scalar_lateral_pi(theta_0)
 	CASE (2)
-		!theta_0(ims:its,:) = theta_0(ite+ims-its:ite,:)
-		!theta_0(ite+1:ime,:) = theta_0(its+1:its+ime-ite,:)
 		CALL periodic_lateral_pi(theta_0)
-	CASE (4)
-		DO i = ims, its
-			theta_0(i,:) = theta_0(its+1,:)
-		END DO
-		DO i = ite+1, ime
-			theta_0(i,:) = theta_0(ite,:)
-		END DO
+	CASE (3)
+		CALL open_lateral_pi(theta_0)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	!theta_0(:,kts) = theta_0(:,kts+1)
-	!theta_0(:,kms:kts-1) = theta_0(:,2*kts-kms:kts+1:-1)
-	!theta_0(:,kte+1) = theta_0(:,kte)
 	CALL no_flux_scalar_bottom_w(theta_0)
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		!theta_0(:,kte+2:kme) = theta_0(:,kte:2*kte-kme+2:-1)
 		CALL no_flux_scalar_top_w(theta_0)
-	CASE (4)
-		DO k = kte+2, kme
-			theta_0(:,k) = theta_0(:,kte+1)
-		END DO
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -243,6 +162,8 @@ IF (PRESENT(theta_0_v)) THEN
 		CALL no_flux_scalar_lateral_u(theta_0_v)
 	CASE (2)
 		CALL periodic_lateral_u(theta_0_v)
+	CASE (3)
+		CALL open_lateral_u(theta_0_v)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
@@ -262,6 +183,8 @@ IF (PRESENT(theta_0_pi)) THEN
 		CALL no_flux_scalar_lateral_pi(theta_0_pi)
 	CASE (2)
 		CALL periodic_lateral_pi(theta_0_pi)
+	CASE (3)
+		CALL open_lateral_pi(theta_0_pi)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
@@ -281,6 +204,8 @@ IF (PRESENT(theta_0_u)) THEN
 		CALL no_flux_scalar_lateral_u(theta_0_u)
 	CASE (2)
 		CALL periodic_lateral_u(theta_0_u)
+	CASE (3)
+		CALL open_lateral_u(theta_0_u)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
@@ -300,6 +225,8 @@ IF (PRESENT(rho_0_w)) THEN
 		CALL no_flux_scalar_lateral_pi(rho_0_w)
 	CASE (2)
 		CALL periodic_lateral_pi(rho_0_w)
+	CASE (3)
+		CALL open_lateral_pi(rho_0_w)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
@@ -319,6 +246,8 @@ IF (PRESENT(rho_0_v)) THEN
 		CALL no_flux_scalar_lateral_u(rho_0_v)
 	CASE (2)
 		CALL periodic_lateral_u(rho_0_v)
+	CASE (3)
+		CALL open_lateral_u(rho_0_v)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
@@ -339,6 +268,8 @@ IF (PRESENT(rho_0_u)) THEN
 		CALL no_flux_scalar_lateral_u(rho_0_u)
 	CASE (2)
 		CALL periodic_lateral_u(rho_0_u)
+	CASE (3)
+		CALL open_lateral_u(rho_0_u)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
@@ -357,35 +288,20 @@ IF (PRESENT(pi_1)) THEN
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		!pi_1(its:ims:-1,:) = pi_1(its+1:2*its-ims+1,:) ! Ppi_1Px = 0.
-		!pi_1(ite+1:ime,:) = pi_1(ite:2*ite-ime+1:-1,:) ! Ppi_1Px = 0.
 		CALL no_flux_scalar_lateral_pi(pi_1)
 	CASE (2)
-		!pi_1(ims:its,:) = pi_1(ite+ims-its:ite,:)
-		!pi_1(ite+1:ime,:) = pi_1(its+1:its+ime-ite,:)
 		CALL periodic_lateral_pi(pi_1)
-	CASE (4)
-		DO i = ims, its
-			pi_1(i,:) = pi_1(its+1,:)
-		END DO
-		DO i = ite+1, ime
-			pi_1(i,:) = pi_1(ite,:)
-		END DO
+	CASE (3)
+		CALL open_lateral_pi(pi_1)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	!pi_1(:,kms:kts-1) = pi_1(:,2*kts-kms-1:kts:-1) ! PuPz = 0
 	CALL no_flux_scalar_bottom_pi(pi_1)
 
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		!pi_1(:,kte+1:kme) = pi_1(:,kte:2*kte-kme+1:-1) ! PuPz = 0
 		CALL no_flux_scalar_top_pi(pi_1)
-	CASE (4)
-		DO k = kte+1, kme
-			pi_1(:,k) = pi_1(:,kte)
-		END DO
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -396,35 +312,20 @@ IF (PRESENT(rho_0)) THEN
 	
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		!rho_0(its:ims:-1,:) = rho_0(its+1:2*its-ims+1,:) ! Ppi_1Px = 0.
-		!rho_0(ite+1:ime,:) = rho_0(ite:2*ite-ime+1:-1,:) ! Ppi_1Px = 0.
 		CALL no_flux_scalar_lateral_pi(rho_0)
 	CASE (2)
-		!rho_0(ims:its,:) = rho_0(ite+ims-its:ite,:)
-		!rho_0(ite+1:ime,:) = rho_0(its+1:its+ime-ite,:)
 		CALL periodic_lateral_pi(rho_0)
-	CASE (4)
-		DO i = ims, its
-			rho_0(i,:) = rho_0(its+1,:)
-		END DO
-		DO i = ite+1, ime
-			rho_0(i,:) = rho_0(ite,:)
-		END DO
+	CASE (3)
+		CALL open_lateral_pi(rho_0)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	!rho_0(:,kms:kts-1) = rho_0(:,2*kts-kms-1:kts:-1) ! PuPz = 0
 	CALL no_flux_scalar_bottom_pi(rho_0)
 
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		!rho_0(:,kte+1:kme) = rho_0(:,kte:2*kte-kme+1:-1) ! PuPz = 0
 		CALL no_flux_scalar_top_pi(rho_0)
-	CASE (4)
-		DO k = kte+1, kme
-			rho_0(:,k) = rho_0(:,kte)
-		END DO
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -567,6 +468,40 @@ CALL set_area_u
 var(ims:imin-1,:) = var(imax-(imin-1-ims):imax,:)
 var(imax+1:ime,:) = var(imin:imin-(imax+1-ime),:)
 END SUBROUTINE periodic_lateral_u
+!=================================================
+
+!=================================================
+! Open - Lateral [pi, u]
+!=================================================
+SUBROUTINE open_lateral_pi(var)
+IMPLICIT NONE
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
+INTEGER :: i
+!-------------------------------------------------
+CALL set_area_pi
+DO i = ims, imin-1
+	var(i,:) = var(imin,:)
+END DO
+DO i = imax+1, ime
+	var(i,:) = var(imax,:)
+END DO
+END SUBROUTINE open_lateral_pi
+!=================================================
+
+!=================================================
+SUBROUTINE open_lateral_u(var)
+IMPLICIT NONE
+REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
+INTEGER :: i
+!-------------------------------------------------
+CALL set_area_u
+DO i = ims, imin-1
+	var(i,:) = var(imin,:)
+END DO
+DO i = imax+1, ime
+	var(i,:) = var(imax,:)
+END DO
+END SUBROUTINE open_lateral_u
 !=================================================
 
 !=================================================
