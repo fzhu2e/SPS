@@ -25,9 +25,9 @@ nt = 65
 ;nt = 301
 ;nt = 401
 ;nt = 1001
-;var = "theta_1"
+var = "theta_1"
 ;var = "pi_1"
-var = "u"
+;var = "u"
 ;var = "w"
 ;=================================
 ; Read data.

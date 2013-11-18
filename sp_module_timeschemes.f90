@@ -51,27 +51,28 @@ INTEGER :: i, k
 !=================================================
 CALL basic_interpolate(old_u,old_w,old_pi_1,old_theta,old_theta_1)
 
-CALL debug_undef_all( new_u,new_w,new_pi_1,new_theta,new_theta_1, &
-                      F_u,rhou_pi,rhouu_pi,                       &
-                      PrhouPx_u,PrhouuPx_u,                       &
-                      rhow_v,rhouw_v,                             &
-                      PrhowPz_u,PrhouwPz_u,                       &
-                      F_w,rhou_v,PrhouPx_w,PrhouwPx_w,            &
-                      rhow_pi,rhoww_pi,PrhowPz_w,PrhowwPz_w,      &
-                      F_theta,rhoutheta_v,PrhowthetaPz_w,         &
-                      Ppi_1Px_u,Ppi_1Pz_w,                        &
-                      F_pi,urhotheta_u,wrhotheta_w,               &
-                      PurhothetaPx_pi,PwrhothetaPz_pi,            &
-                      tend_u,tend_w,tend_theta,tend_pi,           &
-                      P2uPx2_u,P2uPz2_u,                          &
-                      P2wPx2_w,P2wPz2_w,                          &
-                      P2thetaPx2_w,P2thetaPz2_w                   )
+CALL debug_undef_all(new_u,new_w,new_pi_1,new_theta,new_theta_1)
+
+CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
+                     tend_u,tend_w,tend_theta,tend_pi  )
+CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
+                         P2wPx2_w,    P2wPz2_w,   &
+                     P2thetaPx2_w,P2thetaPz2_w    )
+CALL debug_undef_all( rhou_pi, rhouu_pi,          &
+                      rhow_v , rhowu_v,           &
+                      rhou_v , rhouw_v,           &
+                      rhow_pi, rhoww_pi,          &
+                      rhoutheta_v, rhowtheta_pi,  &
+                      urhotheta_u, wrhotheta_w    )
+CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
+                     PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
+                     PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
 CALL tendency_u(old_u,rho_0,old_pi_1,F_u,tend_u)
 CALL tendency_w(old_w,rho_0,old_theta_1,theta_0,old_pi_1,F_w,tend_w)
 CALL tendency_theta(old_u,old_w,rho_0,old_theta,F_theta,tend_theta)
 !=================================================
-! 4. Update u, w, theta
+! Update u, w, theta
 !-------------------------------------------------
 ! u-grid
 DO i = its + 1, ite -1
@@ -88,21 +89,8 @@ DO i = its + 1, ite
 	END DO
 END DO
 CALL update_boundary(new_u,new_w)
-
-!DO k = kme, kms, -1
-	!WRITE(*,"(2F15.9)") tend_theta(255,k), tend_w(255,k)
-!END DO
-!CALL debug_ascii_output(Ppi_1Pz_w)
-!CALL debug_test_boundary(Ppi_1Pz_w)
-!CALL debug_ascii_output(Cp*theta_0*Ppi_1Pz_w)
-!CALL debug_ascii_output(theta_0*Ppi_1Pz_w)
-!CALL debug_test_boundary(Cp*theta_0*Ppi_1Pz_w)
-!CALL debug_ascii_output(F_w)
-!CALL debug_ascii_output(F_w - Cp*theta_0*Ppi_1Pz_w)
-!CALL debug_ascii_output(F_w - theta_0*Ppi_1Pz_w)
-
 !=================================================
-! 5.2 Update pi_1
+! Update pi_1
 !-------------------------------------------------
 CALL tendency_pi(new_u,new_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 ! pi-grid
@@ -160,21 +148,22 @@ INTEGER :: i, k
 !-------------------------------------------------
 CALL basic_interpolate(old_u,old_w,old_pi_1,old_theta,old_theta_1)
 
-CALL debug_undef_all( mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1, &
-                      F_u,rhou_pi,rhouu_pi,                       &
-                      PrhouPx_u,PrhouuPx_u,                       &
-                      rhow_v,rhouw_v,                             &
-                      PrhowPz_u,PrhouwPz_u,                       &
-                      F_w,rhou_v,PrhouPx_w,PrhouwPx_w,            &
-                      rhow_pi,rhoww_pi,PrhowPz_w,PrhowwPz_w,      &
-                      F_theta,rhoutheta_v,PrhowthetaPz_w,         &
-                      Ppi_1Px_u,Ppi_1Pz_w,                        &
-                      F_pi,urhotheta_u,wrhotheta_w,               &
-                      PurhothetaPx_pi,PwrhothetaPz_pi,            &
-                      tend_u,tend_w,tend_theta,tend_pi,           &
-                      P2uPx2_u,P2uPz2_u,                          &
-                      P2wPx2_w,P2wPz2_w,                          &
-                      P2thetaPx2_w,P2thetaPz2_w                   )
+CALL debug_undef_all(mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1)
+
+CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
+                     tend_u,tend_w,tend_theta,tend_pi  )
+CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
+                         P2wPx2_w,    P2wPz2_w,   &
+                     P2thetaPx2_w,P2thetaPz2_w    )
+CALL debug_undef_all( rhou_pi, rhouu_pi,          &
+                      rhow_v , rhowu_v,           &
+                      rhou_v , rhouw_v,           &
+                      rhow_pi, rhoww_pi,          &
+                      rhoutheta_v, rhowtheta_pi,  &
+                      urhotheta_u, wrhotheta_w    )
+CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
+                     PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
+                     PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
 CALL tendency_u(old_u,rho_0,old_pi_1,F_u,tend_u)
 CALL tendency_w(old_w,rho_0,old_theta_1,theta_0,old_pi_1,F_w,tend_w)
@@ -220,21 +209,22 @@ CALL update_boundary(mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1)
 !-------------------------------------------------
 CALL basic_interpolate(mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1)
 
-CALL debug_undef_all( mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1, &
-                      F_u,rhou_pi,rhouu_pi,                       &
-                      PrhouPx_u,PrhouuPx_u,                       &
-                      rhow_v,rhouw_v,                             &
-                      PrhowPz_u,PrhouwPz_u,                       &
-                      F_w,rhou_v,PrhouPx_w,PrhouwPx_w,            &
-                      rhow_pi,rhoww_pi,PrhowPz_w,PrhowwPz_w,      &
-                      F_theta,rhoutheta_v,PrhowthetaPz_w,         &
-                      Ppi_1Px_u,Ppi_1Pz_w,                        &
-                      F_pi,urhotheta_u,wrhotheta_w,               &
-                      PurhothetaPx_pi,PwrhothetaPz_pi,            &
-                      tend_u,tend_w,tend_theta,tend_pi,           &
-                      P2uPx2_u,P2uPz2_u,                          &
-                      P2wPx2_w,P2wPz2_w,                          &
-                      P2thetaPx2_w,P2thetaPz2_w                   )
+CALL debug_undef_all( mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1)
+
+CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
+                     tend_u,tend_w,tend_theta,tend_pi  )
+CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
+                         P2wPx2_w,    P2wPz2_w,   &
+                     P2thetaPx2_w,P2thetaPz2_w    )
+CALL debug_undef_all( rhou_pi, rhouu_pi,          &
+                      rhow_v , rhowu_v,           &
+                      rhou_v , rhouw_v,           &
+                      rhow_pi, rhoww_pi,          &
+                      rhoutheta_v, rhowtheta_pi,  &
+                      urhotheta_u, wrhotheta_w    )
+CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
+                     PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
+                     PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
 CALL tendency_u(mid1_u,rho_0,mid1_pi_1,F_u,tend_u)
 CALL tendency_w(mid1_w,rho_0,mid1_theta_1,theta_0,mid1_pi_1,F_w,tend_w)
@@ -280,21 +270,22 @@ CALL update_boundary(mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1)
 !-------------------------------------------------
 CALL basic_interpolate(mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1)
 
-CALL debug_undef_all( new_u,new_w,new_pi_1,new_theta,new_theta_1, &
-                      F_u,rhou_pi,rhouu_pi,                       &
-                      PrhouPx_u,PrhouuPx_u,                       &
-                      rhow_v,rhouw_v,                             &
-                      PrhowPz_u,PrhouwPz_u,                       &
-                      F_w,rhou_v,PrhouPx_w,PrhouwPx_w,            &
-                      rhow_pi,rhoww_pi,PrhowPz_w,PrhowwPz_w,      &
-                      F_theta,rhoutheta_v,PrhowthetaPz_w,         &
-                      Ppi_1Px_u,Ppi_1Pz_w,                        &
-                      F_pi,urhotheta_u,wrhotheta_w,               &
-                      PurhothetaPx_pi,PwrhothetaPz_pi,            &
-                      tend_u,tend_w,tend_theta,tend_pi,           &
-                      P2uPx2_u,P2uPz2_u,                          &
-                      P2wPx2_w,P2wPz2_w,                          &
-                      P2thetaPx2_w,P2thetaPz2_w                   )
+CALL debug_undef_all( new_u,new_w,new_pi_1,new_theta,new_theta_1)
+
+CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
+                     tend_u,tend_w,tend_theta,tend_pi  )
+CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
+                         P2wPx2_w,    P2wPz2_w,   &
+                     P2thetaPx2_w,P2thetaPz2_w    )
+CALL debug_undef_all( rhou_pi, rhouu_pi,          &
+                      rhow_v , rhowu_v,           &
+                      rhou_v , rhouw_v,           &
+                      rhow_pi, rhoww_pi,          &
+                      rhoutheta_v, rhowtheta_pi,  &
+                      urhotheta_u, wrhotheta_w    )
+CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
+                     PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
+                     PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
 CALL tendency_u(mid2_u,rho_0,mid2_pi_1,F_u,tend_u)
 CALL tendency_w(mid2_w,rho_0,mid2_theta_1,theta_0,mid2_pi_1,F_w,tend_w)

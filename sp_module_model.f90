@@ -19,7 +19,7 @@ INTEGER, PARAMETER :: TimeScheme = 2       ! 1. Forward-backward; 2. Runge-Kutta
 INTEGER, PARAMETER :: AdvectionScheme = 5  ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order;
 INTEGER, PARAMETER :: LateralBoundary = 2  ! 1. No-flux; 2. Periodic; 3. Open;
 INTEGER, PARAMETER :: UpperBoundary = 1    ! 1. No-flux;
-INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height; 2. Terrain;
+INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 
 !=================================================
 !-------------------------------------------------
@@ -27,20 +27,10 @@ INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height; 2. Terrain;
 !-------------------------------------------------
 INTEGER, PARAMETER :: RunCase = 1         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
 
-INTEGER, PARAMETER :: nx = 128                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 16                               ! grid number along z-axis
-REAL(preci), PARAMETER :: dx = 400.                        ! delta x (m)
-REAL(preci), PARAMETER :: dz = 400.                       ! (m)
-
-!INTEGER, PARAMETER :: nx = 256                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 32                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 200.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 200.                       ! (m)
-
-!INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
-!REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
-!REAL(preci), PARAMETER :: dz = 100.                       ! (m)
+INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
+REAL(preci), PARAMETER :: dx = 100.                        ! delta x (m)
+REAL(preci), PARAMETER :: dz = 100.                       ! (m)
 
 !INTEGER, PARAMETER :: nx = 1024                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 128                               ! grid number along z-axis
