@@ -64,14 +64,17 @@ INTEGER :: i, k
 CALL set_area_pi
 CALL set_area_expand(expand)
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		rhou_pi(i,k) = rho_0(i,k)*u_pi(i,k)
 	END DO
 END DO
+!OMP END PARALLEL
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			fa(i,k) = u(i-1,k) + u(i,k)
@@ -84,6 +87,7 @@ CASE (5)
 			rhouu_pi(i,k) = rhouu_pi(i,k) - ABS(u_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
 END SELECT
@@ -93,14 +97,17 @@ END SELECT
 CALL set_area_v
 CALL set_area_expand(expand)
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		rhow_v(i,k) = rho_0_v(i,k)*w_v(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			fa(i,k) = u(i,k) + u(i,k-1)
@@ -113,6 +120,7 @@ CASE (5)
 			rhowu_v(i,k) = rhowu_v(i,k) - ABS(w_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
 END SELECT
@@ -120,6 +128,7 @@ END SELECT
 ! u-grid
 !-------------------------------------------------
 CALL set_area_u
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		PrhouPx_u(i,k) = (rhou_pi(i+1,k) - rhou_pi(i,k))/dx
@@ -136,8 +145,10 @@ DO i = imin, imax
 		tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 IF (RunCase == 1 .OR. RunCase == 2) THEN
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			P2uPx2_u(i,k) = (u(i+1,k) + u(i-1,k) - 2*u(i,k))/dx/dx
@@ -146,6 +157,7 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 			tend_u(i,k) = tend_u(i,k) + Km*(P2uPx2_u(i,k) + P2uPz2_u(i,k)) ! Add diffusion term.
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 END IF
 	
 !-------------------------------------------------
@@ -180,14 +192,17 @@ INTEGER :: i, k
 CALL set_area_v
 CALL set_area_expand(expand)
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		rhou_v(i,k) = rho_0_v(i,k)*u_v(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			fa(i,k) = w(i,k) + w(i+1,k)
@@ -200,6 +215,7 @@ CASE (5)
 			rhouw_v(i,k) = rhouw_v(i,k) - ABS(u_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
 END SELECT
@@ -209,14 +225,17 @@ END SELECT
 CALL set_area_pi
 CALL set_area_expand(expand)
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		rhow_pi(i,k) = rho_0(i,k)*w_pi(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			fa(i,k) = w(i,k) + w(i,k+1)
@@ -230,6 +249,7 @@ CASE (5)
 			rhoww_pi(i,k) = rhoww_pi(i,k) - ABS(w_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
 END SELECT
@@ -237,6 +257,7 @@ END SELECT
 ! w-grid 
 !-------------------------------------------------
 CALL set_area_w
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		PrhouPx_w(i,k) = (rhou_v(i,k) - rhou_v(i-1,k))/dx
@@ -253,8 +274,10 @@ DO i = imin, imax
 		tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 IF (RunCase == 1 .OR. RunCase == 2) THEN
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			P2wPx2_w(i,k) = (w(i+1,k) + w(i-1,k) - 2*w(i,k))/dx/dx
@@ -263,6 +286,7 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 			tend_w(i,k) = tend_w(i,k) + Km*(P2wPx2_w(i,k) + P2wPz2_w(i,k)) ! Add diffusion term.
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 END IF
 !-------------------------------------------------
 IF (ANY(ISNAN(F_w(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITHT F_w!!!"
@@ -297,6 +321,7 @@ CALL set_area_expand(expand)
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 		fa(i,k) = theta(i,k) + theta(i+1,k)
@@ -309,6 +334,7 @@ CASE (5)
 		rhoutheta_v(i,k) = rhoutheta_v(i,k) - ABS(u_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
 END SELECT
@@ -320,6 +346,7 @@ CALL set_area_expand(expand)
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			fa(i,k) = theta(i,k+1) + theta(i,k)
@@ -332,6 +359,7 @@ CASE (5)
 			rhowtheta_pi(i,k) = rhowtheta_pi(i,k) - ABS(w_hat_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 CASE DEFAULT
 	STOP "Wrong advection scheme!!!"
 END SELECT
@@ -340,13 +368,16 @@ END SELECT
 !-------------------------------------------------
 CALL set_area_w
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		PrhouthetaPx_w(i,k) = (rhoutheta_v(i,k) - rhoutheta_v(i-1,k))/dx
 		PrhowthetaPz_w(i,k) = (rhowtheta_pi(i,k) - rhowtheta_pi(i,k-1))/dz
 	END DO
 END DO
+!OMP END PARALLEL DO
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		uPthetaPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k))
@@ -356,8 +387,10 @@ DO i = imin, imax
 		tend_theta(i,k) = F_theta(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 	
 IF (RunCase == 1 .OR. RunCase == 2) THEN
+	!OMP PARALLEL DO
 	DO i = imin, imax
 		DO k = kmin, kmax
 			P2thetaPx2_w(i,k) = (theta(i+1,k) + theta(i-1,k) - 2*theta(i,k))/dx/dx
@@ -366,6 +399,7 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 			tend_theta(i,k) = F_theta(i,k) + Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k)) ! Add diffusion term.
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 END IF
 !-------------------------------------------------
 IF (ANY(ISNAN(F_theta(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
@@ -391,22 +425,27 @@ INTEGER :: i, k
 CALL set_area_u
 CALL set_area_expand(expand)
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		urhotheta_u(i,k) = u(i,k)*rho_0_u(i,k)*theta_0_u(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_w
 CALL set_area_expand(expand)
 
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_pi
+!OMP PARALLEL DO
 DO i = imin, imax
 	DO k = kmin, kmax
 		PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
@@ -416,6 +455,7 @@ DO i = imin, imax
 		tend_pi(i,k) = F_pi(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 !-------------------------------------------------
 IF (ANY(ISNAN(F_pi(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
 !=================================================
