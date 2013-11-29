@@ -65,8 +65,8 @@ IF (ANY(theta_1(imin:imax+1,kmin:kmax+1) == undef)) STOP "theta_0_u is WRONG!!!"
 IF (ANY(b_pi(kmin:kmax) == undef) .OR. ANY(VertA_u(imin:imax) == undef) .OR. ANY(VertB_u(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		pi_1_u(i,k) = (pi_1(i,k) + pi_1(i+1,k))/2.
 		w_u(i,k) = (w(i,k) + w(i+1,k) + w(i,k+1) + w(i+1,k+1))/4.
 		theta_u(i,k) = (theta(i,k) + theta(i+1,k) + theta(i,k+1) + theta(i+1,k+1))/4.
@@ -88,8 +88,8 @@ IF (ANY(theta_1(imin:imax,kmin:kmax+1) == undef)) STOP "theta_1_pi is WRONG!!!"
 IF (ANY(b_pi(kmin:kmax) == undef) .OR. ANY(VertA_pi(imin:imax) == undef) .OR. ANY(VertB_pi(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		u_pi(i,k) = (u(i-1,k) + u(i,k))/2.
 		w_pi(i,k) = (w(i,k+1) + w(i,k))/2.
 		theta_pi(i,k) = (theta(i,k+1) + theta(i,k))/2.
@@ -109,8 +109,8 @@ IF (ANY(u(imin-1:imax,kmin-1:kmax) == undef)) STOP "u_w is WRONG!!!"
 IF (ANY(b(kmin:kmax) == undef) .OR. ANY(VertA_pi(imin:imax) == undef) .OR. ANY(VertB_w(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		pi_1_w(i,k) = (pi_1(i,k-1) + pi_1(i,k))/2.
 		u_w(i,k) = (u(i,k) + u(i-1,k) + u(i,k-1) + u(i-1,k-1))/4.
 
@@ -130,8 +130,8 @@ IF (ANY(theta_1(imin:imax+1,kmin:kmax) == undef)) STOP "theta_1_v is WRONG!!!"
 
 IF (ANY(b(kmin:kmax) == undef) .OR. ANY(VertA_u(imin:imax) == undef) .OR. ANY(VertB_v(imin:imax,kmin:kmax) == undef)) STOP "w_hat_u is WRONG!!!"
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		pi_1_v(i,k) = (pi_1(i,k) + pi_1(i + 1,k) + pi_1(i,k - 1) + pi_1(i + 1,k - 1))/4.
 		u_v(i,k) = (u(i,k - 1) + u(i,k))/2.
 		w_v(i,k) = (w(i,k) + w(i + 1,k))/2.

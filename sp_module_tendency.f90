@@ -65,18 +65,18 @@ CALL set_area_pi
 CALL set_area_expand(expand)
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		rhou_pi(i,k) = rho_0(i,k)*u_pi(i,k)
 	END DO
 END DO
-!OMP END PARALLEL
+!OMP END PARALLEL DO
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			fa(i,k) = u(i-1,k) + u(i,k)
 			fb(i,k) = u(i-2,k) + u(i+1,k)
 			fc(i,k) = u(i-3,k) + u(i+2,k)
@@ -98,8 +98,8 @@ CALL set_area_v
 CALL set_area_expand(expand)
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		rhow_v(i,k) = rho_0_v(i,k)*w_v(i,k)
 	END DO
 END DO
@@ -108,8 +108,8 @@ END DO
 SELECT CASE (AdvectionScheme)
 CASE (5)
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			fa(i,k) = u(i,k) + u(i,k-1)
 			fb(i,k) = u(i,k+1) + u(i,k-2)
 			fc(i,k) = u(i,k+2) + u(i,k-3)
@@ -129,8 +129,8 @@ END SELECT
 !-------------------------------------------------
 CALL set_area_u
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		PrhouPx_u(i,k) = (rhou_pi(i+1,k) - rhou_pi(i,k))/dx
 		PrhouuPx_u(i,k) = (rhouu_pi(i+1,k) - rhouu_pi(i,k))/dx
 		PrhowPz_u(i,k) = (rhow_v(i,k+1) - rhow_v(i,k))/dz
@@ -149,8 +149,8 @@ END DO
 
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			P2uPx2_u(i,k) = (u(i+1,k) + u(i-1,k) - 2*u(i,k))/dx/dx
 			P2uPz2_u(i,k) = (u(i,k+1) + u(i,k-1) - 2*u(i,k))/dz/dz
 			
@@ -193,8 +193,8 @@ CALL set_area_v
 CALL set_area_expand(expand)
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		rhou_v(i,k) = rho_0_v(i,k)*u_v(i,k)
 	END DO
 END DO
@@ -203,8 +203,8 @@ END DO
 SELECT CASE (AdvectionScheme)
 CASE (5)
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			fa(i,k) = w(i,k) + w(i+1,k)
 			fb(i,k) = w(i-1,k) + w(i+2,k)
 			fc(i,k) = w(i-2,k) + w(i+3,k)
@@ -226,8 +226,8 @@ CALL set_area_pi
 CALL set_area_expand(expand)
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		rhow_pi(i,k) = rho_0(i,k)*w_pi(i,k)
 	END DO
 END DO
@@ -236,8 +236,8 @@ END DO
 SELECT CASE (AdvectionScheme)
 CASE (5)
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			fa(i,k) = w(i,k) + w(i,k+1)
 			fb(i,k) = w(i,k-1) + w(i,k+2)
 			fc(i,k) = w(i,k-2) + w(i,k+3)
@@ -258,8 +258,8 @@ END SELECT
 !-------------------------------------------------
 CALL set_area_w
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		PrhouPx_w(i,k) = (rhou_v(i,k) - rhou_v(i-1,k))/dx
 		PrhouwPx_w(i,k) = (rhouw_v(i,k) - rhouw_v(i-1,k))/dx
 		PrhowPz_w(i,k) = (rhow_pi(i,k) - rhow_pi(i,k-1))/dz
@@ -278,8 +278,8 @@ END DO
 
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			P2wPx2_w(i,k) = (w(i+1,k) + w(i-1,k) - 2*w(i,k))/dx/dx
 			P2wPz2_w(i,k) = (w(i,k+1) + w(i,k-1) - 2*w(i,k))/dz/dz
 			
@@ -322,16 +322,16 @@ CALL set_area_expand(expand)
 SELECT CASE (AdvectionScheme)
 CASE (5)
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
-		fa(i,k) = theta(i,k) + theta(i+1,k)
-		fb(i,k) = theta(i-1,k) + theta(i+2,k)
-		fc(i,k) = theta(i-2,k) + theta(i+3,k)
-		rhoutheta_v(i,k) = rho_0_v(i,k)*u_v(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-		fd(i,k) = theta(i+1,k) - theta(i,k)
-		fe(i,k) = theta(i+2,k) - theta(i-1,k)
-		ff(i,k) = theta(i+3,k) - theta(i-2,k)
-		rhoutheta_v(i,k) = rhoutheta_v(i,k) - ABS(u_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
+	DO k = kmin, kmax
+		DO i = imin, imax
+			fa(i,k) = theta(i,k) + theta(i+1,k)
+			fb(i,k) = theta(i-1,k) + theta(i+2,k)
+			fc(i,k) = theta(i-2,k) + theta(i+3,k)
+			rhoutheta_v(i,k) = rho_0_v(i,k)*u_v(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			fd(i,k) = theta(i+1,k) - theta(i,k)
+			fe(i,k) = theta(i+2,k) - theta(i-1,k)
+			ff(i,k) = theta(i+3,k) - theta(i-2,k)
+			rhoutheta_v(i,k) = rhoutheta_v(i,k) - ABS(u_v(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
 	!OMP END PARALLEL DO
@@ -347,8 +347,8 @@ CALL set_area_expand(expand)
 SELECT CASE (AdvectionScheme)
 CASE (5)
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			fa(i,k) = theta(i,k+1) + theta(i,k)
 			fb(i,k) = theta(i,k+2) + theta(i,k-1)
 			fc(i,k) = theta(i,k+3) + theta(i,k-2)
@@ -369,8 +369,8 @@ END SELECT
 CALL set_area_w
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		PrhouthetaPx_w(i,k) = (rhoutheta_v(i,k) - rhoutheta_v(i-1,k))/dx
 		PrhowthetaPz_w(i,k) = (rhowtheta_pi(i,k) - rhowtheta_pi(i,k-1))/dz
 	END DO
@@ -378,8 +378,8 @@ END DO
 !OMP END PARALLEL DO
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		uPthetaPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k))
 		wPthetaPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
 	
@@ -391,8 +391,8 @@ END DO
 	
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP PARALLEL DO
-	DO i = imin, imax
-		DO k = kmin, kmax
+	DO k = kmin, kmax
+		DO i = imin, imax
 			P2thetaPx2_w(i,k) = (theta(i+1,k) + theta(i-1,k) - 2*theta(i,k))/dx/dx
 			P2thetaPz2_w(i,k) = (theta(i,k+1) + theta(i,k-1) - 2*theta(i,k))/dz/dz
 			
@@ -426,8 +426,8 @@ CALL set_area_u
 CALL set_area_expand(expand)
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		urhotheta_u(i,k) = u(i,k)*rho_0_u(i,k)*theta_0_u(i,k)
 	END DO
 END DO
@@ -437,8 +437,8 @@ CALL set_area_w
 CALL set_area_expand(expand)
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
 	END DO
 END DO
@@ -446,8 +446,8 @@ END DO
 
 CALL set_area_pi
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
 		PwrhothetaPz_pi(i,k) = (wrhotheta_w(i,k + 1) - wrhotheta_w(i,k))/dz
 		

@@ -76,8 +76,8 @@ CALL tendency_theta(old_u,old_w,rho_0,old_theta,F_theta,tend_theta)
 !-------------------------------------------------
 ! u-grid
 !OMP PARALLEL DO
-DO i = its + 1, ite -1
-	DO k = kts, kte
+DO k = kts, kte
+	DO i = its + 1, ite -1
 		new_u(i,k) = old_u(i,k) + DeltaT*tend_u(i,k)
 	END DO
 END DO
@@ -85,8 +85,8 @@ END DO
 
 ! w-grid
 !OMP PARALLEL DO
-DO i = its + 1, ite
-	DO k = kts + 1, kte
+DO k = kts + 1, kte
+	DO i = its + 1, ite
 		new_w(i,k) = old_w(i,k) + DeltaT*tend_w(i,k)
 		new_theta(i,k) = old_theta(i,k) + DeltaT*tend_theta(i,k)
 		new_theta_1(i,k) = new_theta(i,k) - theta_0(i,k)
@@ -100,8 +100,8 @@ CALL update_boundary(new_u,new_w)
 CALL tendency_pi(new_u,new_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 ! pi-grid
 !OMP PARALLEL DO
-DO i = its + 1, ite
-	DO k = kts, kte
+DO k = kts, kte
+	DO i = its + 1, ite
 		new_pi_1(i,k) = old_pi_1(i,k) + DeltaT*tend_pi(i,k)
 	END DO
 END DO
@@ -179,8 +179,8 @@ CALL tendency_theta(old_u,old_w,rho_0,old_theta,F_theta,tend_theta)
 ! u-grid (its + 1:ite - 1, kts:kte)
 CALL set_area_u
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		mid1_u(i,k) = old_u(i,k) + DeltaT/3.*tend_u(i,k)
 	END DO
 END DO
@@ -190,8 +190,8 @@ END DO
 CALL set_area_w
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		mid1_w(i,k) = old_w(i,k) + DeltaT/3.*tend_w(i,k)
 		mid1_theta(i,k) = old_theta(i,k) + DeltaT/3.*tend_theta(i,k)
 		mid1_theta_1(i,k) = mid1_theta(i,k) - theta_0(i,k)
@@ -207,8 +207,8 @@ CALL tendency_pi(mid1_u,mid1_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 CALL set_area_pi
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		mid1_pi_1(i,k) = old_pi_1(i,k) + DeltaT/3.*tend_pi(i,k)
 	END DO
 END DO
@@ -246,8 +246,8 @@ CALL tendency_theta(mid1_u,mid1_w,rho_0,mid1_theta,F_theta,tend_theta)
 CALL set_area_u
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		mid2_u(i,k) = old_u(i,k) + DeltaT/2.*tend_u(i,k)
 	END DO
 END DO
@@ -257,8 +257,8 @@ END DO
 CALL set_area_w
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		mid2_w(i,k) = old_w(i,k) + DeltaT/2.*tend_w(i,k)
 		mid2_theta(i,k) = old_theta(i,k) + DeltaT/2.*tend_theta(i,k)
 		mid2_theta_1(i,k) = mid1_theta(i,k) - theta_0(i,k)
@@ -274,8 +274,8 @@ CALL tendency_pi(mid2_u,mid2_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 CALL set_area_pi
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		mid2_pi_1(i,k) = old_pi_1(i,k) + DeltaT/2.*tend_pi(i,k)
 	END DO
 END DO
@@ -313,8 +313,8 @@ CALL tendency_theta(mid2_u,mid2_w,rho_0,mid2_theta,F_theta,tend_theta)
 CALL set_area_u
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		new_u(i,k) = old_u(i,k) + DeltaT*tend_u(i,k)
 	END DO
 END DO
@@ -324,8 +324,8 @@ END DO
 CALL set_area_w
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		new_w(i,k) = old_w(i,k) + DeltaT*tend_w(i,k)
 		new_theta(i,k) = old_theta(i,k) + DeltaT*tend_theta(i,k)
 		new_theta_1(i,k) = mid1_theta(i,k) - theta_0(i,k)
@@ -341,8 +341,8 @@ CALL tendency_pi(new_u,new_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 CALL set_area_pi
 
 !OMP PARALLEL DO
-DO i = imin, imax
-	DO k = kmin, kmax
+DO k = kmin, kmax
+	DO i = imin, imax
 		new_pi_1(i,k) = old_pi_1(i,k) + DeltaT*tend_pi(i,k)
 	END DO
 END DO
