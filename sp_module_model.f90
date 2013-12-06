@@ -17,7 +17,7 @@ IMPLICIT NONE
 !-------------------------------------------------
 INTEGER, PARAMETER :: TimeScheme = 2       ! 1. Forward-backward; 2. Runge-Kutta;
 INTEGER, PARAMETER :: AdvectionScheme = 5  ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order;
-INTEGER, PARAMETER :: LateralBoundary = 1  ! 1. No-flux; 2. Periodic; 3. Open;
+INTEGER, PARAMETER :: LateralBoundary = 2  ! 1. No-flux; 2. Periodic; 3. Open;
 INTEGER, PARAMETER :: UpperBoundary = 1    ! 1. No-flux;
 INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 

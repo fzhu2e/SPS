@@ -354,7 +354,7 @@ CASE (5)
 			fd(i,k) = theta(i,k+1) - theta(i,k)
 			fe(i,k) = theta(i,k+2) - theta(i,k-1)
 			ff(i,k) = theta(i,k+3) - theta(i,k-2)
-			rhowtheta_pi(i,k) = rhowtheta_pi(i,k) - ABS(w_hat_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
+			rhowtheta_pi(i,k) = rhowtheta_pi(i,k) - ABS(w_pi(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
 	!OMP END PARALLEL DO
