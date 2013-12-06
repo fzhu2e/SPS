@@ -1,4 +1,5 @@
 #!/bin/bash
+./makemake.perl sp_dynamic
 make clean; make
 ulimit -s unlimited
 #OMP_NUM_THREADS=1

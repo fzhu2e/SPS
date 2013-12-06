@@ -200,6 +200,7 @@ END DO
 !OMP END PARALLEL DO
 
 CALL update_boundary(mid1_u,mid1_w)
+CALL basic_interpolate(mid1_u,mid1_w,old_pi_1,old_theta,old_theta_1) !!!
 
 CALL tendency_pi(mid1_u,mid1_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 
@@ -267,6 +268,7 @@ END DO
 !OMP END PARALLEL DO
 
 CALL update_boundary(mid2_u,mid2_w)
+CALL basic_interpolate(mid2_u,mid2_w,mid1_pi_1,mid1_theta,mid1_theta_1)  !!!
 
 CALL tendency_pi(mid2_u,mid2_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 
@@ -334,6 +336,7 @@ END DO
 !OMP END PARALLEL DO
 
 CALL update_boundary(new_u,new_w)
+CALL basic_interpolate(new_u,new_w,mid2_pi_1,mid2_theta,mid2_theta_1)  !!!
 
 CALL tendency_pi(new_u,new_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 
