@@ -20,7 +20,7 @@ CONTAINS
 !=================================================
 SUBROUTINE debug_ascii_output(var)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var
 INTEGER :: i, k
 !=================================================
 OPEN(1, FILE = 'debug/debug_field.txt')
@@ -45,7 +45,7 @@ SUBROUTINE debug_undef_all( var00,var01,var02,var03,var04,var05,var06,var07,var0
                             var40,var41,var42,var43,var44,var45,var46,var47,var48,var49   )
 IMPLICIT NONE
 !=================================================
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: &
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: &
       var00,var01,var02,var03,var04,var05,var06,var07,var08,var09,  &
       var10,var11,var12,var13,var14,var15,var16,var17,var18,var19,  &
       var20,var21,var22,var23,var24,var25,var26,var27,var28,var29,  &
@@ -111,7 +111,7 @@ END SUBROUTINE debug_undef_all
 !=================================================
 SUBROUTINE debug_test_boundary(var)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var
 INTEGER :: i, k
 INTEGER :: i_left, i_right
 INTEGER :: k_bot, k_top

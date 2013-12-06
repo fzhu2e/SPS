@@ -15,27 +15,27 @@ USE sp_module_debug
 IMPLICIT NONE
 !=================================================
 ! Tendency term
-REAL(preci), DIMENSION(ims:ime,kms:kme) ::    F_u,    F_w,    F_theta,    F_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: tend_u, tend_w, tend_theta, tend_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) ::    F_u,    F_w,    F_theta,    F_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_u, tend_w, tend_theta, tend_pi
 !-------------------------------------------------
 ! Diffusion term
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u, P2uPz2_u
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w, P2wPz2_w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w, P2thetaPz2_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u, P2uPz2_u
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w, P2wPz2_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w, P2thetaPz2_w
 !-------------------------------------------------
 ! Conponents
 !----------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: rhou_pi, rhouu_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: rhow_v , rhowu_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: rhou_v , rhouw_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: rhow_pi, rhoww_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: rhoutheta_v, rhowtheta_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: urhotheta_u, wrhotheta_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_pi, rhouu_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_v , rhowu_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_v , rhouw_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_pi, rhoww_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhoutheta_v, rhowtheta_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u, wrhotheta_w
 !----------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: PrhouthetaPx_w, PrhowthetaPz_w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi, PwrhothetaPz_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouthetaPx_w, PrhowthetaPz_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi, PwrhothetaPz_pi
 !-------------------------------------------------
 INTEGER, PARAMETER :: expand = 1
 !=================================================
@@ -44,14 +44,14 @@ CONTAINS
 SUBROUTINE tendency_u(u,rho_0,pi_1,F_u,tend_u)
 IMPLICIT NONE
 !=================================================
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: uPuPx_u, wPuPz_u
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPuPx_u, wPuPz_u
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -170,16 +170,16 @@ END SUBROUTINE tendency_u
 SUBROUTINE tendency_w(w,rho_0,theta_1,theta_0,pi_1,F_w,tend_w)
 IMPLICIT NONE
 !=================================================
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_w
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: uPwPx_w, wPwPz_w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPwPx_w, wPwPz_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -298,15 +298,15 @@ END SUBROUTINE tendency_w
 SUBROUTINE tendency_theta(u,w,rho_0,theta,F_theta,tend_theta)
 IMPLICIT NONE
 !=================================================
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: uPthetaPx_w, wPthetaPz_w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPthetaPx_w, wPthetaPz_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -411,13 +411,13 @@ END SUBROUTINE tendency_theta
 SUBROUTINE tendency_pi(u,w,pi_0,rho_0,theta_0,F_pi,tend_pi)
 IMPLICIT NONE
 !=================================================
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi
 INTEGER :: i, k
 !=================================================
 ! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)

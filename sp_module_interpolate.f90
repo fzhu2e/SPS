@@ -15,14 +15,14 @@ IMPLICIT NONE
 !=================================================
 ! Basic interpolated variations in Arakawa-C and Charney-Phillips grids.
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: u_pi, u_w, u_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: w_pi, w_u, w_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: w_hat, w_hat_pi, w_hat_u, w_hat_v ! Calculated, not interpolated.
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_1_u, pi_1_w, pi_1_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0_pi, theta_0_u, theta_0_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi, theta_1_u, theta_1_v
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: rho_0_u, rho_0_w, rho_0_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_pi, u_w, u_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: w_pi, w_u, w_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: w_hat, w_hat_pi, w_hat_u, w_hat_v ! Calculated, not interpolated.
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1_u, pi_1_w, pi_1_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0_pi, theta_0_u, theta_0_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi, theta_1_u, theta_1_v
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0_u, rho_0_w, rho_0_v
 !=================================================
 CONTAINS
 !=================================================
@@ -33,11 +33,11 @@ CONTAINS
 SUBROUTINE basic_interpolate(u,w,pi_1,theta,theta_1)
 IMPLICIT NONE
 !=================================================
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
 !-------------------------------------------------
 INTEGER :: i, k
 INTEGER, PARAMETER :: expand = 1

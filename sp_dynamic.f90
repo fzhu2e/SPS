@@ -17,19 +17,19 @@ USE sp_module_output
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: v        ! wind speed along y-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_0 
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_0  ! theta = theta_0 + theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: v        ! wind speed along y-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_0 
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0  ! theta = theta_0 + theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0    ! density
 !-------------------------------------------------
 INTEGER :: i, k
 INTEGER :: t_start, t_end, rate
-REAL(preci) :: t_lapse, t_left, t_all
+REAL(kd) :: t_lapse, t_left, t_all
 !=================================================
 ! Initial an ideal case.
 !-------------------------------------------------

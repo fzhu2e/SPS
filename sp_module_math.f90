@@ -20,8 +20,8 @@ CONTAINS
 SUBROUTINE TDMatrix(a,b,c,d,x,x_start,x_end,z_start,z_end)
 IMPLICIT NONE
 INTEGER, INTENT(IN) :: x_start, x_end, z_start, z_end
-REAL(preci), DIMENSION(x_start:x_end,z_start:z_end), INTENT(INOUT) :: a, b, c, d
-REAL(preci), DIMENSION(x_start:x_end,z_start:z_end), INTENT(INOUT) :: x
+REAL(kd), DIMENSION(x_start:x_end,z_start:z_end), INTENT(INOUT) :: a, b, c, d
+REAL(kd), DIMENSION(x_start:x_end,z_start:z_end), INTENT(INOUT) :: x
 !-------------------------------------------------
 !REAL, DIMENSION(x_start:x_end,z_start:z_end) :: temp
 REAL, DIMENSION(x_start:x_end,z_start+1:z_end) :: m

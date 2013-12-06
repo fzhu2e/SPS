@@ -13,17 +13,13 @@ OBJS =	sp_dynamic.o sp_module_boundary.o sp_module_constant.o \
 LIBS =	
 
 F90 = ifort
-#F90FLAGS = -O0 -g -w -DDEBUG
-#F90FLAGS = -O3 -w 
-F90FLAGS = -O3 -w -fp-model precise
-LDFLAGS =
-CONFIG =
-CONFIG = -openmp
+F90FLAGS = -O3 -w -fp-model kdse
+LDFLAGS = -openmp
 
 all: $(PROG)
 
 $(PROG): $(OBJS)
-	$(F90) $(LDFLAGS) $(CONFIG) -o $@ $(OBJS) $(LIBS)
+	$(F90) $(LDFLAGS) -o $@ $(OBJS) $(LIBS)
 
 clean:
 	rm -f $(PROG) $(OBJS) *.mod
@@ -31,12 +27,13 @@ clean:
 .SUFFIXES: $(SUFFIXES) .f90
 
 .f90.o:
-	$(F90) $(F90FLAGS) $(CONFIG) -c $<
+	$(F90) $(F90FLAGS) -c $<
 
 sp_dynamic.o: sp_module_boundary.o sp_module_constant.o sp_module_debug.o \
 	sp_module_initiate.o sp_module_integrate.o sp_module_model.o \
 	sp_module_output.o
-sp_module_boundary.o: sp_module_constant.o sp_module_model.o sp_module_debug.o
+sp_module_boundary.o: sp_module_constant.o sp_module_debug.o \
+	sp_module_model.o
 sp_module_debug.o: sp_module_constant.o sp_module_model.o
 sp_module_initiate.o: sp_module_constant.o sp_module_debug.o \
 	sp_module_interpolate.o sp_module_model.o

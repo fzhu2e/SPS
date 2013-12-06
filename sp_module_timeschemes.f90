@@ -31,21 +31,21 @@ SUBROUTINE forward_backward( DeltaT,v,theta_0,pi_0,rho_0,                &
                              new_u,new_w,new_pi_1,new_theta,new_theta_1  )
 IMPLICIT NONE
 !=================================================
-REAL(preci), INTENT(IN) :: DeltaT
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: v            ! wind speed along y-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0      ! theta = theta_0 + theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0        ! density
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta_1
+REAL(kd), INTENT(IN) :: DeltaT
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: v            ! wind speed along y-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0      ! theta = theta_0 + theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0        ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta_1
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -122,32 +122,32 @@ SUBROUTINE runge_kutta( DeltaT,v,theta_0,pi_0,rho_0,                   &
                         new_u,new_w,new_pi_1,new_theta,new_theta_1     )
 IMPLICIT NONE
 !=================================================
-REAL(preci), INTENT(IN) :: DeltaT
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: v
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta_1
+REAL(kd), INTENT(IN) :: DeltaT
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: v
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta_1
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid1_u
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid1_w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid1_pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid1_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid1_theta_1
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_u
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: mid2_theta_1
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_u
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_theta_1
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_u
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_theta_1
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================

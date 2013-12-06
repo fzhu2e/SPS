@@ -21,19 +21,19 @@ SUBROUTINE update_boundary(u,w,pi_1,theta,theta_1,                 &
                            rho_0,rho_0_w,rho_0_u,rho_0_v           )
 IMPLICIT NONE
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0  ! theta0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_v
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0  ! rho0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_u
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_w
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_v
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0  ! theta0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_v
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0  ! rho0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_v
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -341,7 +341,7 @@ END SUBROUTINE update_boundary
 !=================================================
 SUBROUTINE no_flux_scalar_bottom_w(scalar)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
 CALL set_area_w
 scalar(:,kms:kmin-1) = scalar(:,2*kmin-kms:kmin+1:-1)
@@ -351,7 +351,7 @@ END SUBROUTINE no_flux_scalar_bottom_w
 !=================================================
 SUBROUTINE no_flux_scalar_bottom_pi(scalar)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
 CALL set_area_pi
 scalar(:,kms:kmin-1) = scalar(:,2*kmin-kms-1:kmin:-1)
@@ -363,7 +363,7 @@ END SUBROUTINE no_flux_scalar_bottom_pi
 !=================================================
 SUBROUTINE no_flux_scalar_top_w(scalar)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
 CALL set_area_w
 scalar(:,kme:kmax+1:-1) = scalar(:,2*kmax-kme:kmax-1)
@@ -373,7 +373,7 @@ END SUBROUTINE no_flux_scalar_top_w
 !=================================================
 SUBROUTINE no_flux_scalar_top_pi(scalar)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
 CALL set_area_pi
 scalar(:,kme:kmax+1:-1) = scalar(:,2*kmax-kme+1:kmax)
@@ -385,7 +385,7 @@ END SUBROUTINE no_flux_scalar_top_pi
 !=================================================
 SUBROUTINE no_flux_vector_top_w(vector)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
 CALL set_area_w
 vector(:,kme:kmax+1:-1) = vector(:,2*kmax-kme:kmax-1)
@@ -399,7 +399,7 @@ END SUBROUTINE no_flux_vector_top_w
 !=================================================
 SUBROUTINE no_flux_vector_bottom_w(vector)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
 CALL set_area_w
 vector(:,kms:kmin-1) = - vector(:,2*kmin-kms:kmin+1:-1)
@@ -412,7 +412,7 @@ END SUBROUTINE no_flux_vector_bottom_w
 !=================================================
 SUBROUTINE no_flux_scalar_lateral_pi(scalar)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
 CALL set_area_pi
 scalar(ims:imin-1,:) = scalar(2*imin-ims-1:imin:-1,:)
@@ -423,7 +423,7 @@ END SUBROUTINE no_flux_scalar_lateral_pi
 !=================================================
 SUBROUTINE no_flux_scalar_lateral_u(scalar)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: scalar
 !-------------------------------------------------
 CALL set_area_u
 scalar(ims:imin-1,:) = scalar(2*imin-ims:imin+1:-1,:)
@@ -436,7 +436,7 @@ END SUBROUTINE no_flux_scalar_lateral_u
 !=================================================
 SUBROUTINE no_flux_vector_lateral_u(vector)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
 CALL set_area_u
 vector(ims:imin-1,:) = - vector(2*imin-ims:imin+1:-1,:)
@@ -451,7 +451,7 @@ END SUBROUTINE no_flux_vector_lateral_u
 !=================================================
 SUBROUTINE periodic_lateral_pi(var)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
 !-------------------------------------------------
 CALL set_area_pi
 var(ims:imin-1,:) = var(imax-(imin-1-ims):imax,:)
@@ -462,7 +462,7 @@ END SUBROUTINE periodic_lateral_pi
 !=================================================
 SUBROUTINE periodic_lateral_u(var)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
 !-------------------------------------------------
 CALL set_area_u
 var(ims:imin-1,:) = var(imax-(imin-1-ims):imax,:)
@@ -475,7 +475,7 @@ END SUBROUTINE periodic_lateral_u
 !=================================================
 SUBROUTINE open_lateral_pi(var)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
 INTEGER :: i
 !-------------------------------------------------
 CALL set_area_pi
@@ -491,7 +491,7 @@ END SUBROUTINE open_lateral_pi
 !=================================================
 SUBROUTINE open_lateral_u(var)
 IMPLICIT NONE
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
 INTEGER :: i
 !-------------------------------------------------
 CALL set_area_u

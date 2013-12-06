@@ -21,22 +21,22 @@ SUBROUTINE integrate(step,u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 IMPLICIT NONE
 !=================================================
 INTEGER, INTENT(IN):: step
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0  ! theta = theta_0 + theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0     ! pi_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0  ! theta = theta_0 + theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0     ! pi_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
 
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: ud_u                    ! updated u
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: ud_w                    ! updated w
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: ud_pi_1                 ! updated ud_pi_1
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: ud_theta                ! updated ud_theta
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: ud_theta_1              ! updated ud_theta_1
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: ud_u                    ! updated u
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: ud_w                    ! updated w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: ud_pi_1                 ! updated ud_pi_1
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: ud_theta                ! updated ud_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: ud_theta_1              ! updated ud_theta_1
 !=================================================
 SELECT CASE (TimeScheme)
 CASE (1)

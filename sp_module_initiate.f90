@@ -21,26 +21,26 @@ CONTAINS
 SUBROUTINE initiate_dc(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 IMPLICIT NONE
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
 !-------------------------------------------------
-REAL(preci), PARAMETER :: x_c = 25.55*1000.  ! (m)
-REAL(preci), PARAMETER :: z_c = 3.0*1000.     ! (m)
-REAL(preci), PARAMETER :: r_x = 4*1000.  ! (m)
-REAL(preci), PARAMETER :: r_z = 2*1000.  ! (m)
+REAL(kd), PARAMETER :: x_c = 25.55*1000.  ! (m)
+REAL(kd), PARAMETER :: z_c = 3.0*1000.     ! (m)
+REAL(kd), PARAMETER :: r_x = 4*1000.  ! (m)
+REAL(kd), PARAMETER :: r_z = 2*1000.  ! (m)
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
-REAL(preci) :: L
+REAL(kd) :: L
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -107,25 +107,25 @@ END SUBROUTINE initiate_dc
 SUBROUTINE initiate_tb(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 IMPLICIT NONE
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
 !-------------------------------------------------
-REAL(preci), PARAMETER :: x_c = 10.0*1000. ! (m)
-REAL(preci), PARAMETER :: z_c = 2.0*1000.  ! (m)
-REAL(preci), PARAMETER :: R = 2.0*1000.    ! (m)
+REAL(kd), PARAMETER :: x_c = 10.0*1000. ! (m)
+REAL(kd), PARAMETER :: z_c = 2.0*1000.  ! (m)
+REAL(kd), PARAMETER :: R = 2.0*1000.    ! (m)
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
-REAL(preci) :: L
+REAL(kd) :: L
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -184,25 +184,25 @@ END SUBROUTINE initiate_tb
 SUBROUTINE initiate_igw(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 IMPLICIT NONE
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
 !-------------------------------------------------
-REAL(preci), PARAMETER :: x_c = 100.0*1000. ! (m)
-REAL(preci), PARAMETER :: H = 10.0*1000.    ! (m)
-REAL(preci), PARAMETER :: a = 5.0*1000.     ! (m)
+REAL(kd), PARAMETER :: x_c = 100.0*1000. ! (m)
+REAL(kd), PARAMETER :: H = 10.0*1000.    ! (m)
+REAL(kd), PARAMETER :: a = 5.0*1000.     ! (m)
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
-REAL(preci) :: L
+REAL(kd) :: L
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -262,28 +262,28 @@ END SUBROUTINE initiate_igw
 SUBROUTINE initiate_Sm(u,v,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 IMPLICIT NONE
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: v        ! wind speed along y-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
 !-------------------------------------------------
-REAL(preci), PARAMETER :: h0 = 250.0            ! (m)
-!REAL(preci), PARAMETER :: h0 = 50.0            ! (m)
-REAL(preci), PARAMETER :: a0 = 5.0*1000.        ! (m)
-REAL(preci), PARAMETER :: x_c = 25.0*1000.        ! (m)
-REAL(preci), PARAMETER :: lambda0 = 4.0*1000.   ! (m)
-REAL(preci), PARAMETER :: N0 = 0.01             ! (s-1)
+REAL(kd), PARAMETER :: h0 = 250.0            ! (m)
+!REAL(kd), PARAMETER :: h0 = 50.0            ! (m)
+REAL(kd), PARAMETER :: a0 = 5.0*1000.        ! (m)
+REAL(kd), PARAMETER :: x_c = 25.0*1000.        ! (m)
+REAL(kd), PARAMETER :: lambda0 = 4.0*1000.   ! (m)
+REAL(kd), PARAMETER :: N0 = 0.01             ! (s-1)
 
-REAL(preci), PARAMETER :: Ts = 280.             ! (K)
+REAL(kd), PARAMETER :: Ts = 280.             ! (K)
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: theta_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
 !-------------------------------------------------
 INTEGER :: i, k 
 !=================================================
@@ -400,14 +400,14 @@ END SUBROUTINE initiate_grid
 SUBROUTINE initiate_basic_state(theta_0,pi_0,rho_0)
 IMPLICIT NONE
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0
 !-------------------------------------------------
-REAL(preci), PARAMETER :: Ts = 300.         ! (K)
-REAL(preci), PARAMETER :: N0 = 0.01         ! (s-1)
+REAL(kd), PARAMETER :: Ts = 300.         ! (K)
+REAL(kd), PARAMETER :: N0 = 0.01         ! (s-1)
 !-------------------------------------------------
-REAL(preci), DIMENSION(ims:ime,kms:kme) :: pi_0_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_0_w
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -496,7 +496,7 @@ END SUBROUTINE initiate_basic_state
 !=================================================
 SUBROUTINE initiate_vertcoords
 IMPLICIT NONE
-REAL(preci), PARAMETER :: sh = 3.0*1000.        ! (m)
+REAL(kd), PARAMETER :: sh = 3.0*1000.        ! (m)
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================

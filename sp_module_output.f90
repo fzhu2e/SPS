@@ -20,11 +20,11 @@ SUBROUTINE output(flag,u,w,theta_1,pi_1,theta)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: u        ! wind speed along x-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: w        ! wind speed along z-axis
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta_1  ! theta'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: pi_1     ! pi'
-REAL(preci), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta     ! pi'
 !=================================================
 SELECT CASE(flag)
 CASE (0)

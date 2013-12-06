@@ -5,7 +5,7 @@ Introduction
 -------------------------------------------------
  Hello, world! This is the baby version of SPS  : )
 
- Some ideal experiments are conducted in this version. If you are interested in developing this system, just fork me and/or send me an email. And suggestions are much appreciated.
+ Some ideal experiments are conducted in this version. If you are interested in developing this system, just fork me and/or send me an email. And suggestions are much apkdated.
  
  "Hack the nature!" ~
 
