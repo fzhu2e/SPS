@@ -15,7 +15,7 @@ OBJS =	sp_dynamic.o sp_module_boundary.o sp_module_constant.o \
 LIBS =	
 
 F90 = ifort
-F90FLAGS = -O3 -w -fp-model kdse
+F90FLAGS = -O3 -w -fp-model preci
 LDFLAGS = -openmp
 
 all: $(PROG)

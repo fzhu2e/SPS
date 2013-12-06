@@ -73,8 +73,8 @@ CASE DEFAULT
 END SELECT
 
 CALL update_boundary(u,w,pi_1,theta,theta_1,                  &
-                     theta_0,theta_0_pi,theta_0_u,theta_0_v,  &
-                     rho_0,rho_0_w,rho_0_u,rho_0_v            )
+                     theta_0,theta_0_pi,theta_0_u,theta_0_vir,  &
+                     rho_0,rho_0_w,rho_0_u,rho_0_vir            )
 
 !CALL debug_ascii_output(u)
 

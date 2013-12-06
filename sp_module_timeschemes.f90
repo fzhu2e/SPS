@@ -59,10 +59,10 @@ CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
                          P2wPx2_w,    P2wPz2_w,   &
                      P2thetaPx2_w,P2thetaPz2_w    )
 CALL debug_undef_all( rhou_pi, rhouu_pi,          &
-                      rhow_v , rhowu_v,           &
-                      rhou_v , rhouw_v,           &
+                      rhow_vir , rhowu_vir,           &
+                      rhou_vir , rhouw_vir,           &
                       rhow_pi, rhoww_pi,          &
-                      rhoutheta_v, rhowtheta_pi,  &
+                      rhoutheta_vir, rhowtheta_pi,  &
                       urhotheta_u, wrhotheta_w    )
 CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
                      PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
@@ -163,10 +163,10 @@ CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
                          P2wPx2_w,    P2wPz2_w,   &
                      P2thetaPx2_w,P2thetaPz2_w    )
 CALL debug_undef_all( rhou_pi, rhouu_pi,          &
-                      rhow_v , rhowu_v,           &
-                      rhou_v , rhouw_v,           &
+                      rhow_vir , rhowu_vir,           &
+                      rhou_vir , rhouw_vir,           &
                       rhow_pi, rhoww_pi,          &
-                      rhoutheta_v, rhowtheta_pi,  &
+                      rhoutheta_vir, rhowtheta_pi,  &
                       urhotheta_u, wrhotheta_w    )
 CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
                      PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
@@ -230,10 +230,10 @@ CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
                          P2wPx2_w,    P2wPz2_w,   &
                      P2thetaPx2_w,P2thetaPz2_w    )
 CALL debug_undef_all( rhou_pi, rhouu_pi,          &
-                      rhow_v , rhowu_v,           &
-                      rhou_v , rhouw_v,           &
+                      rhow_vir , rhowu_vir,           &
+                      rhou_vir , rhouw_vir,           &
                       rhow_pi, rhoww_pi,          &
-                      rhoutheta_v, rhowtheta_pi,  &
+                      rhoutheta_vir, rhowtheta_pi,  &
                       urhotheta_u, wrhotheta_w    )
 CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
                      PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
@@ -298,10 +298,10 @@ CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
                          P2wPx2_w,    P2wPz2_w,   &
                      P2thetaPx2_w,P2thetaPz2_w    )
 CALL debug_undef_all( rhou_pi, rhouu_pi,          &
-                      rhow_v , rhowu_v,           &
-                      rhou_v , rhouw_v,           &
+                      rhow_vir , rhowu_vir,           &
+                      rhou_vir , rhouw_vir,           &
                       rhow_pi, rhoww_pi,          &
-                      rhoutheta_v, rhowtheta_pi,  &
+                      rhoutheta_vir, rhowtheta_pi,  &
                       urhotheta_u, wrhotheta_w    )
 CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
                      PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &

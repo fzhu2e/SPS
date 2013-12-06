@@ -17,8 +17,8 @@ CONTAINS
 ! Initiate.
 !=================================================
 SUBROUTINE update_boundary(u,w,pi_1,theta,theta_1,                 &
-                           theta_0,theta_0_pi,theta_0_u,theta_0_v, &
-                           rho_0,rho_0_w,rho_0_u,rho_0_v           )
+                           theta_0,theta_0_pi,theta_0_u,theta_0_vir, &
+                           rho_0,rho_0_w,rho_0_u,rho_0_vir           )
 IMPLICIT NONE
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind speed along x-axis
@@ -29,11 +29,11 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_1  ! thet
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0  ! theta0
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_v
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_0_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0  ! rho0
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_v
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_vir
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -41,7 +41,7 @@ INTEGER :: i, k
 IF (PRESENT(u)) THEN
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		CALL no_flux_vector_lateral_u(u)
+		CALL no_flux_virector_lateral_u(u)
 	CASE (2)
 		CALL periodic_lateral_u(u)
 	CASE (3)
@@ -74,11 +74,11 @@ IF (PRESENT(w)) THEN
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	CALL no_flux_vector_bottom_w(w)
+	CALL no_flux_virector_bottom_w(w)
 
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		CALL no_flux_vector_top_w(w)
+		CALL no_flux_virector_top_w(w)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -156,22 +156,22 @@ IF (PRESENT(theta_0)) THEN
 	
 END IF
 
-IF (PRESENT(theta_0_v)) THEN
+IF (PRESENT(theta_0_vir)) THEN
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		CALL no_flux_scalar_lateral_u(theta_0_v)
+		CALL no_flux_scalar_lateral_u(theta_0_vir)
 	CASE (2)
-		CALL periodic_lateral_u(theta_0_v)
+		CALL periodic_lateral_u(theta_0_vir)
 	CASE (3)
-		CALL open_lateral_u(theta_0_v)
+		CALL open_lateral_u(theta_0_vir)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 
-	CALL no_flux_scalar_bottom_w(theta_0_v)
+	CALL no_flux_scalar_bottom_w(theta_0_vir)
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		CALL no_flux_scalar_top_w(theta_0_v)
+		CALL no_flux_scalar_top_w(theta_0_vir)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -240,22 +240,22 @@ IF (PRESENT(rho_0_w)) THEN
 	END SELECT
 END IF
 
-IF (PRESENT(rho_0_v)) THEN
+IF (PRESENT(rho_0_vir)) THEN
 	SELECT CASE (LateralBoundary)
 	CASE (1)
-		CALL no_flux_scalar_lateral_u(rho_0_v)
+		CALL no_flux_scalar_lateral_u(rho_0_vir)
 	CASE (2)
-		CALL periodic_lateral_u(rho_0_v)
+		CALL periodic_lateral_u(rho_0_vir)
 	CASE (3)
-		CALL open_lateral_u(rho_0_v)
+		CALL open_lateral_u(rho_0_vir)
 	CASE DEFAULT
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 
-	CALL no_flux_scalar_bottom_w(rho_0_v)
+	CALL no_flux_scalar_bottom_w(rho_0_vir)
 	SELECT CASE (UpperBoundary)
 	CASE (1)
-		CALL no_flux_scalar_top_w(rho_0_v)
+		CALL no_flux_scalar_top_w(rho_0_vir)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -383,7 +383,7 @@ END SUBROUTINE no_flux_scalar_top_pi
 !=================================================
 ! No Flux - Vector - Top [w]
 !=================================================
-SUBROUTINE no_flux_vector_top_w(vector)
+SUBROUTINE no_flux_virector_top_w(vector)
 IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
@@ -391,20 +391,20 @@ CALL set_area_w
 vector(:,kme:kmax+1:-1) = vector(:,2*kmax-kme:kmax-1)
 vector(:,kmin) = 0
 vector(:,kmax) = 0
-END SUBROUTINE no_flux_vector_top_w
+END SUBROUTINE no_flux_virector_top_w
 !=================================================
 
 !=================================================
 ! No Flux - Vector - Bottom [w]
 !=================================================
-SUBROUTINE no_flux_vector_bottom_w(vector)
+SUBROUTINE no_flux_virector_bottom_w(vector)
 IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
 CALL set_area_w
 vector(:,kms:kmin-1) = - vector(:,2*kmin-kms:kmin+1:-1)
 vector(:,kmin) = 0.
-END SUBROUTINE no_flux_vector_bottom_w
+END SUBROUTINE no_flux_virector_bottom_w
 !=================================================
 
 !=================================================
@@ -434,7 +434,7 @@ END SUBROUTINE no_flux_scalar_lateral_u
 !=================================================
 ! No Flux - Vector - Lateral [u]
 !=================================================
-SUBROUTINE no_flux_vector_lateral_u(vector)
+SUBROUTINE no_flux_virector_lateral_u(vector)
 IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
@@ -443,7 +443,7 @@ vector(ims:imin-1,:) = - vector(2*imin-ims:imin+1:-1,:)
 vector(imax+1:ime,:) = - vector(imax-1:2*imax-ime:-1,:)
 vector(imin,:) = 0.
 vector(imax,:) = 0.
-END SUBROUTINE no_flux_vector_lateral_u
+END SUBROUTINE no_flux_virector_lateral_u
 !=================================================
 
 !=================================================

@@ -17,7 +17,7 @@ IMPLICIT NONE
 !-------------------------------------------------
 INTEGER, PARAMETER :: TimeScheme = 2       ! 1. Forward-backward; 2. Runge-Kutta;
 INTEGER, PARAMETER :: AdvectionScheme = 5  ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order;
-INTEGER, PARAMETER :: LateralBoundary = 2  ! 1. No-flux; 2. Periodic; 3. Open;
+INTEGER, PARAMETER :: LateralBoundary = 1  ! 1. No-flux; 2. Periodic; 3. Open;
 INTEGER, PARAMETER :: UpperBoundary = 1    ! 1. No-flux;
 INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 
@@ -52,15 +52,15 @@ INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 ! 2. Thermal bubble.
 !-------------------------------------------------
 !INTEGER, PARAMETER :: RunCase = 2         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-!REAL(kd), PARAMETER :: dx = 100.                        ! delta x (m)
-!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!!REAL(kd), PARAMETER :: dx = 100.                        ! delta x (m)
+!!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
 
-!!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
-!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!!REAL(kd), PARAMETER :: dx = 50.                        ! delta x (m)
-!!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 50.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
 
 !REAL(kd), PARAMETER :: dt = 0.1                               ! delta t (s)
 !INTEGER :: nstep = 10000
@@ -134,31 +134,31 @@ INTEGER, PARAMETER :: kme = kte + halo
 !-------------------------------------------------
 ! Vertical coordinates
 
-REAL(kd), PARAMETER :: ztop = nz*dz                         ! (m)
-REAL(kd), DIMENSION(ims:ime) :: zs = 0.                     ! (m) on u-grid
-REAL(kd), DIMENSION(ims:ime) :: zs_pi = 0.                  ! (m) on pi-grid
-REAL(kd), DIMENSION(ims:ime) :: PzsPx = 0.                  ! (m) on u-grid
-REAL(kd), DIMENSION(ims:ime) :: PzsPx_pi = 0.               ! (m) on pi-grid
-REAL(kd), DIMENSION(kms:kme) :: b                           !     on w-grid
-REAL(kd), DIMENSION(kms:kme) :: b_pi                        !     on pi-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat               ! (m) on w-grid : Real Height in z_hat coords.
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_pi            ! (m) on pi-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_u             ! (m) on u-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_v             ! (m) on v-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat             ! (m) on w-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_pi          ! (m) on pi-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_u           ! (m) on u-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_v           ! (m) on v-grid
-REAL(kd), DIMENSION(ims:ime) :: VertA_u = 0.                !  Vertical Variation A on u-grid
-REAL(kd), DIMENSION(ims:ime) :: VertA_pi = 0.               !  Vertical Variation A on pi-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_u = 1.        !  Vertical Variation B on u-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_w = 1.        !  Vertical Variation B on w-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_pi = 1.       !  Vertical Variation B on pi-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_v = 1.        !  Vertical Variation B on v-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_u = 0.        !  Vertical Variation C on u-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_w = 0.        !  Vertical Variation C on w-grid
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_pi = 0.       !  Vertical Variation C on pi-gridi
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_v = 0.        !  Vertical Variation C on v-gridi
+!REAL(kd), PARAMETER :: ztop = nz*dz                         ! (m)
+!REAL(kd), DIMENSION(ims:ime) :: zs = 0.                     ! (m) on u-grid
+!REAL(kd), DIMENSION(ims:ime) :: zs_pi = 0.                  ! (m) on pi-grid
+!REAL(kd), DIMENSION(ims:ime) :: PzsPx = 0.                  ! (m) on u-grid
+!REAL(kd), DIMENSION(ims:ime) :: PzsPx_pi = 0.               ! (m) on pi-grid
+!REAL(kd), DIMENSION(kms:kme) :: b                           !     on w-grid
+!REAL(kd), DIMENSION(kms:kme) :: b_pi                        !     on pi-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat               ! (m) on w-grid : Real Height in z_hat coords.
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_pi            ! (m) on pi-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_u             ! (m) on u-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_vir             ! (m) on v-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat             ! (m) on w-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_pi          ! (m) on pi-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_u           ! (m) on u-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_vir           ! (m) on v-grid
+!REAL(kd), DIMENSION(ims:ime) :: VertA_u = 0.                !  Vertical Variation A on u-grid
+!REAL(kd), DIMENSION(ims:ime) :: VertA_pi = 0.               !  Vertical Variation A on pi-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_u = 1.        !  Vertical Variation B on u-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_w = 1.        !  Vertical Variation B on w-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_pi = 1.       !  Vertical Variation B on pi-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_vir = 1.        !  Vertical Variation B on v-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_u = 0.        !  Vertical Variation C on u-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_w = 0.        !  Vertical Variation C on w-grid
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_pi = 0.       !  Vertical Variation C on pi-gridi
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_vir = 0.        !  Vertical Variation C on v-gridi
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime) :: xx      ! distance on u-grid along x-axis (m)
 REAL(kd), DIMENSION(ims:ime) :: xpi     ! distance on pi-grid along x-axis (m)
@@ -200,14 +200,14 @@ kmin = kts
 kmax = kte
 END SUBROUTINE set_calc_area_pi
 
-SUBROUTINE set_calc_area_v
+SUBROUTINE set_calc_area_vir
 IMPLICIT NONE
 ! v-grid (its + 1:ite - 1, kts + 1:kte)
 imin = its + 1
 imax = ite - 1
 kmin = kts + 1
 kmax = kte
-END SUBROUTINE set_calc_area_v
+END SUBROUTINE set_calc_area_vir
 !=================================================
 
 !=================================================
@@ -238,13 +238,13 @@ kmin = kts
 kmax = kte
 END SUBROUTINE set_area_pi
 
-SUBROUTINE set_area_v
+SUBROUTINE set_area_vir
 IMPLICIT NONE
 imin = its
 imax = ite
 kmin = kts
 kmax = kte + 1
-END SUBROUTINE set_area_v
+END SUBROUTINE set_area_vir
 
 SUBROUTINE set_area_expand(num)
 IMPLICIT NONE
