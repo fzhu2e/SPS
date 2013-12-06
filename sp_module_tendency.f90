@@ -125,19 +125,19 @@ END SELECT
 !-------------------------------------------------
 ! u-grid
 !-------------------------------------------------
+CALL ppx_u(rhou_pi,PrhouPx_u)
+CALL ppx_u(rhouu_pi,PrhouuPx_u)
+CALL ppzeta_u(rhow_vir,PrhowPz_u)
+CALL ppzeta_u(rhowu_vir,PrhowuPz_u)
+CALL ppx_u(pi_1,Ppi_1Px_u)
+
 CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		PrhouPx_u(i,k) = (rhou_pi(i+1,k) - rhou_pi(i,k))/dx
-		PrhouuPx_u(i,k) = (rhouu_pi(i+1,k) - rhouu_pi(i,k))/dx
-		PrhowPz_u(i,k) = (rhow_vir(i,k+1) - rhow_vir(i,k))/dz
-		PrhowuPz_u(i,k) = (rhowu_vir(i,k+1) - rhowu_vir(i,k))/dz
 		
 		uPuPx_u(i,k) = 1./rho_0_u(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k))
 		wPuPz_u(i,k) = 1./rho_0_u(i,k)*(PrhowuPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
-	
-		Ppi_1Px_u(i,k) = (pi_1(i + 1,k) - pi_1(i,k))/dx
 	
 		F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)
 		tend_u(i,k) = F_u(i,k) - Cp*theta_0_u(i,k)*Ppi_1Px_u(i,k)
@@ -254,19 +254,19 @@ END SELECT
 !-------------------------------------------------
 ! w-grid 
 !-------------------------------------------------
+CALL ppx_w(rhou_vir,PrhouPx_w)
+CALL ppx_w(rhouw_vir,PrhouwPx_w)
+CALL ppzeta_w(rhow_pi,PrhowPz_w)
+CALL ppzeta_w(rhoww_pi,PrhowwPz_w)
+CALL ppzeta_w(pi_1,Ppi_1Pz_w)
+
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		PrhouPx_w(i,k) = (rhou_vir(i,k) - rhou_vir(i-1,k))/dx
-		PrhouwPx_w(i,k) = (rhouw_vir(i,k) - rhouw_vir(i-1,k))/dx
-		PrhowPz_w(i,k) = (rhow_pi(i,k) - rhow_pi(i,k-1))/dz
-		PrhowwPz_w(i,k) = (rhoww_pi(i,k) - rhoww_pi(i,k-1))/dz
 
 		uPwPx_w(i,k) = 1./rho_0_w(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k))
 		wPwPz_w(i,k) = 1./rho_0_w(i,k)*(PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k))
-
-		Ppi_1Pz_w(i,k) = (pi_1(i,k) - pi_1(i,k - 1))/dz
 
 		F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*theta_1(i,k)/theta_0(i,k)
 		tend_w(i,k) = F_w(i,k) - Cp*theta_0(i,k)*Ppi_1Pz_w(i,k)
@@ -364,16 +364,10 @@ END SELECT
 !-------------------------------------------------
 ! w-grid - Theta on kts and kte+1 should also be updated.
 !-------------------------------------------------
-CALL set_area_w
+CALL ppx_w(rhoutheta_vir,PrhouthetaPx_w)
+CALL ppzeta_w(rhowtheta_pi,PrhowthetaPz_w)
 
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		PrhouthetaPx_w(i,k) = (rhoutheta_vir(i,k) - rhoutheta_vir(i-1,k))/dx
-		PrhowthetaPz_w(i,k) = (rhowtheta_pi(i,k) - rhowtheta_pi(i,k-1))/dz
-	END DO
-END DO
-!OMP END PARALLEL DO
+CALL set_area_w
 
 !OMP PARALLEL DO
 DO k = kmin, kmax
@@ -442,12 +436,13 @@ DO k = kmin, kmax
 END DO
 !OMP END PARALLEL DO
 
+CALL ppx_pi(urhotheta_u,PurhothetaPx_pi)
+CALL ppzeta_pi(wrhotheta_w,PwrhothetaPz_pi)
+
 CALL set_area_pi
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		PurhothetaPx_pi(i,k) = (urhotheta_u(i,k) - urhotheta_u(i - 1,k))/dx
-		PwrhothetaPz_pi(i,k) = (wrhotheta_w(i,k + 1) - wrhotheta_w(i,k))/dz
 		
 		F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
 		tend_pi(i,k) = F_pi(i,k)
@@ -458,6 +453,108 @@ END DO
 IF (ANY(ISNAN(F_pi(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
 !=================================================
 END SUBROUTINE tendency_pi
+!=================================================
+
+!=================================================
+SUBROUTINE ppx_u(var_pi,output)
+IMPLICIT NONE
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
+INTEGER :: i, k
+CALL set_area_u
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		output(i,k) = (var_pi(i+1,k) - var_pi(i,k))/dx
+	END DO
+END DO
+!OMP END PARALLEL DO
+END SUBROUTINE ppx_u
+!=================================================
+
+!=================================================
+SUBROUTINE ppzeta_u(var_vir,output)
+IMPLICIT NONE
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_vir
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
+INTEGER :: i, k
+CALL set_area_u
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		output(i,k) = (var_vir(i,k+1) - var_vir(i,k))/dz
+	END DO
+END DO
+!OMP END PARALLEL DO
+END SUBROUTINE ppzeta_u
+!=================================================
+
+!=================================================
+SUBROUTINE ppx_w(var_vir,output)
+IMPLICIT NONE
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_vir
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
+INTEGER :: i, k
+CALL set_area_w
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		output(i,k) = (var_vir(i,k) - var_vir(i-1,k))/dx
+	END DO
+END DO
+!OMP END PARALLEL DO
+END SUBROUTINE ppx_w
+!=================================================
+
+!=================================================
+SUBROUTINE ppzeta_w(var_pi,output)
+IMPLICIT NONE
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
+INTEGER :: i, k
+CALL set_area_w
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		output(i,k) = (var_pi(i,k) - var_pi(i,k-1))/dz
+	END DO
+END DO
+!OMP END PARALLEL DO
+END SUBROUTINE ppzeta_w
+!=================================================
+
+!=================================================
+SUBROUTINE ppx_pi(var_u,output)
+IMPLICIT NONE
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
+INTEGER :: i, k
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		output(i,k) = (var_u(i,k) - var_u(i-1,k))/dx
+	END DO
+END DO
+!OMP END PARALLEL DO
+END SUBROUTINE ppx_pi
+!=================================================
+
+!=================================================
+SUBROUTINE ppzeta_pi(var_w,output)
+IMPLICIT NONE
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
+INTEGER :: i, k
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		output(i,k) = (var_w(i,k+1) - var_w(i,k))/dz
+	END DO
+END DO
+!OMP END PARALLEL DO
+END SUBROUTINE ppzeta_pi
 !=================================================
 
 !=================================================

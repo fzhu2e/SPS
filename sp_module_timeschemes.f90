@@ -26,88 +26,88 @@ CONTAINS
 ! 1. Update u, w, theta with value at n-time point.
 ! 2. Update pi' with the updated u, w.
 !=================================================
-SUBROUTINE forward_backward( DeltaT,v,theta_0,pi_0,rho_0,                &
-                             old_u,old_w,old_pi_1,old_theta,old_theta_1, &
-                             new_u,new_w,new_pi_1,new_theta,new_theta_1  )
-IMPLICIT NONE
-!=================================================
-REAL(kd), INTENT(IN) :: DeltaT
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: v            ! wind speed along y-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0      ! theta = theta_0 + theta'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0        ! density
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_u        ! wind speed along x-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_w        ! wind speed along z-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_pi_1     ! pi'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta_1  ! theta'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta_1
-!-------------------------------------------------
-INTEGER :: i, k
-!=================================================
-CALL basic_interpolate(old_u,old_w,old_pi_1,old_theta,old_theta_1)
+!SUBROUTINE forward_backward( DeltaT,v,theta_0,pi_0,rho_0,                &
+                             !old_u,old_w,old_pi_1,old_theta,old_theta_1, &
+                             !new_u,new_w,new_pi_1,new_theta,new_theta_1  )
+!IMPLICIT NONE
+!!=================================================
+!REAL(kd), INTENT(IN) :: DeltaT
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: v            ! wind speed along y-axis
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0      ! theta = theta_0 + theta'
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0        ! density
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_u        ! wind speed along x-axis
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_w        ! wind speed along z-axis
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_pi_1     ! pi'
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_theta_1  ! theta'
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_u
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_w
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_pi_1
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta_1
+!!-------------------------------------------------
+!INTEGER :: i, k
+!!=================================================
+!CALL basic_interpolate(old_u,old_w,old_pi_1,old_theta,old_theta_1)
 
-CALL debug_undef_all(new_u,new_w,new_pi_1,new_theta,new_theta_1)
+!CALL debug_undef_all(new_u,new_w,new_pi_1,new_theta,new_theta_1)
 
-CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
-                     tend_u,tend_w,tend_theta,tend_pi  )
-CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
-                         P2wPx2_w,    P2wPz2_w,   &
-                     P2thetaPx2_w,P2thetaPz2_w    )
-CALL debug_undef_all( rhou_pi, rhouu_pi,          &
-                      rhow_vir , rhowu_vir,           &
-                      rhou_vir , rhouw_vir,           &
-                      rhow_pi, rhoww_pi,          &
-                      rhoutheta_vir, rhowtheta_pi,  &
-                      urhotheta_u, wrhotheta_w    )
-CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
-                     PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
-                     PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
+!CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
+                     !tend_u,tend_w,tend_theta,tend_pi  )
+!CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
+                         !P2wPx2_w,    P2wPz2_w,   &
+                     !P2thetaPx2_w,P2thetaPz2_w    )
+!CALL debug_undef_all( rhou_pi, rhouu_pi,          &
+                      !rhow_vir , rhowu_vir,           &
+                      !rhou_vir , rhouw_vir,           &
+                      !rhow_pi, rhoww_pi,          &
+                      !rhoutheta_vir, rhowtheta_pi,  &
+                      !urhotheta_u, wrhotheta_w    )
+!CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
+                     !PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
+                     !PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
-CALL tendency_u(old_u,rho_0,old_pi_1,F_u,tend_u)
-CALL tendency_w(old_w,rho_0,old_theta_1,theta_0,old_pi_1,F_w,tend_w)
-CALL tendency_theta(old_u,old_w,rho_0,old_theta,F_theta,tend_theta)
-!=================================================
-! Update u, w, theta
-!-------------------------------------------------
-! u-grid
-!OMP PARALLEL DO
-DO k = kts, kte
-	DO i = its + 1, ite -1
-		new_u(i,k) = old_u(i,k) + DeltaT*tend_u(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
+!CALL tendency_u(old_u,rho_0,old_pi_1,F_u,tend_u)
+!CALL tendency_w(old_w,rho_0,old_theta_1,theta_0,old_pi_1,F_w,tend_w)
+!CALL tendency_theta(old_u,old_w,rho_0,old_theta,F_theta,tend_theta)
+!!=================================================
+!! Update u, w, theta
+!!-------------------------------------------------
+!! u-grid
+!!OMP PARALLEL DO
+!DO k = kts, kte
+	!DO i = its + 1, ite -1
+		!new_u(i,k) = old_u(i,k) + DeltaT*tend_u(i,k)
+	!END DO
+!END DO
+!!OMP END PARALLEL DO
 
-! w-grid
-!OMP PARALLEL DO
-DO k = kts + 1, kte
-	DO i = its + 1, ite
-		new_w(i,k) = old_w(i,k) + DeltaT*tend_w(i,k)
-		new_theta(i,k) = old_theta(i,k) + DeltaT*tend_theta(i,k)
-		new_theta_1(i,k) = new_theta(i,k) - theta_0(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
-CALL update_boundary(new_u,new_w)
-!=================================================
-! Update pi_1
-!-------------------------------------------------
-CALL tendency_pi(new_u,new_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
-! pi-grid
-!OMP PARALLEL DO
-DO k = kts, kte
-	DO i = its + 1, ite
-		new_pi_1(i,k) = old_pi_1(i,k) + DeltaT*tend_pi(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
-!=================================================
-END SUBROUTINE forward_backward
+!! w-grid
+!!OMP PARALLEL DO
+!DO k = kts + 1, kte
+	!DO i = its + 1, ite
+		!new_w(i,k) = old_w(i,k) + DeltaT*tend_w(i,k)
+		!new_theta(i,k) = old_theta(i,k) + DeltaT*tend_theta(i,k)
+		!new_theta_1(i,k) = new_theta(i,k) - theta_0(i,k)
+	!END DO
+!END DO
+!!OMP END PARALLEL DO
+!CALL update_boundary(new_u,new_w)
+!!=================================================
+!! Update pi_1
+!!-------------------------------------------------
+!CALL tendency_pi(new_u,new_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
+!! pi-grid
+!!OMP PARALLEL DO
+!DO k = kts, kte
+	!DO i = its + 1, ite
+		!new_pi_1(i,k) = old_pi_1(i,k) + DeltaT*tend_pi(i,k)
+	!END DO
+!END DO
+!!OMP END PARALLEL DO
+!!=================================================
+!END SUBROUTINE forward_backward
 !=================================================
 
 !=================================================
@@ -117,13 +117,12 @@ END SUBROUTINE forward_backward
 ! phi** = phi(n) + dt/2.*tend(phi*)
 ! phi(n+1) = phi(n) + dt*tend(phi**)
 !=================================================
-SUBROUTINE runge_kutta( DeltaT,v,theta_0,pi_0,rho_0,                   &
+SUBROUTINE runge_kutta( DeltaT,theta_0,pi_0,rho_0,                   &
                         old_u,old_w,old_pi_1,old_theta,old_theta_1,    &
                         new_u,new_w,new_pi_1,new_theta,new_theta_1     )
 IMPLICIT NONE
 !=================================================
 REAL(kd), INTENT(IN) :: DeltaT
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: v
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0
