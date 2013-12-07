@@ -24,60 +24,48 @@ CONTAINS
 !=================================================
 SUBROUTINE runge_kutta( uGrid, wGrid, piGrid, virGrid, new )
 IMPLICIT NONE
-TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
+TYPE(grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 TYPE(mainvar), INTENT(OUT) :: new
 TYPE(mainvar) :: old, mid1, mid2
 !=================================================
 INTEGER :: i, k
 !=================================================
-! Step 1. phi* = phi(n) + dt/3.*tend(phi(n))
-!-------------------------------------------------
 old%u = uGrid%u
 old%w = wGrid%w
 old%pi_1 = piGrid%pi_1
 old%theta = wGrid%theta
 old%theta_1 = wGrid%theta_1
-
-CALL update(old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
-            old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
-            mid1%u,mid1%w,mid1%pi_1,mid1%theta,mid1%theta_1,&
-            3 )
+!=================================================
+! Step 1. phi* = phi(n) + dt/3.*tend(phi(n))
+!-------------------------------------------------
+CALL update(old, old, mid1, 3, uGrid,wGrid,piGrid,virGrid)
 
 !=================================================
 ! Step 2. phi** = phi(n) + dt/2.*tend(phi*)
 !-------------------------------------------------
-CALL update(old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
-            mid1%u,mid1%w,mid1%pi_1,mid1%theta,mid1%theta_1,&
-            mid2%u,mid2%w,mid2%pi_1,mid2%theta,mid2%theta_1,&
-            2 )
+CALL update(old, mid1, mid2, 2, uGrid,wGrid,piGrid,virGrid)
 
 !=================================================
 ! Step 3. phi(n+1) = phi(n) + dt*tend(phi**)
 !-------------------------------------------------
-CALL update(old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
-            mid2%u,mid2%w,mid2%pi_1,mid2%theta,mid2%theta_1,&
-            new%u,new%w,new%pi_1,new%theta,new%theta_1,     &
-            1 )
+CALL update(old, mid2, new, 1, uGrid,wGrid,piGrid,virGrid)
 
 !=================================================
 END SUBROUTINE runge_kutta
 !=================================================
 
 !=================================================
-SUBROUTINE update(A_u,A_w,A_pi_1,A_theta,A_theta_1, &
-                  B_u,B_w,B_pi_1,B_theta,B_theta_1, &
-                  C_u,C_w,C_pi_1,C_theta,C_theta_1, &
-                  deno )
+SUBROUTINE update(A, B, C, deno, uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: A_u, A_w, A_pi_1, A_theta, A_theta_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: B_u, B_w, B_pi_1, B_theta, B_theta_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: C_u, C_w, C_pi_1, C_theta, C_theta_1
+TYPE(grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+TYPE(mainvar), INTENT(IN) :: A, B
+!TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 INTEGER, INTENT(IN) :: deno
+TYPE(mainvar), INTENT(OUT) :: C
 INTEGER :: i, k
 !=================================================
-CALL basic_interpolate(A_u,A_w,A_pi_1,A_theta,A_theta_1)
-
-CALL debug_undef_all(C_u,C_w,C_pi_1,C_theta,C_theta_1)
+!CALL basic_interpolate(A%u,A%w,A%pi_1,A%theta,A%theta_1)
+CALL basic_interpolate(A,uGrid,wGrid,piGrid,virGrid)
 
 CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
                      tend_u,tend_w,tend_theta,tend_pi  )
@@ -94,16 +82,16 @@ CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,   
                      PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
                      PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
-CALL tendency_u(B_u,B_pi_1,tend_u)
-CALL tendency_w(B_w,B_theta_1,B_pi_1,tend_w)
-CALL tendency_theta(B_u,B_w,B_theta,tend_theta)
+CALL tendency_u(B%u,B%pi_1,tend_u,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_w(B%w,B%theta_1,B%pi_1,tend_w,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_theta(B%u,B%w,B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
 
 ! u-grid (its + 1:ite - 1, kts:kte)
 CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		C_u(i,k) = A_u(i,k) + dt/REAL(deno)*tend_u(i,k)
+		C%u(i,k) = A%u(i,k) + dt/REAL(deno)*tend_u(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -114,17 +102,18 @@ CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		C_w(i,k) = A_w(i,k) + dt/REAL(deno)*tend_w(i,k)
-		C_theta(i,k) = A_theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
-		C_theta_1(i,k) = C_theta(i,k) - theta_0(i,k)
+		C%w(i,k) = A%w(i,k) + dt/REAL(deno)*tend_w(i,k)
+		C%theta(i,k) = A%theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
+		C%theta_1(i,k) = C%theta(i,k) - wGrid%theta_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
 
-CALL update_boundary(C_u,C_w)
-CALL basic_interpolate(C_u,C_w,A_pi_1,A_theta,A_theta_1) !!!
+CALL update_boundary(C%u,C%w)
+!CALL basic_interpolate(C%u,C%w,A%pi_1,A%theta,A%theta_1) !!!
+CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
 
-CALL tendency_pi(C_u,C_w,tend_pi)
+CALL tendency_pi(C%u,C%w,tend_pi,uGrid,wGrid,piGrid,virGrid)
 
 ! pi-grid (its + 1:ite, kts:kte)
 CALL set_area_pi
@@ -132,12 +121,12 @@ CALL set_area_pi
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		C_pi_1(i,k) = A_pi_1(i,k) + dt/REAL(deno)*tend_pi(i,k)
+		C%pi_1(i,k) = A%pi_1(i,k) + dt/REAL(deno)*tend_pi(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
 
-CALL update_boundary(C_u,C_w,C_pi_1,C_theta,C_theta_1)
+CALL update_boundary(C%u,C%w,C%pi_1,C%theta,C%theta_1)
 
 !=================================================
 END SUBROUTINE update

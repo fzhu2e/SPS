@@ -73,41 +73,9 @@ CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
 
-!u = uGrid%u
-!w = wGrid%w
-!pi_1 = piGrid%pi_1
-!theta = wGrid%theta
-!theta_1 = wGrid%theta_1
-
-pi_0 = piGrid%pi_0
-
-theta_0 = wGrid%theta_0
-theta_0_pi = piGrid%theta_0
-theta_0_u = uGrid%theta_0
-theta_0_vir = virGrid%theta_0
-
-rho_0 = piGrid%rho_0
-rho_0_u = uGrid%rho_0
-rho_0_w = wGrid%rho_0
-rho_0_vir = virGrid%rho_0
-
 CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%theta_1)
 
-!CALL debug_ascii_output(u,"u")
-!CALL debug_ascii_output(w,"w")
-!CALL debug_ascii_output(pi_1,"pi_1")
-!CALL debug_ascii_output(theta,"theta")
-!CALL debug_ascii_output(theta_1,"theta_1")
-!CALL debug_ascii_output(theta_0,"theta_0")
-!CALL debug_ascii_output(theta_0_pi,"theta_0_pi")
-!CALL debug_ascii_output(theta_0_u,"theta_0_u")
-!CALL debug_ascii_output(theta_0_vir,"theta_0_vir")
-!CALL debug_ascii_output(rho_0,"rho_0")
-!CALL debug_ascii_output(rho_0_w,"rho_0_w")
-!CALL debug_ascii_output(rho_0_u,"rho_0_u")
-!CALL debug_ascii_output(rho_0_vir,"rho_0_vir")
-
-CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)                               ! output the initial fields
+CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
 !=================================================
 ! Integrate.
 !-------------------------------------------------
@@ -116,10 +84,8 @@ DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
 	CALL integrate(uGrid,wGrid,piGrid,virGrid) ! main integrate module
 	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%theta_1)
-	!IF (MOD(i,1000) == 0.) THEN
-	!IF (MOD(i,200) == 0.) THEN
 	IF (MOD(i,100) == 0.) THEN
-		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)               ! output the fields at each time step
+		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
 	END IF
 	
 	CALL SYSTEM_CLOCK(t_end)
@@ -131,7 +97,7 @@ END DO
 !=================================================
 ! Finish.
 !-------------------------------------------------
-CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)                   ! finish
+CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"

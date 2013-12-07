@@ -10,16 +10,17 @@
 MODULE sp_module_interpolate
 USE sp_module_constant
 USE sp_module_model
+USE sp_module_gridvar
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
 ! Basic interpolated variations in Arakawa-C and Charney-Phillips grids.
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_pi, u_w, u_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: w_pi, w_u, w_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1_u, pi_1_w, pi_1_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi, theta_1_u, theta_1_vir
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_pi, u_w, u_vir
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: w_pi, w_u, w_vir
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1_u, pi_1_w, pi_1_vir
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_vir
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi, theta_1_u, theta_1_vir
 !=================================================
 CONTAINS
 !=================================================
@@ -27,42 +28,56 @@ CONTAINS
 !=================================================
 ! Basic interpolate.
 !=================================================
-SUBROUTINE basic_interpolate(u,w,pi_1,theta,theta_1)
+SUBROUTINE basic_interpolate(Main,uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
+!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
+TYPE(mainvar), INTENT(IN) :: Main
+TYPE(grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
-CALL debug_undef_all( u_pi,u_w,u_vir,                               &
-                      w_pi,w_u,w_vir,                               &
-                      pi_1_u,pi_1_w,pi_1_vir,                       &
-                      theta_pi,theta_u,theta_vir,                   &
-                      theta_1_pi,theta_1_u,theta_1_vir              )
+!CALL debug_undef_all( u_pi,u_w,u_vir,                               &
+                      !w_pi,w_u,w_vir,                               &
+                      !pi_1_u,pi_1_w,pi_1_vir,                       &
+                      !theta_pi,theta_u,theta_vir,                   &
+                      !theta_1_pi,theta_1_u,theta_1_vir              )
 !=================================================
-CALL u2w(u,u_w)
-CALL u2pi(u,u_pi)
-CALL u2vir(u,u_vir)
+CALL u2w(Main%u,wGrid%u)
+CALL u2pi(Main%u,piGrid%u)
+CALL u2vir(Main%u,virGrid%u)
 
-CALL w2pi(w,w_pi)
-CALL w2vir(w,w_vir)
-CALL w2u(w,w_u)
+CALL w2pi(Main%w,piGrid%w)
+CALL w2vir(Main%w,virGrid%w)
 
-CALL pi2u(pi_1,pi_1_u)
-CALL pi2w(pi_1,pi_1_w)
-CALL pi2vir(pi_1,pi_1_vir)
+CALL pi2vir(Main%pi_1,virGrid%pi_1)
 
-CALL w2pi(theta,theta_pi)
-CALL w2u(theta,theta_u)
-CALL w2vir(theta,theta_vir)
+CALL w2pi(Main%theta,piGrid%theta)
+CALL w2pi(Main%theta_1,piGrid%theta_1)
+!=================================================
+!CALL u2w(u,u_w)
+!CALL u2pi(u,u_pi)
+!CALL u2vir(u,u_vir)
 
-CALL w2pi(theta_1,theta_1_pi)
-CALL w2u(theta_1,theta_1_u)
-CALL w2vir(theta_1,theta_1_vir)
+!CALL w2pi(w,w_pi)
+!CALL w2vir(w,w_vir)
+!CALL w2u(w,w_u)
+
+!CALL pi2u(pi_1,pi_1_u)
+!CALL pi2w(pi_1,pi_1_w)
+!CALL pi2vir(pi_1,pi_1_vir)
+
+!CALL w2pi(theta,theta_pi)
+!CALL w2u(theta,theta_u)
+!CALL w2vir(theta,theta_vir)
+
+!CALL w2pi(theta_1,theta_1_pi)
+!CALL w2u(theta_1,theta_1_u)
+!CALL w2vir(theta_1,theta_1_vir)
 !=================================================
 END SUBROUTINE basic_interpolate
 !=================================================

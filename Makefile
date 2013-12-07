@@ -44,7 +44,7 @@ sp_module_integrate.o: sp_module_boundary.o sp_module_constant.o \
 	sp_module_debug.o sp_module_gridvar.o sp_module_model.o \
 	sp_module_timeschemes.o
 sp_module_interpolate.o: sp_module_constant.o sp_module_debug.o \
-	sp_module_model.o
+	sp_module_gridvar.o sp_module_model.o
 sp_module_math.o: sp_module_constant.o
 sp_module_model.o: sp_module_constant.o
 sp_module_output.o: sp_module_constant.o sp_module_model.o

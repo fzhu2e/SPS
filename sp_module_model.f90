@@ -131,42 +131,7 @@ INTEGER, PARAMETER :: ime = ite + halo
 INTEGER, PARAMETER :: kms = kts - halo
 INTEGER, PARAMETER :: kme = kte + halo
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_0
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0,theta_0_pi, theta_0_u, theta_0_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0,rho_0_u, rho_0_w, rho_0_vir
-!-------------------------------------------------
-! Vertical coordinates
-
 REAL(kd), PARAMETER :: ztop = nz*dz                         ! (m)
-!REAL(kd), DIMENSION(ims:ime) :: zs = 0.                     ! (m) on u-grid
-!REAL(kd), DIMENSION(ims:ime) :: zs_pi = 0.                  ! (m) on pi-grid
-!REAL(kd), DIMENSION(ims:ime) :: PzsPx = 0.                  ! (m) on u-grid
-!REAL(kd), DIMENSION(ims:ime) :: PzsPx_pi = 0.               ! (m) on pi-grid
-!REAL(kd), DIMENSION(kms:kme) :: b                           !     on w-grid
-!REAL(kd), DIMENSION(kms:kme) :: b_pi                        !     on pi-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat               ! (m) on w-grid : Real Height in z_hat coords.
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_pi            ! (m) on pi-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_u             ! (m) on u-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: z_hat_vir             ! (m) on v-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat             ! (m) on w-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_pi          ! (m) on pi-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_u           ! (m) on u-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PbPzhat_vir           ! (m) on v-grid
-!REAL(kd), DIMENSION(ims:ime) :: VertA_u = 0.                !  Vertical Variation A on u-grid
-!REAL(kd), DIMENSION(ims:ime) :: VertA_pi = 0.               !  Vertical Variation A on pi-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_u = 1.        !  Vertical Variation B on u-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_w = 1.        !  Vertical Variation B on w-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_pi = 1.       !  Vertical Variation B on pi-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertB_vir = 1.        !  Vertical Variation B on v-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_u = 0.        !  Vertical Variation C on u-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_w = 0.        !  Vertical Variation C on w-grid
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_pi = 0.       !  Vertical Variation C on pi-gridi
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: VertC_vir = 0.        !  Vertical Variation C on v-gridi
-!-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime) :: xx      ! distance on u-grid along x-axis (m)
-REAL(kd), DIMENSION(ims:ime) :: xpi     ! distance on pi-grid along x-axis (m)
-REAL(kd), DIMENSION(kms:kme) :: zz      ! height on w-grid along z-axis (m) : Height of Model Level
-REAL(kd), DIMENSION(kms:kme) :: zpi     ! height on pi-grid along z-axis (m)
 !-------------------------------------------------
 INTEGER :: imin, imax, kmin, kmax
 !=================================================
