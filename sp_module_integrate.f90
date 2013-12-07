@@ -39,7 +39,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: ud_theta_1              ! updated ud_the
 SELECT CASE (TimeScheme)
 CASE (2)
 	! Runge-Kutta Scheme
-	CALL runge_kutta( dt,theta_0,pi_0,rho_0,                    &
+	CALL runge_kutta( theta_0,pi_0,rho_0,                    &
 	                     u,    w,    pi_1,    theta,    theta_1,  &
 	                  ud_u, ud_w, ud_pi_1, ud_theta, ud_theta_1   )
 CASE DEFAULT

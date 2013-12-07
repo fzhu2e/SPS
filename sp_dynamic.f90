@@ -65,8 +65,8 @@ CASE (1)
 	CALL initiate_dc(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
 !CASE (2)
 	!CALL initiate_tb(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the TB case
-!CASE (3)
-	!CALL initiate_igw(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
+CASE (3)
+	CALL initiate_igw(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 !CASE (4)
 	!CALL initiate_Sm(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 CASE DEFAULT
