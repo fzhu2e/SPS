@@ -22,62 +22,41 @@ CONTAINS
 !=================================================
 
 !=================================================
-SUBROUTINE runge_kutta( uGrid, wGrid, piGrid, virGrid,    &
-						new_u,new_w,new_pi_1,new_theta,new_theta_1)
+SUBROUTINE runge_kutta( uGrid, wGrid, piGrid, virGrid, new )
 IMPLICIT NONE
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
+TYPE(mainvar), INTENT(OUT) :: new
+TYPE(mainvar) :: old, mid1, mid2
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: old_u
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: old_w
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: old_pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: old_theta
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: old_theta_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: new_theta_1
-!-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_u
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_w
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_theta
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid1_theta_1
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_u
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_w
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_theta
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: mid2_theta_1
-!-------------------------------------------------
 INTEGER :: i, k
 !=================================================
 ! Step 1. phi* = phi(n) + dt/3.*tend(phi(n))
 !-------------------------------------------------
-old_u = uGrid%u
-old_w = wGrid%w
-old_pi_1 = piGrid%pi_1
-old_theta = wGrid%theta
-old_theta_1 = wGrid%theta_1
+old%u = uGrid%u
+old%w = wGrid%w
+old%pi_1 = piGrid%pi_1
+old%theta = wGrid%theta
+old%theta_1 = wGrid%theta_1
 
-CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
-            old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
-            mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1,&
+CALL update(old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
+            old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
+            mid1%u,mid1%w,mid1%pi_1,mid1%theta,mid1%theta_1,&
             3 )
 
 !=================================================
 ! Step 2. phi** = phi(n) + dt/2.*tend(phi*)
 !-------------------------------------------------
-CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
-            mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1,&
-            mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1,&
+CALL update(old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
+            mid1%u,mid1%w,mid1%pi_1,mid1%theta,mid1%theta_1,&
+            mid2%u,mid2%w,mid2%pi_1,mid2%theta,mid2%theta_1,&
             2 )
 
 !=================================================
 ! Step 3. phi(n+1) = phi(n) + dt*tend(phi**)
 !-------------------------------------------------
-CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
-            mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1,&
-            new_u,new_w,new_pi_1,new_theta,new_theta_1,     &
+CALL update(old%u,old%w,old%pi_1,old%theta,old%theta_1,     &
+            mid2%u,mid2%w,mid2%pi_1,mid2%theta,mid2%theta_1,&
+            new%u,new%w,new%pi_1,new%theta,new%theta_1,     &
             1 )
 
 !=================================================
