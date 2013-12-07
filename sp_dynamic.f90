@@ -18,14 +18,13 @@ USE sp_module_output
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
+TYPE(grid) :: uGrid, wGrid, piGrid, virGrid
+!=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1     ! pi'
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_0 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0  ! theta = theta_0 + theta'
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1  ! theta'
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0    ! density
 !-------------------------------------------------
 INTEGER :: i, k
 INTEGER :: t_start, t_end, rate
@@ -51,8 +50,10 @@ WRITE(*,"(1X,A9,2F9.2)") " Km/Kh: ", Km, Kh
 WRITE(*,*) "====================="
 WRITE(*,*)
 
-CALL debug_undef_all(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
-!CALL debug_ascii_output(u)
+!CALL debug_undef_all(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
+CALL initiate_grid(uGrid,wGrid,piGrid,virGrid)
+CALL initiate_terrain(uGrid,wGrid,piGrid,virGrid)
+CALL initiate_basic_state(uGrid,wGrid,piGrid,virGrid)
 !-------------------------------------------------
 ! Initiate.
 !-------------------------------------------------
@@ -62,22 +63,51 @@ WRITE(*,*) "====================="
 WRITE(*,*)
 SELECT CASE (RunCase)
 CASE (1)
-	CALL initiate_dc(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
+	CALL initiate_dc(uGrid,wGrid,piGrid,virGrid)
+	!CALL initiate_dc(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
 !CASE (2)
 	!CALL initiate_tb(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the TB case
-CASE (3)
-	CALL initiate_igw(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
+!CASE (3)
+	!CALL initiate_igw(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 !CASE (4)
 	!CALL initiate_Sm(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
 
-CALL update_boundary(u,w,pi_1,theta,theta_1,                  &
-                     theta_0,theta_0_pi,theta_0_u,theta_0_vir,  &
-                     rho_0,rho_0_w,rho_0_u,rho_0_vir            )
+u = uGrid%u
+w = wGrid%w
+pi_1 = piGrid%pi_1
+theta = wGrid%theta
+theta_1 = wGrid%theta_1
 
-!CALL debug_ascii_output(u)
+pi_0 = piGrid%pi_0
+
+theta_0 = wGrid%theta_0
+theta_0_pi = piGrid%theta_0
+theta_0_u = uGrid%theta_0
+theta_0_vir = virGrid%theta_0
+
+rho_0 = piGrid%rho_0
+rho_0_u = uGrid%rho_0
+rho_0_w = wGrid%rho_0
+rho_0_vir = virGrid%rho_0
+
+CALL update_boundary(u,w,pi_1,theta,theta_1)
+
+!CALL debug_ascii_output(u,"u")
+!CALL debug_ascii_output(w,"w")
+!CALL debug_ascii_output(pi_1,"pi_1")
+!CALL debug_ascii_output(theta,"theta")
+!CALL debug_ascii_output(theta_1,"theta_1")
+!CALL debug_ascii_output(theta_0,"theta_0")
+!CALL debug_ascii_output(theta_0_pi,"theta_0_pi")
+!CALL debug_ascii_output(theta_0_u,"theta_0_u")
+!CALL debug_ascii_output(theta_0_vir,"theta_0_vir")
+!CALL debug_ascii_output(rho_0,"rho_0")
+!CALL debug_ascii_output(rho_0_w,"rho_0_w")
+!CALL debug_ascii_output(rho_0_u,"rho_0_u")
+!CALL debug_ascii_output(rho_0_vir,"rho_0_vir")
 
 CALL output(0,u,w,pi_1,theta_1)                               ! output the initial fields
 !-------------------------------------------------
@@ -93,7 +123,7 @@ CALL output(0,u,w,pi_1,theta_1)                               ! output the initi
 t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
-	CALL integrate(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0) ! main integrate module
+	CALL integrate(u,w,pi_1,theta,theta_1) ! main integrate module
 	CALL update_boundary(u,w,pi_1,theta,theta_1)
 	!IF (MOD(i,1000) == 0.) THEN
 	!IF (MOD(i,200) == 0.) THEN

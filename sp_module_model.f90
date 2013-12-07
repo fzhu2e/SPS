@@ -131,8 +131,9 @@ INTEGER, PARAMETER :: ime = ite + halo
 INTEGER, PARAMETER :: kms = kts - halo
 INTEGER, PARAMETER :: kme = kte + halo
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0_pi, theta_0_u, theta_0_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0_u, rho_0_w, rho_0_vir
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_0
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0,theta_0_pi, theta_0_u, theta_0_vir
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0,rho_0_u, rho_0_w, rho_0_vir
 !-------------------------------------------------
 ! Vertical coordinates
 
@@ -171,46 +172,6 @@ INTEGER :: imin, imax, kmin, kmax
 !=================================================
 
 CONTAINS
-!=================================================
-! Set calculate area of u-grid, w-grid, pi-grid, and v-grid.
-! Fix the index of boundaries.
-!=================================================
-SUBROUTINE set_calc_area_u
-IMPLICIT NONE
-! u-grid (its + 1:ite - 1, kts:kte)
-imin = its + 1
-imax = ite - 1
-kmin = kts
-kmax = kte
-END SUBROUTINE set_calc_area_u
-
-SUBROUTINE set_calc_area_w
-IMPLICIT NONE
-! w-grid (it + 1:ite, kts + 1:kte)
-imin = its + 1
-imax = ite
-kmin = kts + 1
-kmax = kte
-END SUBROUTINE set_calc_area_w
-
-SUBROUTINE set_calc_area_pi
-IMPLICIT NONE
-! pi-grid (its + 1:ite, kts:kte)
-imin = its + 1
-imax = ite
-kmin = kts
-kmax = kte
-END SUBROUTINE set_calc_area_pi
-
-SUBROUTINE set_calc_area_vir
-IMPLICIT NONE
-! v-grid (its + 1:ite - 1, kts + 1:kte)
-imin = its + 1
-imax = ite - 1
-kmin = kts + 1
-kmax = kte
-END SUBROUTINE set_calc_area_vir
-!=================================================
 
 !=================================================
 ! Arakawa-C grid.

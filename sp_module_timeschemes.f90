@@ -354,14 +354,10 @@ CONTAINS
 !=================================================
 
 !=================================================
-SUBROUTINE runge_kutta( theta_0,pi_0,rho_0,                   &
-						old_u,old_w,old_pi_1,old_theta,old_theta_1,    &
+SUBROUTINE runge_kutta( old_u,old_w,old_pi_1,old_theta,old_theta_1,    &
 						new_u,new_w,new_pi_1,new_theta,new_theta_1     )
 IMPLICIT NONE
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: old_pi_1
@@ -391,7 +387,7 @@ INTEGER :: i, k
 CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
             old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
             mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1,&
-            pi_0,rho_0,theta_0,3 )
+            3 )
 
 !=================================================
 ! Step 2. phi** = phi(n) + dt/2.*tend(phi*)
@@ -399,7 +395,7 @@ CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
 CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
             mid1_u,mid1_w,mid1_pi_1,mid1_theta,mid1_theta_1,&
             mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1,&
-            pi_0,rho_0,theta_0,2 )
+            2 )
 
 !=================================================
 ! Step 3. phi(n+1) = phi(n) + dt*tend(phi**)
@@ -407,7 +403,7 @@ CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
 CALL update(old_u,old_w,old_pi_1,old_theta,old_theta_1,     &
             mid2_u,mid2_w,mid2_pi_1,mid2_theta,mid2_theta_1,&
             new_u,new_w,new_pi_1,new_theta,new_theta_1,     &
-            pi_0,rho_0,theta_0,1 )
+            1 )
 
 !=================================================
 END SUBROUTINE runge_kutta
@@ -417,11 +413,10 @@ END SUBROUTINE runge_kutta
 SUBROUTINE update(A_u,A_w,A_pi_1,A_theta,A_theta_1, &
                   B_u,B_w,B_pi_1,B_theta,B_theta_1, &
                   C_u,C_w,C_pi_1,C_theta,C_theta_1, &
-                  pi_0,rho_0,theta_0,deno           )
+                  deno           )
 IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: A_u, A_w, A_pi_1, A_theta, A_theta_1
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: B_u, B_w, B_pi_1, B_theta, B_theta_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0,rho_0,theta_0
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: C_u, C_w, C_pi_1, C_theta, C_theta_1
 INTEGER, INTENT(IN) :: deno
 INTEGER :: i, k
@@ -445,9 +440,9 @@ CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,   
                      PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
                      PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
-CALL tendency_u(B_u,rho_0,B_pi_1,F_u,tend_u)
-CALL tendency_w(B_w,rho_0,B_theta_1,theta_0,B_pi_1,F_w,tend_w)
-CALL tendency_theta(B_u,B_w,rho_0,B_theta,F_theta,tend_theta)
+CALL tendency_u(B_u,B_pi_1,F_u,tend_u)
+CALL tendency_w(B_w,B_theta_1,B_pi_1,F_w,tend_w)
+CALL tendency_theta(B_u,B_w,B_theta,F_theta,tend_theta)
 
 ! u-grid (its + 1:ite - 1, kts:kte)
 CALL set_area_u
@@ -475,7 +470,7 @@ END DO
 CALL update_boundary(C_u,C_w)
 CALL basic_interpolate(C_u,C_w,A_pi_1,A_theta,A_theta_1) !!!
 
-CALL tendency_pi(C_u,C_w,pi_0,rho_0,theta_0,F_pi,tend_pi)
+CALL tendency_pi(C_u,C_w,F_pi,tend_pi)
 
 ! pi-grid (its + 1:ite, kts:kte)
 CALL set_area_pi

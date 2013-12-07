@@ -39,11 +39,10 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi, PwrhothetaPz_pi
 !=================================================
 CONTAINS
 !=================================================
-SUBROUTINE tendency_u(u,rho_0,pi_1,F_u,tend_u)
+SUBROUTINE tendency_u(u,pi_1,F_u,tend_u)
 IMPLICIT NONE
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
@@ -165,13 +164,11 @@ END SUBROUTINE tendency_u
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_w(w,rho_0,theta_1,theta_0,pi_1,F_w,tend_w)
+SUBROUTINE tendency_w(w,theta_1,pi_1,F_w,tend_w)
 IMPLICIT NONE
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_w
@@ -292,13 +289,66 @@ IF (ANY(ISNAN(F_w(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITHT F_w!!!"
 END SUBROUTINE tendency_w
 !=================================================
 
+
 !=================================================
-SUBROUTINE tendency_theta(u,w,rho_0,theta,F_theta,tend_theta)
+SUBROUTINE tendency_pi(u,w,F_pi,tend_pi)
 IMPLICIT NONE
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi
+INTEGER :: i, k
+!=================================================
+! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)
+!-------------------------------------------------
+CALL set_area_u
+CALL set_area_expand(expand)
+
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		urhotheta_u(i,k) = u(i,k)*rho_0_u(i,k)*theta_0_u(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_w
+CALL set_area_expand(expand)
+
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL ppx_pi(urhotheta_u,PurhothetaPx_pi)
+CALL ppzeta_pi(wrhotheta_w,PwrhothetaPz_pi)
+
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		
+		F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
+		tend_pi(i,k) = F_pi(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
+!-------------------------------------------------
+IF (ANY(ISNAN(F_pi(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
+!=================================================
+END SUBROUTINE tendency_pi
+!=================================================
+
+!=================================================
+SUBROUTINE tendency_theta(u,w,theta,F_theta,tend_theta)
+IMPLICIT NONE
+!=================================================
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
@@ -397,62 +447,6 @@ END IF
 IF (ANY(ISNAN(F_theta(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
 !=================================================
 END SUBROUTINE tendency_theta
-!=================================================
-
-!=================================================
-SUBROUTINE tendency_pi(u,w,pi_0,rho_0,theta_0,F_pi,tend_pi)
-IMPLICIT NONE
-!=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_pi
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi
-INTEGER :: i, k
-!=================================================
-! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)
-!-------------------------------------------------
-CALL set_area_u
-CALL set_area_expand(expand)
-
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		urhotheta_u(i,k) = u(i,k)*rho_0_u(i,k)*theta_0_u(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
-
-CALL set_area_w
-CALL set_area_expand(expand)
-
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
-
-CALL ppx_pi(urhotheta_u,PurhothetaPx_pi)
-CALL ppzeta_pi(wrhotheta_w,PwrhothetaPz_pi)
-
-CALL set_area_pi
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		
-		F_pi(i,k) = - cs*cs/Cp/rho_0(i,k)/theta_0_pi(i,k)/theta_0_pi(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
-		tend_pi(i,k) = F_pi(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
-!-------------------------------------------------
-IF (ANY(ISNAN(F_pi(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
-!=================================================
-END SUBROUTINE tendency_pi
 !=================================================
 
 !=================================================

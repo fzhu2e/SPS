@@ -17,13 +17,9 @@ IMPLICIT NONE
 !=================================================
 CONTAINS
 !=================================================
-SUBROUTINE integrate(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
+SUBROUTINE integrate(u,w,pi_1,theta,theta_1)
 IMPLICIT NONE
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_0  ! theta = theta_0 + theta'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_0     ! pi_0
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: rho_0    ! density
-
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
@@ -39,8 +35,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: ud_theta_1              ! updated ud_the
 SELECT CASE (TimeScheme)
 CASE (2)
 	! Runge-Kutta Scheme
-	CALL runge_kutta( theta_0,pi_0,rho_0,                    &
-	                     u,    w,    pi_1,    theta,    theta_1,  &
+	CALL runge_kutta( u,    w,    pi_1,    theta,    theta_1,  &
 	                  ud_u, ud_w, ud_pi_1, ud_theta, ud_theta_1   )
 CASE DEFAULT
 	STOP "Wrong time differencing scheme!!!"
