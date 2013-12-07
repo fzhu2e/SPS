@@ -11,7 +11,6 @@ MODULE sp_module_tendency
 USE sp_module_constant
 USE sp_module_model
 USE sp_module_gridvar
-USE sp_module_interpolate
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
@@ -40,14 +39,13 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi, PwrhothetaPz_pi
 !=================================================
 CONTAINS
 !=================================================
-SUBROUTINE tendency_u(u,pi_1,tend_u,uGrid,wGrid,piGrid,virGrid)
+SUBROUTINE tendency_u(Main,tend_u,uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
+TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
-!=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
+!=================================================
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_u
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPuPx_u, wPuPz_u
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
@@ -76,13 +74,13 @@ CASE (5)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			fa(i,k) = u(i-1,k) + u(i,k)
-			fb(i,k) = u(i-2,k) + u(i+1,k)
-			fc(i,k) = u(i-3,k) + u(i+2,k)
+			fa(i,k) = Main%u(i-1,k) + Main%u(i,k)
+			fb(i,k) = Main%u(i-2,k) + Main%u(i+1,k)
+			fc(i,k) = Main%u(i-3,k) + Main%u(i+2,k)
 			rhouu_pi(i,k) = rhou_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-			fd(i,k) = u(i,k) - u(i-1,k)
-			fe(i,k) = u(i+1,k) - u(i-2,k)
-			ff(i,k) = u(i+2,k) - u(i-3,k)
+			fd(i,k) = Main%u(i,k) - Main%u(i-1,k)
+			fe(i,k) = Main%u(i+1,k) - Main%u(i-2,k)
+			ff(i,k) = Main%u(i+2,k) - Main%u(i-3,k)
 			rhouu_pi(i,k) = rhouu_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
@@ -109,13 +107,13 @@ CASE (5)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			fa(i,k) = u(i,k) + u(i,k-1)
-			fb(i,k) = u(i,k+1) + u(i,k-2)
-			fc(i,k) = u(i,k+2) + u(i,k-3)
+			fa(i,k) = Main%u(i,k) + Main%u(i,k-1)
+			fb(i,k) = Main%u(i,k+1) + Main%u(i,k-2)
+			fc(i,k) = Main%u(i,k+2) + Main%u(i,k-3)
 			rhowu_vir(i,k) = rhow_vir(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-			fd(i,k) = u(i,k) - u(i,k-1)
-			fe(i,k) = u(i,k+1) - u(i,k-2)
-			ff(i,k) = u(i,k+2) - u(i,k-3)
+			fd(i,k) = Main%u(i,k) - Main%u(i,k-1)
+			fe(i,k) = Main%u(i,k+1) - Main%u(i,k-2)
+			ff(i,k) = Main%u(i,k+2) - Main%u(i,k-3)
 			rhowu_vir(i,k) = rhowu_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
@@ -130,15 +128,15 @@ CALL ppx_u(rhou_pi,PrhouPx_u)
 CALL ppx_u(rhouu_pi,PrhouuPx_u)
 CALL ppzeta_u(rhow_vir,PrhowPz_u)
 CALL ppzeta_u(rhowu_vir,PrhowuPz_u)
-CALL ppx_u(pi_1,Ppi_1Px_u)
+CALL ppx_u(Main%pi_1,Ppi_1Px_u)
 
 CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		
-		uPuPx_u(i,k) = 1./uGrid%rho_0(i,k)*(PrhouuPx_u(i,k) - u(i,k)*PrhouPx_u(i,k))
-		wPuPz_u(i,k) = 1./uGrid%rho_0(i,k)*(PrhowuPz_u(i,k) - u(i,k)*PrhowPz_u(i,k))
+		uPuPx_u(i,k) = 1./uGrid%rho_0(i,k)*(PrhouuPx_u(i,k) - Main%u(i,k)*PrhouPx_u(i,k))
+		wPuPz_u(i,k) = 1./uGrid%rho_0(i,k)*(PrhowuPz_u(i,k) - Main%u(i,k)*PrhowPz_u(i,k))
 	
 		F_u(i,k) = - uPuPx_u(i,k) - wPuPz_u(i,k)
 		tend_u(i,k) = F_u(i,k) - Cp*uGrid%theta_0(i,k)*Ppi_1Px_u(i,k)
@@ -150,8 +148,8 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			P2uPx2_u(i,k) = (u(i+1,k) + u(i-1,k) - 2*u(i,k))/dx/dx
-			P2uPz2_u(i,k) = (u(i,k+1) + u(i,k-1) - 2*u(i,k))/dz/dz
+			P2uPx2_u(i,k) = (Main%u(i+1,k) + Main%u(i-1,k) - 2*Main%u(i,k))/dx/dx
+			P2uPz2_u(i,k) = (Main%u(i,k+1) + Main%u(i,k-1) - 2*Main%u(i,k))/dz/dz
 			
 			tend_u(i,k) = tend_u(i,k) + Km*(P2uPx2_u(i,k) + P2uPz2_u(i,k)) ! Add diffusion term.
 		END DO
@@ -166,15 +164,13 @@ END SUBROUTINE tendency_u
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_w(w,theta_1,pi_1,tend_w, uGrid, wGrid, piGrid, virGrid)
+SUBROUTINE tendency_w(Main,tend_w, uGrid, wGrid, piGrid, virGrid)
 IMPLICIT NONE
+TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
-!=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_w
+!=================================================
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_w
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPwPx_w, wPwPz_w
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
@@ -203,13 +199,13 @@ CASE (5)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			fa(i,k) = w(i,k) + w(i+1,k)
-			fb(i,k) = w(i-1,k) + w(i+2,k)
-			fc(i,k) = w(i-2,k) + w(i+3,k)
+			fa(i,k) = Main%w(i,k) + Main%w(i+1,k)
+			fb(i,k) = Main%w(i-1,k) + Main%w(i+2,k)
+			fc(i,k) = Main%w(i-2,k) + Main%w(i+3,k)
 			rhouw_vir(i,k) = rhou_vir(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-			fd(i,k) = w(i+1,k) - w(i,k)
-			fe(i,k) = w(i+2,k) - w(i-1,k)
-			ff(i,k) = w(i+3,k) - w(i-2,k)
+			fd(i,k) = Main%w(i+1,k) - Main%w(i,k)
+			fe(i,k) = Main%w(i+2,k) - Main%w(i-1,k)
+			ff(i,k) = Main%w(i+3,k) - Main%w(i-2,k)
 			rhouw_vir(i,k) = rhouw_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
@@ -236,14 +232,14 @@ CASE (5)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			fa(i,k) = w(i,k) + w(i,k+1)
-			fb(i,k) = w(i,k-1) + w(i,k+2)
-			fc(i,k) = w(i,k-2) + w(i,k+3)
+			fa(i,k) = Main%w(i,k) + Main%w(i,k+1)
+			fb(i,k) = Main%w(i,k-1) + Main%w(i,k+2)
+			fc(i,k) = Main%w(i,k-2) + Main%w(i,k+3)
 			rhoww_pi(i,k) = rhow_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
 	
-			fd(i,k) = w(i,k+1) - w(i,k)
-			fe(i,k) = w(i,k+2) - w(i,k-1)
-			ff(i,k) = w(i,k+3) - w(i,k-2)
+			fd(i,k) = Main%w(i,k+1) - Main%w(i,k)
+			fe(i,k) = Main%w(i,k+2) - Main%w(i,k-1)
+			ff(i,k) = Main%w(i,k+3) - Main%w(i,k-2)
 			rhoww_pi(i,k) = rhoww_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
@@ -258,17 +254,17 @@ CALL ppx_w(rhou_vir,PrhouPx_w)
 CALL ppx_w(rhouw_vir,PrhouwPx_w)
 CALL ppzeta_w(rhow_pi,PrhowPz_w)
 CALL ppzeta_w(rhoww_pi,PrhowwPz_w)
-CALL ppzeta_w(pi_1,Ppi_1Pz_w)
+CALL ppzeta_w(Main%pi_1,Ppi_1Pz_w)
 
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 
-		uPwPx_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhouwPx_w(i,k) - w(i,k)*PrhouPx_w(i,k))
-		wPwPz_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhowwPz_w(i,k) - w(i,k)*PrhowPz_w(i,k))
+		uPwPx_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhouwPx_w(i,k) - Main%w(i,k)*PrhouPx_w(i,k))
+		wPwPz_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhowwPz_w(i,k) - Main%w(i,k)*PrhowPz_w(i,k))
 
-		F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*theta_1(i,k)/wGrid%theta_0(i,k)
+		F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*Main%theta_1(i,k)/wGrid%theta_0(i,k)
 		tend_w(i,k) = F_w(i,k) - Cp*wGrid%theta_0(i,k)*Ppi_1Pz_w(i,k)
 	END DO
 END DO
@@ -278,8 +274,8 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			P2wPx2_w(i,k) = (w(i+1,k) + w(i-1,k) - 2*w(i,k))/dx/dx
-			P2wPz2_w(i,k) = (w(i,k+1) + w(i,k-1) - 2*w(i,k))/dz/dz
+			P2wPx2_w(i,k) = (Main%w(i+1,k) + Main%w(i-1,k) - 2*Main%w(i,k))/dx/dx
+			P2wPz2_w(i,k) = (Main%w(i,k+1) + Main%w(i,k-1) - 2*Main%w(i,k))/dz/dz
 			
 			tend_w(i,k) = tend_w(i,k) + Km*(P2wPx2_w(i,k) + P2wPz2_w(i,k)) ! Add diffusion term.
 		END DO
@@ -294,14 +290,13 @@ END SUBROUTINE tendency_w
 
 
 !=================================================
-SUBROUTINE tendency_pi(u,w,tend_pi, uGrid, wGrid, piGrid, virGrid )
+SUBROUTINE tendency_pi(Main,tend_pi,uGrid,wGrid,piGrid,virGrid )
 IMPLICIT NONE
+TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
-!=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi
+!=================================================
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_pi
 INTEGER :: i, k
 !=================================================
 ! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)
@@ -312,7 +307,7 @@ CALL set_area_expand(expand)
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		urhotheta_u(i,k) = u(i,k)*uGrid%rho_0(i,k)*uGrid%theta_0(i,k)
+		urhotheta_u(i,k) = Main%u(i,k)*uGrid%rho_0(i,k)*uGrid%theta_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -323,7 +318,7 @@ CALL set_area_expand(expand)
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		wrhotheta_w(i,k) = w(i,k)*wGrid%rho_0(i,k)*wGrid%theta_0(i,k)
+		wrhotheta_w(i,k) = Main%w(i,k)*wGrid%rho_0(i,k)*wGrid%theta_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -348,15 +343,13 @@ END SUBROUTINE tendency_pi
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_theta(u,w,theta,tend_theta, uGrid, wGrid, piGrid, virGrid)
+SUBROUTINE tendency_theta(Main,tend_theta,uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
+TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
-!=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
+!=================================================
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_theta
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPthetaPx_w, wPthetaPz_w
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
@@ -377,13 +370,13 @@ CASE (5)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			fa(i,k) = theta(i,k) + theta(i+1,k)
-			fb(i,k) = theta(i-1,k) + theta(i+2,k)
-			fc(i,k) = theta(i-2,k) + theta(i+3,k)
+			fa(i,k) = Main%theta(i,k) + Main%theta(i+1,k)
+			fb(i,k) = Main%theta(i-1,k) + Main%theta(i+2,k)
+			fc(i,k) = Main%theta(i-2,k) + Main%theta(i+3,k)
 			rhoutheta_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-			fd(i,k) = theta(i+1,k) - theta(i,k)
-			fe(i,k) = theta(i+2,k) - theta(i-1,k)
-			ff(i,k) = theta(i+3,k) - theta(i-2,k)
+			fd(i,k) = Main%theta(i+1,k) - Main%theta(i,k)
+			fe(i,k) = Main%theta(i+2,k) - Main%theta(i-1,k)
+			ff(i,k) = Main%theta(i+3,k) - Main%theta(i-2,k)
 			rhoutheta_vir(i,k) = rhoutheta_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
@@ -402,13 +395,13 @@ CASE (5)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			fa(i,k) = theta(i,k+1) + theta(i,k)
-			fb(i,k) = theta(i,k+2) + theta(i,k-1)
-			fc(i,k) = theta(i,k+3) + theta(i,k-2)
+			fa(i,k) = Main%theta(i,k+1) + Main%theta(i,k)
+			fb(i,k) = Main%theta(i,k+2) + Main%theta(i,k-1)
+			fc(i,k) = Main%theta(i,k+3) + Main%theta(i,k-2)
 			rhowtheta_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
-			fd(i,k) = theta(i,k+1) - theta(i,k)
-			fe(i,k) = theta(i,k+2) - theta(i,k-1)
-			ff(i,k) = theta(i,k+3) - theta(i,k-2)
+			fd(i,k) = Main%theta(i,k+1) - Main%theta(i,k)
+			fe(i,k) = Main%theta(i,k+2) - Main%theta(i,k-1)
+			ff(i,k) = Main%theta(i,k+3) - Main%theta(i,k-2)
 			rhowtheta_pi(i,k) = rhowtheta_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd(i,k) - 5*fe(i,k) + ff(i,k))
 		END DO
 	END DO
@@ -427,8 +420,8 @@ CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		uPthetaPx_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhouthetaPx_w(i,k) - theta(i,k)*PrhouPx_w(i,k))
-		wPthetaPz_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhowthetaPz_w(i,k) - theta(i,k)*PrhowPz_w(i,k))
+		uPthetaPx_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhouthetaPx_w(i,k) - Main%theta(i,k)*PrhouPx_w(i,k))
+		wPthetaPz_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhowthetaPz_w(i,k) - Main%theta(i,k)*PrhowPz_w(i,k))
 	
 		F_theta(i,k) = - uPthetaPx_w(i,k) - wPthetaPz_w(i,k)
 		tend_theta(i,k) = F_theta(i,k)
@@ -440,8 +433,8 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			P2thetaPx2_w(i,k) = (theta(i+1,k) + theta(i-1,k) - 2*theta(i,k))/dx/dx
-			P2thetaPz2_w(i,k) = (theta(i,k+1) + theta(i,k-1) - 2*theta(i,k))/dz/dz
+			P2thetaPx2_w(i,k) = (Main%theta(i+1,k) + Main%theta(i-1,k) - 2*Main%theta(i,k))/dx/dx
+			P2thetaPz2_w(i,k) = (Main%theta(i,k+1) + Main%theta(i,k-1) - 2*Main%theta(i,k))/dz/dz
 			
 			tend_theta(i,k) = F_theta(i,k) + Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k)) ! Add diffusion term.
 		END DO

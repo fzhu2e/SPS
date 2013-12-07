@@ -14,14 +14,6 @@ USE sp_module_gridvar
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
-! Basic interpolated variations in Arakawa-C and Charney-Phillips grids.
-!-------------------------------------------------
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_pi, u_w, u_vir
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: w_pi, w_u, w_vir
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1_u, pi_1_w, pi_1_vir
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_vir
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi, theta_1_u, theta_1_vir
-!=================================================
 CONTAINS
 !=================================================
 !/////////////////////////////////////////////////////////////////////

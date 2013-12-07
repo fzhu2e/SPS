@@ -80,9 +80,9 @@ CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,   
                      PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
                      PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
-CALL tendency_u(B%u,B%pi_1,tend_u,uGrid,wGrid,piGrid,virGrid)
-CALL tendency_w(B%w,B%theta_1,B%pi_1,tend_w,uGrid,wGrid,piGrid,virGrid)
-CALL tendency_theta(B%u,B%w,B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_u(B,tend_u,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_theta(B,tend_theta,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_u
 !OMP PARALLEL DO
@@ -106,7 +106,7 @@ END DO
 CALL update_boundary(C%u,C%w)
 CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
 
-CALL tendency_pi(C%u,C%w,tend_pi,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_pi(C,tend_pi,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_pi
 !OMP PARALLEL DO
