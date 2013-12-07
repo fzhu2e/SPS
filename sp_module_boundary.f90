@@ -16,14 +16,13 @@ CONTAINS
 !=================================================
 ! Initiate.
 !=================================================
-SUBROUTINE update_boundary(u,w,pi_1,theta,theta_1)
+SUBROUTINE update_boundary(u,w,pi_1,theta)
 IMPLICIT NONE
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: pi_1     ! pi'
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta_1  ! theta'
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -123,30 +122,6 @@ IF (PRESENT(theta)) THEN
 	END SELECT
 	
 END IF
-
-IF (PRESENT(theta_1)) THEN
-	
-	SELECT CASE (LateralBoundary)
-	CASE (1)
-		CALL no_flux_scalar_lateral_pi(theta_1)
-	CASE (2)
-		CALL periodic_lateral_pi(theta_1)
-	CASE (3)
-		CALL open_lateral_pi(theta_1)
-	CASE DEFAULT
-		STOP "Wrong lateral boundary scheme!!!"
-	END SELECT
-	
-	CALL no_flux_scalar_bottom_w(theta_1)
-	SELECT CASE (UpperBoundary)
-	CASE (1)
-		CALL no_flux_scalar_top_w(theta_1)
-	CASE DEFAULT
-		STOP "Wrong upper boundary scheme!!!"
-	END SELECT
-	
-END IF
-
 
 !=================================================
 END SUBROUTINE update_boundary

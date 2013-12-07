@@ -18,15 +18,15 @@ IMPLICIT NONE
 !=================================================
 CONTAINS
 !=================================================
-SUBROUTINE integrate(uGrid, wGrid, piGrid, virGrid)
+SUBROUTINE integrate(uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
 TYPE(grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 TYPE(mainvar) :: new
 !=================================================
 SELECT CASE (TimeScheme)
-CASE (2)
+CASE (1)
 	! Runge-Kutta Scheme
-	CALL runge_kutta( uGrid, wGrid,  piGrid, virGrid, new)
+	CALL runge_kutta(uGrid,wGrid,piGrid,virGrid,new)
 CASE DEFAULT
 	STOP "Wrong time differencing scheme!!!"
 END SELECT
@@ -36,7 +36,6 @@ uGrid%u = new%u
 wGrid%w = new%w
 piGrid%pi_1 = new%pi_1
 wGrid%theta = new%theta
-wGrid%theta_1 = wGrid%theta - wGrid%theta_0
 !=================================================
 END SUBROUTINE integrate
 !=================================================

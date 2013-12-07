@@ -73,7 +73,8 @@ CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
 
-CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%theta_1)
+CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta)
+wGrid%theta_1 = wGrid%theta - wGrid%theta_0
 
 CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
 !=================================================
@@ -83,7 +84,8 @@ t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
 	CALL integrate(uGrid,wGrid,piGrid,virGrid) ! main integrate module
-	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%theta_1)
+	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta)
+	wGrid%theta_1 = wGrid%theta - wGrid%theta_0
 	IF (MOD(i,100) == 0.) THEN
 		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
 	END IF
