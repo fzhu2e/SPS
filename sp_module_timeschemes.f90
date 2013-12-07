@@ -65,20 +65,20 @@ INTEGER :: i, k
 !=================================================
 CALL basic_interpolate(A,uGrid,wGrid,piGrid,virGrid)
 
-CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
-                     tend_u,tend_w,tend_theta,tend_pi  )
-CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
-                         P2wPx2_w,    P2wPz2_w,   &
-                     P2thetaPx2_w,P2thetaPz2_w    )
-CALL debug_undef_all( rhou_pi, rhouu_pi,          &
-                      rhow_vir , rhowu_vir,           &
-                      rhou_vir , rhouw_vir,           &
-                      rhow_pi, rhoww_pi,          &
-                      rhoutheta_vir, rhowtheta_pi,  &
-                      urhotheta_u, wrhotheta_w    )
-CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
-                     PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
-                     PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
+!CALL debug_undef_all(   F_u,   F_w,   F_theta,   F_pi, &
+                     !tend_u,tend_w,tend_theta,tend_pi  )
+!CALL debug_undef_all(    P2uPx2_u,    P2uPz2_u,   &
+                         !P2wPx2_w,    P2wPz2_w,   &
+                     !P2thetaPx2_w,P2thetaPz2_w    )
+!CALL debug_undef_all( rhou_pi, rhouu_pi,          &
+                      !rhow_vir , rhowu_vir,           &
+                      !rhou_vir , rhouw_vir,           &
+                      !rhow_pi, rhoww_pi,          &
+                      !rhoutheta_vir, rhowtheta_pi,  &
+                      !urhotheta_u, wrhotheta_w    )
+!CALL debug_undef_all(PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u,         &
+                     !PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w,         &
+                     !PrhouthetaPx_w, PrhowthetaPz_w, PurhothetaPx_pi, PwrhothetaPz_pi )
 
 CALL tendency_u(B,tend_u,uGrid,wGrid,piGrid,virGrid)
 CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
@@ -106,13 +106,13 @@ END DO
 CALL update_boundary(C%u,C%w)
 CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
 
-CALL tendency_pi(C,tend_pi,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_pi(C,tend_pi_1,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_pi
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		C%pi_1(i,k) = A%pi_1(i,k) + dt/REAL(deno)*tend_pi(i,k)
+		C%pi_1(i,k) = A%pi_1(i,k) + dt/REAL(deno)*tend_pi_1(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO

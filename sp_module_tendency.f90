@@ -15,27 +15,31 @@ USE sp_module_debug
 IMPLICIT NONE
 !=================================================
 ! Tendency term
-REAL(kd), DIMENSION(ims:ime,kms:kme) ::    F_u,    F_w,    F_theta,    F_pi
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_u, tend_w, tend_theta, tend_pi
+!----------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_u = undef, tend_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_pi_1 = undef, tend_theta = undef
 !-------------------------------------------------
 ! Diffusion term
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u, P2uPz2_u
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w, P2wPz2_w
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w, P2thetaPz2_w
+!----------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u = undef, P2uPz2_u = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w = undef, P2wPz2_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w = undef, P2thetaPz2_w = undef
 !-------------------------------------------------
 ! Conponents
 !----------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_pi, rhouu_pi
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_vir , rhowu_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_vir , rhouw_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_pi, rhoww_pi
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhoutheta_vir, rhowtheta_pi
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u, wrhotheta_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_pi = undef, rhouu_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_vir = undef, rhowu_vir = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_vir = undef, rhouw_vir = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_pi = undef, rhoww_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhoutheta_vir = undef, rhowtheta_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u = undef, wrhotheta_w = undef
 !----------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_u, PrhouuPx_u, PrhowPz_u, PrhowuPz_u, Ppi_1Px_u
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_w, PrhouwPx_w, PrhowPz_w, PrhowwPz_w, Ppi_1Pz_w
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouthetaPx_w, PrhowthetaPz_w
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi, PwrhothetaPz_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_u = undef, PrhouuPx_u = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhowPz_u = undef, PrhowuPz_u = undef, Ppi_1Px_u = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_w = undef, PrhouwPx_w = undef, PrhowPz_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhowwPz_w = undef, Ppi_1Pz_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouthetaPx_w = undef, PrhowthetaPz_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef, PwrhothetaPz_pi = undef
 !=================================================
 CONTAINS
 !=================================================
@@ -290,11 +294,11 @@ END SUBROUTINE tendency_w
 
 
 !=================================================
-SUBROUTINE tendency_pi(Main,tend_pi,uGrid,wGrid,piGrid,virGrid )
+SUBROUTINE tendency_pi(Main,tend_pi_1,uGrid,wGrid,piGrid,virGrid )
 IMPLICIT NONE
 TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi_1
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_pi
 INTEGER :: i, k
@@ -332,7 +336,7 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		
 		F_pi(i,k) = - cs*cs/Cp/piGrid%rho_0(i,k)/piGrid%theta_0(i,k)/piGrid%theta_0(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
-		tend_pi(i,k) = F_pi(i,k)
+		tend_pi_1(i,k) = F_pi(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
