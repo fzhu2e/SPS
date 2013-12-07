@@ -10,6 +10,7 @@
 MODULE sp_module_tendency
 USE sp_module_constant
 USE sp_module_model
+USE sp_module_gridvar
 USE sp_module_interpolate
 USE sp_module_debug
 IMPLICIT NONE
@@ -39,12 +40,12 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi, PwrhothetaPz_pi
 !=================================================
 CONTAINS
 !=================================================
-SUBROUTINE tendency_u(u,pi_1,F_u,tend_u)
+SUBROUTINE tendency_u(u,pi_1,tend_u)
 IMPLICIT NONE
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_u
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPuPx_u, wPuPz_u
@@ -77,7 +78,7 @@ CASE (5)
 			fa(i,k) = u(i-1,k) + u(i,k)
 			fb(i,k) = u(i-2,k) + u(i+1,k)
 			fc(i,k) = u(i-3,k) + u(i+2,k)
-			rhouu_pi(i,k) = rho_0(i,k)*u_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			rhouu_pi(i,k) = rhou_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
 			fd(i,k) = u(i,k) - u(i-1,k)
 			fe(i,k) = u(i+1,k) - u(i-2,k)
 			ff(i,k) = u(i+2,k) - u(i-3,k)
@@ -110,7 +111,7 @@ CASE (5)
 			fa(i,k) = u(i,k) + u(i,k-1)
 			fb(i,k) = u(i,k+1) + u(i,k-2)
 			fc(i,k) = u(i,k+2) + u(i,k-3)
-			rhowu_vir(i,k) = rho_0_vir(i,k)*w_vir(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			rhowu_vir(i,k) = rhow_vir(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
 			fd(i,k) = u(i,k) - u(i,k-1)
 			fe(i,k) = u(i,k+1) - u(i,k-2)
 			ff(i,k) = u(i,k+2) - u(i,k-3)
@@ -164,13 +165,13 @@ END SUBROUTINE tendency_u
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_w(w,theta_1,pi_1,F_w,tend_w)
+SUBROUTINE tendency_w(w,theta_1,pi_1,tend_w)
 IMPLICIT NONE
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_w
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_w
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPwPx_w, wPwPz_w
@@ -203,7 +204,7 @@ CASE (5)
 			fa(i,k) = w(i,k) + w(i+1,k)
 			fb(i,k) = w(i-1,k) + w(i+2,k)
 			fc(i,k) = w(i-2,k) + w(i+3,k)
-			rhouw_vir(i,k) = rho_0_vir(i,k)*u_vir(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			rhouw_vir(i,k) = rhou_vir(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
 			fd(i,k) = w(i+1,k) - w(i,k)
 			fe(i,k) = w(i+2,k) - w(i-1,k)
 			ff(i,k) = w(i+3,k) - w(i-2,k)
@@ -236,7 +237,7 @@ CASE (5)
 			fa(i,k) = w(i,k) + w(i,k+1)
 			fb(i,k) = w(i,k-1) + w(i,k+2)
 			fc(i,k) = w(i,k-2) + w(i,k+3)
-			rhoww_pi(i,k) = rho_0(i,k)*w_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			rhoww_pi(i,k) = rhow_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
 	
 			fd(i,k) = w(i,k+1) - w(i,k)
 			fe(i,k) = w(i,k+2) - w(i,k-1)
@@ -291,12 +292,12 @@ END SUBROUTINE tendency_w
 
 
 !=================================================
-SUBROUTINE tendency_pi(u,w,F_pi,tend_pi)
+SUBROUTINE tendency_pi(u,w,tend_pi)
 IMPLICIT NONE
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi
 INTEGER :: i, k
 !=================================================
@@ -319,7 +320,7 @@ CALL set_area_expand(expand)
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0(i,k)
+		wrhotheta_w(i,k) = w(i,k)*rho_0_w(i,k)*theta_0_pi(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -344,13 +345,13 @@ END SUBROUTINE tendency_pi
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_theta(u,w,theta,F_theta,tend_theta)
+SUBROUTINE tendency_theta(u,w,theta,tend_theta)
 IMPLICIT NONE
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: F_theta
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPthetaPx_w, wPthetaPz_w

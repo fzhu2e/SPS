@@ -50,7 +50,6 @@ WRITE(*,"(1X,A9,2F9.2)") " Km/Kh: ", Km, Kh
 WRITE(*,*) "====================="
 WRITE(*,*)
 
-!CALL debug_undef_all(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 CALL initiate_grid(uGrid,wGrid,piGrid,virGrid)
 CALL initiate_terrain(uGrid,wGrid,piGrid,virGrid)
 CALL initiate_basic_state(uGrid,wGrid,piGrid,virGrid)
@@ -64,7 +63,6 @@ WRITE(*,*)
 SELECT CASE (RunCase)
 CASE (1)
 	CALL initiate_dc(uGrid,wGrid,piGrid,virGrid)
-	!CALL initiate_dc(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
 !CASE (2)
 	!CALL initiate_tb(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the TB case
 !CASE (3)
@@ -75,11 +73,11 @@ CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
 
-u = uGrid%u
-w = wGrid%w
-pi_1 = piGrid%pi_1
-theta = wGrid%theta
-theta_1 = wGrid%theta_1
+!u = uGrid%u
+!w = wGrid%w
+!pi_1 = piGrid%pi_1
+!theta = wGrid%theta
+!theta_1 = wGrid%theta_1
 
 pi_0 = piGrid%pi_0
 
@@ -93,7 +91,7 @@ rho_0_u = uGrid%rho_0
 rho_0_w = wGrid%rho_0
 rho_0_vir = virGrid%rho_0
 
-CALL update_boundary(u,w,pi_1,theta,theta_1)
+CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%theta_1)
 
 !CALL debug_ascii_output(u,"u")
 !CALL debug_ascii_output(w,"w")
@@ -109,26 +107,19 @@ CALL update_boundary(u,w,pi_1,theta,theta_1)
 !CALL debug_ascii_output(rho_0_u,"rho_0_u")
 !CALL debug_ascii_output(rho_0_vir,"rho_0_vir")
 
-CALL output(0,u,w,pi_1,theta_1)                               ! output the initial fields
-!-------------------------------------------------
-!CALL debug_ascii_output(pi)
-!CALL debug_ascii_output(pi_0)
-!CALL debug_ascii_output(pi_1)
-!CALL debug_ascii_output(theta)
-!CALL debug_ascii_output(theta_1)
-!CALL debug_ascii_output(rho_0)
+CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)                               ! output the initial fields
 !=================================================
 ! Integrate.
 !-------------------------------------------------
 t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
-	CALL integrate(u,w,pi_1,theta,theta_1) ! main integrate module
-	CALL update_boundary(u,w,pi_1,theta,theta_1)
+	CALL integrate(uGrid,wGrid,piGrid,virGrid) ! main integrate module
+	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%theta_1)
 	!IF (MOD(i,1000) == 0.) THEN
 	!IF (MOD(i,200) == 0.) THEN
 	IF (MOD(i,100) == 0.) THEN
-		CALL output(1,u,w,pi_1,theta_1)               ! output the fields at each time step
+		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)               ! output the fields at each time step
 	END IF
 	
 	CALL SYSTEM_CLOCK(t_end)
@@ -140,7 +131,7 @@ END DO
 !=================================================
 ! Finish.
 !-------------------------------------------------
-CALL output(99,u,w,pi_1,theta_1)                   ! finish
+CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)                   ! finish
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"
