@@ -19,9 +19,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_pi, u_w, u_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: w_pi, w_u, w_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1_u, pi_1_w, pi_1_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi, theta_u, theta_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0_pi, theta_0_u, theta_0_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi, theta_1_u, theta_1_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0_u, rho_0_w, rho_0_vir
 !=================================================
 CONTAINS
 !=================================================

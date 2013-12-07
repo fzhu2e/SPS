@@ -130,11 +130,13 @@ INTEGER, PARAMETER :: ims = its - halo
 INTEGER, PARAMETER :: ime = ite + halo
 INTEGER, PARAMETER :: kms = kts - halo
 INTEGER, PARAMETER :: kme = kte + halo
-
+!-------------------------------------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0_pi, theta_0_u, theta_0_vir
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0_u, rho_0_w, rho_0_vir
 !-------------------------------------------------
 ! Vertical coordinates
 
-!REAL(kd), PARAMETER :: ztop = nz*dz                         ! (m)
+REAL(kd), PARAMETER :: ztop = nz*dz                         ! (m)
 !REAL(kd), DIMENSION(ims:ime) :: zs = 0.                     ! (m) on u-grid
 !REAL(kd), DIMENSION(ims:ime) :: zs_pi = 0.                  ! (m) on pi-grid
 !REAL(kd), DIMENSION(ims:ime) :: PzsPx = 0.                  ! (m) on u-grid

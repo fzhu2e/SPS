@@ -10,7 +10,6 @@
 MODULE sp_module_initiate
 USE sp_module_constant
 USE sp_module_model
-USE sp_module_interpolate
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================

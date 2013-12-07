@@ -58,6 +58,7 @@ CALL debug_undef_all(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
 WRITE(*,*) "====================="
 WRITE(*,*) " Initial case..."
 WRITE(*,*) "====================="
+WRITE(*,*)
 SELECT CASE (RunCase)
 CASE (1)
 	CALL initiate_dc(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the DC case
@@ -78,8 +79,6 @@ CALL update_boundary(u,w,pi_1,theta,theta_1,                  &
 !CALL debug_ascii_output(u)
 
 CALL output(0,u,w,theta_1,pi_1)                               ! output the initial fields
-WRITE(*,*) "====================="
-WRITE(*,*)
 !-------------------------------------------------
 !CALL debug_ascii_output(pi)
 !CALL debug_ascii_output(pi_0)
@@ -90,13 +89,8 @@ WRITE(*,*)
 !=================================================
 ! Integrate.
 !-------------------------------------------------
-
-!nstep = 0
-!nstep = 1
-
 t_all = 0.
 DO i = 1, nstep
-	
 	CALL SYSTEM_CLOCK(t_start,rate)
 	CALL integrate(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0) ! main integrate module
 	CALL update_boundary(u,w,pi_1,theta,theta_1)
@@ -111,9 +105,9 @@ DO i = 1, nstep
 	t_left = t_lapse*(nstep - i)/60./60.  ! unit: hour
 	t_all = t_all + t_lapse
 	WRITE(*,"('Step/nStep -- time lapse/left: ',2X,I6,'/ ',I6,' --',F12.6,' sec/',1X,F6.3,' hr')") , i, nstep, t_lapse, t_left
-	
 END DO
 !=================================================
+! Finish.
 !-------------------------------------------------
 CALL output(99,u,w,theta_1,pi_1,theta)                   ! finish
 WRITE(*,*)
