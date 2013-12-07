@@ -18,12 +18,13 @@ CONTAINS
 !=================================================
 ! Output ASCII file.
 !=================================================
-SUBROUTINE debug_ascii_output(var)
+SUBROUTINE debug_ascii_output(var,filename)
 IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var
+CHARACTER(*) :: filename
 INTEGER :: i, k
 !=================================================
-OPEN(1, FILE = 'debug/debug_field.txt')
+OPEN(1, FILE = 'debug/'//TRIM(ADJUSTL(filename)))
 DO k = kms, kme
 	DO i = ims, ime - 1
 		WRITE(1, "(F11.5\)") var(i,k)

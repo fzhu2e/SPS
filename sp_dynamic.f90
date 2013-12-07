@@ -10,6 +10,7 @@
 PROGRAM sp_dynamic
 USE sp_module_constant
 USE sp_module_model
+USE sp_module_gridvar
 USE sp_module_initiate
 USE sp_module_boundary
 USE sp_module_integrate
@@ -78,7 +79,7 @@ CALL update_boundary(u,w,pi_1,theta,theta_1,                  &
 
 !CALL debug_ascii_output(u)
 
-CALL output(0,u,w,theta_1,pi_1)                               ! output the initial fields
+CALL output(0,u,w,pi_1,theta_1)                               ! output the initial fields
 !-------------------------------------------------
 !CALL debug_ascii_output(pi)
 !CALL debug_ascii_output(pi_0)
@@ -97,7 +98,7 @@ DO i = 1, nstep
 	!IF (MOD(i,1000) == 0.) THEN
 	!IF (MOD(i,200) == 0.) THEN
 	IF (MOD(i,100) == 0.) THEN
-		CALL output(1,u,w,theta_1,pi_1)               ! output the fields at each time step
+		CALL output(1,u,w,pi_1,theta_1)               ! output the fields at each time step
 	END IF
 	
 	CALL SYSTEM_CLOCK(t_end)
@@ -109,7 +110,7 @@ END DO
 !=================================================
 ! Finish.
 !-------------------------------------------------
-CALL output(99,u,w,theta_1,pi_1,theta)                   ! finish
+CALL output(99,u,w,pi_1,theta_1)                   ! finish
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"

@@ -32,8 +32,8 @@ clean:
 	$(F90) $(F90FLAGS) -c $<
 
 sp_dynamic.o: sp_module_boundary.o sp_module_constant.o sp_module_debug.o \
-	sp_module_initiate.o sp_module_integrate.o sp_module_model.o \
-	sp_module_output.o
+	sp_module_gridvar.o sp_module_initiate.o sp_module_integrate.o \
+	sp_module_model.o sp_module_output.o
 sp_module_boundary.o: sp_module_constant.o sp_module_debug.o \
 	sp_module_model.o
 sp_module_debug.o: sp_module_constant.o sp_module_model.o

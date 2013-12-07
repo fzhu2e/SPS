@@ -16,15 +16,14 @@ CONTAINS
 !=================================================
 ! Output the fields.
 !=================================================
-SUBROUTINE output(flag,u,w,theta_1,pi_1,theta)
+SUBROUTINE output(flag,u,w,pi_1,theta_1)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: w        ! wind speed along z-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta_1  ! theta'
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: pi_1     ! pi'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta_1  ! theta'
 !=================================================
 SELECT CASE(flag)
 CASE (0)
@@ -36,22 +35,14 @@ CASE (0)
 		OPEN(2, FILE="./output/modelvar_w.bin", FORM='binary', CONVERT='big_endian')
 		WRITE(2) w(its:ite,kts:kte)
 	END IF
-	IF (PRESENT(theta_1)) THEN
-		OPEN(3, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(3) theta_1(its:ite,kts:kte)
-	END IF
 	IF (PRESENT(pi_1)) THEN
-		OPEN(4, FILE="./output/modelvar_pi_1.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(4) pi_1(its:ite,kts:kte)
+		OPEN(3, FILE="./output/modelvar_pi_1.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(3) pi_1(its:ite,kts:kte)
 	END IF
-	IF (PRESENT(theta)) THEN
-		OPEN(5, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(5) theta(its:ite,kts:kte)
+	IF (PRESENT(theta_1)) THEN
+		OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(4) theta_1(its:ite,kts:kte)
 	END IF
-	!WRITE(1) u(ims:ime,kms:kme)
-	!WRITE(2) w(ims:ime,kms:kme)
-	!WRITE(3) theta_1(ims:ime,kms:kme)
-	!WRITE(4) pi_1(its:ime,kms:kme)
 CASE (1)
 	IF (PRESENT(u)) THEN
 		WRITE(1) u(its:ite,kts:kte)
@@ -59,19 +50,12 @@ CASE (1)
 	IF (PRESENT(w)) THEN
 		WRITE(2) w(its:ite,kts:kte)
 	END IF
-	IF (PRESENT(theta_1)) THEN
-		WRITE(3) theta_1(its:ite,kts:kte)
-	END IF
 	IF (PRESENT(pi_1)) THEN
-		WRITE(4) pi_1(its:ite,kts:kte)
+		WRITE(3) pi_1(its:ite,kts:kte)
 	END IF
-	IF (PRESENT(theta)) THEN
-		WRITE(5) theta(its:ite,kts:kte)
+	IF (PRESENT(theta_1)) THEN
+		WRITE(4) theta_1(its:ite,kts:kte)
 	END IF
-	!WRITE(1) u(ims:ime,kms:kme)
-	!WRITE(2) w(ims:ime,kms:kme)
-	!WRITE(3) theta_1(ims:ime,kms:kme)
-	!WRITE(4) pi_1(its:ime,kms:kme)
 CASE (99)
 	IF (PRESENT(u)) THEN
 		CLOSE(1)
@@ -79,14 +63,11 @@ CASE (99)
 	IF (PRESENT(w)) THEN
 		CLOSE(2)
 	END IF
-	IF (PRESENT(theta_1)) THEN
+	IF (PRESENT(pi_1)) THEN
 		CLOSE(3)
 	END IF
-	IF (PRESENT(pi_1)) THEN
+	IF (PRESENT(theta_1)) THEN
 		CLOSE(4)
-	END IF
-	IF (PRESENT(theta)) THEN
-		CLOSE(5)
 	END IF
 CASE DEFAULT
 	WRITE(*,*) "==================================="
