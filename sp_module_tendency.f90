@@ -11,6 +11,7 @@ MODULE sp_module_tendency
 USE sp_module_constant
 USE sp_module_model
 USE sp_module_gridvar
+USE sp_module_advection
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
@@ -474,108 +475,6 @@ END IF
 IF (ANY(ISNAN(F_theta(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
 !=================================================
 END SUBROUTINE tendency_theta
-!=================================================
-
-!=================================================
-SUBROUTINE ppx_u(var_pi,output)
-IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
-INTEGER :: i, k
-CALL set_area_u
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		output(i,k) = (var_pi(i+1,k) - var_pi(i,k))/dx
-	END DO
-END DO
-!OMP END PARALLEL DO
-END SUBROUTINE ppx_u
-!=================================================
-
-!=================================================
-SUBROUTINE ppzeta_u(var_vir,output)
-IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
-INTEGER :: i, k
-CALL set_area_u
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		output(i,k) = (var_vir(i,k+1) - var_vir(i,k))/dz
-	END DO
-END DO
-!OMP END PARALLEL DO
-END SUBROUTINE ppzeta_u
-!=================================================
-
-!=================================================
-SUBROUTINE ppx_w(var_vir,output)
-IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_vir
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
-INTEGER :: i, k
-CALL set_area_w
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		output(i,k) = (var_vir(i,k) - var_vir(i-1,k))/dx
-	END DO
-END DO
-!OMP END PARALLEL DO
-END SUBROUTINE ppx_w
-!=================================================
-
-!=================================================
-SUBROUTINE ppzeta_w(var_pi,output)
-IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
-INTEGER :: i, k
-CALL set_area_w
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		output(i,k) = (var_pi(i,k) - var_pi(i,k-1))/dz
-	END DO
-END DO
-!OMP END PARALLEL DO
-END SUBROUTINE ppzeta_w
-!=================================================
-
-!=================================================
-SUBROUTINE ppx_pi(var_u,output)
-IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_u
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
-INTEGER :: i, k
-CALL set_area_pi
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		output(i,k) = (var_u(i,k) - var_u(i-1,k))/dx
-	END DO
-END DO
-!OMP END PARALLEL DO
-END SUBROUTINE ppx_pi
-!=================================================
-
-!=================================================
-SUBROUTINE ppzeta_pi(var_w,output)
-IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_w
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
-INTEGER :: i, k
-CALL set_area_pi
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		output(i,k) = (var_w(i,k+1) - var_w(i,k))/dz
-	END DO
-END DO
-!OMP END PARALLEL DO
-END SUBROUTINE ppzeta_pi
 !=================================================
 
 !=================================================
