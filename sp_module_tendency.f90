@@ -268,7 +268,7 @@ DO k = kmin, kmax
 		uPwPx_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhouwPx_w(i,k) - Main%w(i,k)*PrhouPx_w(i,k))
 		wPwPz_w(i,k) = 1./wGrid%rho_0(i,k)*(PrhowwPz_w(i,k) - Main%w(i,k)*PrhowPz_w(i,k))
 
-		F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*Main%theta_1(i,k)/wGrid%theta_0(i,k)
+		F_w(i,k) = - uPwPx_w(i,k) - wPwPz_w(i,k) + g*wGrid%theta_1(i,k)/wGrid%theta_0(i,k)
 		tend_w(i,k) = F_w(i,k) - Cp*wGrid%theta_0(i,k)*Ppi_1Pz_w(i,k)
 	END DO
 END DO
