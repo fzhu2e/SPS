@@ -95,6 +95,9 @@ DO i = imin, imax
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
 		wGrid%theta_1(i,k) = 2.*MAX(0.,1. - L/R)
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
+		wGrid%qc(i,k) = 0.
+		wGrid%qv(i,k) = 0.
+		wGrid%qr(i,k) = 0.
 	END DO
 END DO
 
@@ -141,6 +144,9 @@ DO i = imin, imax
 		L = SIN(PI_math*wGrid%zz(i,k)/H)/(1. + (wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c)/a/a)
 		wGrid%theta_1(i,k) = 0.01*L
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
+		wGrid%qc(i,k) = 0.
+		wGrid%qv(i,k) = 0.
+		wGrid%qr(i,k) = 0.
 	END DO
 END DO
 

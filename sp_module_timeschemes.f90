@@ -14,7 +14,6 @@ USE sp_module_gridvar
 USE sp_module_tendency
 USE sp_module_interpolate
 USE sp_module_boundary
-USE sp_module_math
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
