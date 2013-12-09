@@ -14,33 +14,6 @@ USE sp_module_gridvar
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
-! Tendency term
-!----------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_u = undef, tend_w = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_pi_1 = undef, tend_theta = undef
-!-------------------------------------------------
-! Diffusion term
-!----------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u = undef, P2uPz2_u = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w = undef, P2wPz2_w = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w = undef, P2thetaPz2_w = undef
-!-------------------------------------------------
-! Conponents
-!----------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_pi = undef, rhouu_pi = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_vir = undef, rhowu_vir = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_vir = undef, rhouw_vir = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_pi = undef, rhoww_pi = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhoutheta_vir = undef, rhowtheta_pi = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u = undef, wrhotheta_w = undef
-!----------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_u = undef, PrhouuPx_u = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhowPz_u = undef, PrhowuPz_u = undef, Ppi_1Px_u = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_w = undef, PrhouwPx_w = undef, PrhowPz_w = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhowwPz_w = undef, Ppi_1Pz_w = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouthetaPx_w = undef, PrhowthetaPz_w = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef, PwrhothetaPz_pi = undef
-!=================================================
 CONTAINS
 !=================================================
 SUBROUTINE tendency_u(Main,tend_u,uGrid,wGrid,piGrid,virGrid)
@@ -53,6 +26,16 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_u
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPuPx_u, wPuPz_u
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
+!-------------------------------------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_pi = undef, rhouu_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_u = undef, PrhouuPx_u = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_vir = undef, rhowu_vir = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhowPz_u = undef, PrhowuPz_u = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Px_u = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u = undef, P2uPz2_u = undef
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -179,6 +162,16 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_w
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPwPx_w, wPwPz_w
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_vir = undef, rhouw_vir = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_w = undef, PrhouwPx_w = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_pi = undef, rhoww_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhowwPz_w = undef, Ppi_1Pz_w = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhowPz_w = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w = undef, P2wPz2_w = undef
+!-------------------------------------------------
 INTEGER :: i, k
 !=================================================
 ! 2. F_w = - u p.w/p.x - w p.w/p.z + g(theta_1/theta_0)
@@ -301,6 +294,9 @@ TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi_1
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_pi
+!-------------------------------------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u = undef, wrhotheta_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef, PwrhothetaPz_pi = undef
 INTEGER :: i, k
 !=================================================
 ! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)
@@ -358,16 +354,43 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_theta
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: uPthetaPx_w, wPthetaPz_w
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_vir = undef, rhow_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_w = undef, PrhowPz_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhoutheta_vir = undef, rhowtheta_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouthetaPx_w = undef, PrhowthetaPz_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w = undef, P2thetaPz2_w = undef
 INTEGER :: i, k
 !=================================================
 ! 3. F_theta = - u p.theta/p.x - w p.theta/p.z
 ! 3.1. - u p.theta/p.x = - 1/rho (p.rhoutheta/p.x - theta p.rhou/p.x)
 ! 3.2. - w p.w/p.z = - 1/rho (p.rhothetaw/p.z - theta p.rhow/p.z)
 !-------------------------------------------------
+! pi-grid
+!-------------------------------------------------
+CALL set_area_pi
+CALL set_area_expand(expand)
+
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+!-------------------------------------------------
 ! v(virtual)-grid
 !-------------------------------------------------
 CALL set_area_vir
 CALL set_area_expand(expand)
+
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
 
 SELECT CASE (AdvectionScheme)
 CASE (5)
@@ -377,7 +400,7 @@ CASE (5)
 			fa(i,k) = Main%theta(i,k) + Main%theta(i+1,k)
 			fb(i,k) = Main%theta(i-1,k) + Main%theta(i+2,k)
 			fc(i,k) = Main%theta(i-2,k) + Main%theta(i+3,k)
-			rhoutheta_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			rhoutheta_vir(i,k) = rhou_vir(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
 			fd(i,k) = Main%theta(i+1,k) - Main%theta(i,k)
 			fe(i,k) = Main%theta(i+2,k) - Main%theta(i-1,k)
 			ff(i,k) = Main%theta(i+3,k) - Main%theta(i-2,k)
@@ -402,7 +425,7 @@ CASE (5)
 			fa(i,k) = Main%theta(i,k+1) + Main%theta(i,k)
 			fb(i,k) = Main%theta(i,k+2) + Main%theta(i,k-1)
 			fc(i,k) = Main%theta(i,k+3) + Main%theta(i,k-2)
-			rhowtheta_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
+			rhowtheta_pi(i,k) = rhow_pi(i,k)/60.*(37*fa(i,k) - 8*fb(i,k) + fc(i,k))
 			fd(i,k) = Main%theta(i,k+1) - Main%theta(i,k)
 			fe(i,k) = Main%theta(i,k+2) - Main%theta(i,k-1)
 			ff(i,k) = Main%theta(i,k+3) - Main%theta(i,k-2)
@@ -416,6 +439,8 @@ END SELECT
 !-------------------------------------------------
 ! w-grid - Theta on kts and kte+1 should also be updated.
 !-------------------------------------------------
+CALL ppx_w(rhou_vir,PrhouPx_w)
+CALL ppzeta_w(rhow_pi,PrhowPz_w)
 CALL ppx_w(rhoutheta_vir,PrhouthetaPx_w)
 CALL ppzeta_w(rhowtheta_pi,PrhowthetaPz_w)
 

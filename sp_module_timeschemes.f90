@@ -61,14 +61,20 @@ TYPE(mainvar), INTENT(IN) :: A, B
 INTEGER, INTENT(IN) :: deno
 TYPE(grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 TYPE(mainvar), INTENT(OUT) :: C
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_u = undef, tend_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_pi_1 = undef, tend_theta = undef
+
 INTEGER :: i, k
 !=================================================
 CALL basic_interpolate(A,uGrid,wGrid,piGrid,virGrid)
 
+!-------------------------------------------------
 CALL tendency_u(B,tend_u,uGrid,wGrid,piGrid,virGrid)
 CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
 CALL tendency_theta(B,tend_theta,uGrid,wGrid,piGrid,virGrid)
 
+!-------------------------------------------------
 CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
@@ -78,6 +84,7 @@ DO k = kmin, kmax
 END DO
 !OMP END PARALLEL DO
 
+!-------------------------------------------------
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
@@ -89,9 +96,11 @@ DO k = kmin, kmax
 END DO
 !OMP END PARALLEL DO
 
+!-------------------------------------------------
 CALL update_boundary(C%u,C%w)
 CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
 
+!-------------------------------------------------
 CALL tendency_pi(C,tend_pi_1,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_pi
@@ -103,6 +112,7 @@ DO k = kmin, kmax
 END DO
 !OMP END PARALLEL DO
 
+!-------------------------------------------------
 CALL update_boundary(C%u,C%w,C%pi_1,C%theta)
 !=================================================
 END SUBROUTINE update
