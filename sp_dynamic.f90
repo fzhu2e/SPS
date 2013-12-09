@@ -63,10 +63,10 @@ WRITE(*,*)
 SELECT CASE (RunCase)
 CASE (1)
 	CALL initiate_dc(uGrid,wGrid,piGrid,virGrid)
-!CASE (2)
-	!CALL initiate_tb(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the TB case
-!CASE (3)
-	!CALL initiate_igw(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
+CASE (2)
+	CALL initiate_tb(uGrid,wGrid,piGrid,virGrid)
+CASE (3)
+	CALL initiate_igw(uGrid,wGrid,piGrid,virGrid)
 !CASE (4)
 	!CALL initiate_Sm(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
 CASE DEFAULT

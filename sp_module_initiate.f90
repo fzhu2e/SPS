@@ -69,153 +69,89 @@ END SUBROUTINE initiate_dc
 !=================================================
 ! Initiate thermal bubble case.
 !=================================================
-!SUBROUTINE initiate_tb(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
-!IMPLICIT NONE
-!!-------------------------------------------------
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
-!!-------------------------------------------------
-!REAL(kd), PARAMETER :: x_c = 10.0*1000. ! (m)
-!REAL(kd), PARAMETER :: z_c = 2.0*1000.  ! (m)
-!REAL(kd), PARAMETER :: R = 2.0*1000.    ! (m)
-!!-------------------------------------------------
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
-!!-------------------------------------------------
-!REAL(kd) :: L
-!!-------------------------------------------------
-!INTEGER :: i, k
-!!=================================================
-!CALL debug_undef_all(pi,theta_1_pi,theta_pi)
+SUBROUTINE initiate_tb(uGrid,wGrid,piGrid,virGrid)
+IMPLICIT NONE
+TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!-------------------------------------------------
+REAL(kd), PARAMETER :: x_c = 10.0*1000. ! (m)
+REAL(kd), PARAMETER :: z_c = 2.0*1000.  ! (m)
+REAL(kd), PARAMETER :: R = 2.0*1000.    ! (m)
+!-------------------------------------------------
+REAL(kd) :: L
+!-------------------------------------------------
+INTEGER :: i, k
+!=================================================
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		uGrid%u(i,k) = 0.
+	END DO
+END DO
 
-!CALL initiate_grid
-!!-------------------------------------------------
-!! theta_0, pi_0, rho_0
-!!-------------------------------------------------
-!CALL initiate_basic_state(theta_0,pi_0,rho_0)
-!!-------------------------------------------------
-!! u (on u-grid)
-!!-------------------------------------------------
-!CALL set_area_u
-!DO i = imin, imax
-	!DO k = kmin, kmax
-		!u(i,k) = 0.
-	!END DO
-!END DO
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		wGrid%w(i,k) = 0.
+		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
+		wGrid%theta_1(i,k) = 2.*MAX(0.,1. - L/R)
+		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
+	END DO
+END DO
 
-!!-------------------------------------------------
-!! w (on w-grid)
-!!-------------------------------------------------
-!CALL set_area_w
-!DO i = imin, imax
-	!DO k = kmin, kmax
-		!w(i,k) = 0.
-!!-------------------------------------------------
-!! theta_1, theta (on w-grid)
-!!-------------------------------------------------
-		!L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c) + (zz(k) - z_c)*(zz(k) - z_c))
-		!theta_1(i,k) = 2.*MAX(0.,1. - L/R)
-		!theta(i,k) = theta_0(i,k) + theta_1(i,k)
-	!END DO
-!END DO
-
-!!-------------------------------------------------
-!! pi_1 (on pi-grid)
-!!-------------------------------------------------
-!CALL set_area_pi
-!DO i = imin, imax
-	!DO k = kmin, kmax
-		!!L = SQRT((xpi(i) - x_c)*(xpi(i) - x_c) + (zpi(k) - z_c)*(zpi(k) - z_c))
-		!!theta_1_pi(i,k) = 2.*MAX(0.,1. - L/R)
-		!!theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
-		!pi_1(i,k) = 0.
-	!END DO
-!END DO
-!!=================================================
-!END SUBROUTINE initiate_tb
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
+		piGrid%pi_1(i,k) = 0.
+	END DO
+END DO
+!=================================================
+END SUBROUTINE initiate_tb
 !=================================================
 
 !=================================================
 ! Initiate inertia gravity waves.
 !=================================================
-!SUBROUTINE initiate_igw(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
-!IMPLICIT NONE
-!!-------------------------------------------------
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
-!!-------------------------------------------------
-!REAL(kd), PARAMETER :: x_c = 100.0*1000. ! (m)
-!REAL(kd), PARAMETER :: H = 10.0*1000.    ! (m)
-!REAL(kd), PARAMETER :: a = 5.0*1000.     ! (m)
-!!-------------------------------------------------
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
-!!-------------------------------------------------
-!REAL(kd) :: L
-!!-------------------------------------------------
-!INTEGER :: i, k
-!!=================================================
-!CALL debug_undef_all(pi,theta_1_pi,theta_pi)
+SUBROUTINE initiate_igw(uGrid,wGrid,piGrid,virGrid)
+IMPLICIT NONE
+TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!-------------------------------------------------
+REAL(kd), PARAMETER :: x_c = 100.0*1000. ! (m)
+REAL(kd), PARAMETER :: H = 10.0*1000.    ! (m)
+REAL(kd), PARAMETER :: a = 5.0*1000.     ! (m)
+!-------------------------------------------------
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
+!-------------------------------------------------
+REAL(kd) :: L
+!-------------------------------------------------
+INTEGER :: i, k
+!=================================================
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		uGrid%u(i,k) = 20.
+	END DO
+END DO
 
-!CALL initiate_grid
-!!-------------------------------------------------
-!! theta_0, pi_0, rho_0
-!!-------------------------------------------------
-!CALL initiate_basic_state(theta_0,pi_0,rho_0)
-!!-------------------------------------------------
-!! u (on u-grid)
-!!-------------------------------------------------
-!CALL set_area_u
-!DO i = imin, imax
-	!DO k = kmin, kmax
-		!u(i,k) = 20.
-	!END DO
-!END DO
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		wGrid%w(i,k) = 0.
+		L = SIN(PI_math*wGrid%zz(i,k)/H)/(1. + (wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c)/a/a)
+		wGrid%theta_1(i,k) = 0.01*L
+		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
+	END DO
+END DO
 
-!!-------------------------------------------------
-!! w (on w-grid)
-!!-------------------------------------------------
-!CALL set_area_w
-!DO i = imin, imax
-	!DO k = kmin, kmax
-		!w(i,k) = 0.
-!!-------------------------------------------------
-!! theta_1, theta (on w-grid)
-!!-------------------------------------------------
-		!L = SIN(PI_math*zz(k)/H)/(1. + (xx(i) - x_c)*(xx(i) - x_c)/a/a)
-		!theta_1(i,k) = 0.01*L
-		!theta(i,k) = theta_0(i,k) + theta_1(i,k)
-	!END DO
-!END DO
-
-!!-------------------------------------------------
-!! pi_1 (on pi-grid)
-!!-------------------------------------------------
-!CALL set_area_pi
-!DO i = imin, imax
-	!DO k = kmin, kmax
-		!!L = SIN(PI_math*zpi(k)/H)/(1. + (xpi(i) - x_c)*(xpi(i) - x_c)/a/a)
-		!!theta_1_pi(i,k) = 0.01*L
-		!!theta_pi(i,k) = theta_0_pi(i,k) + theta_1_pi(i,k)
-		!pi_1(i,k) = 0.
-	!END DO
-!END DO
-!!=================================================
-!END SUBROUTINE initiate_igw
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
+		piGrid%pi_1(i,k) = 0.
+	END DO
+END DO
+!=================================================
+END SUBROUTINE initiate_igw
 !=================================================
 
 
