@@ -33,7 +33,6 @@ old%u = uGrid%u
 old%w = wGrid%w
 old%pi_1 = piGrid%pi_1
 old%theta = wGrid%theta
-!old%theta_1 = wGrid%theta_1
 !=================================================
 ! Step 1. phi* = phi(n) + dt/3.*tend(phi(n))
 !-------------------------------------------------
