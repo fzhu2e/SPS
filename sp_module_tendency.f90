@@ -145,14 +145,15 @@ DO k = kmin, kmax
 END DO
 !OMP END PARALLEL DO
 !-------------------------------------------------
-IF (ANY(ISNAN(F_pi(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH F_theta!!!"
+IF (ANY(ISNAN(tend_pi_1(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_pi_1!!!"
 !=================================================
 END SUBROUTINE tendency_pi
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_theta(Main,tend_theta,uGrid,wGrid,piGrid,virGrid)
+SUBROUTINE tendency_theta(flag,Main,tend_theta,uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
+INTEGER, INTENT(IN) :: flag
 TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
@@ -162,20 +163,42 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_theta = undef, D_theta = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w = undef, P2thetaPz2_w = undef
 INTEGER :: i, k
 !=================================================
-CALL calc_advection_w(Main%theta,A_theta,uGrid,wGrid,piGrid,virGrid)
+SELECT CASE (flag)
+CASE (0)
+	CALL calc_advection_w(Main%theta,A_theta,uGrid,wGrid,piGrid,virGrid)
+CASE (1)
+	CALL calc_advection_w(Main%qv,A_theta,uGrid,wGrid,piGrid,virGrid)
+CASE (2)
+	CALL calc_advection_w(Main%qc,A_theta,uGrid,wGrid,piGrid,virGrid)
+CASE (3)
+	CALL calc_advection_w(Main%qr,A_theta,uGrid,wGrid,piGrid,virGrid)
+CASE DEFAULT
+	WRITE(*,*) "Wrong flag of tendency_theta"
+END SELECT
 
 CALL set_area_w
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		P2thetaPx2_w(i,k) = (Main%theta(i+1,k) + Main%theta(i-1,k) - 2*Main%theta(i,k))/dx/dx
-		P2thetaPz2_w(i,k) = (Main%theta(i,k+1) + Main%theta(i,k-1) - 2*Main%theta(i,k))/dz/dz
-		D_theta(i,k) = Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k))
-
-		tend_theta(i,k) = A_theta(i,k) + D_theta(i,k)
+IF (flag == 0) THEN
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			P2thetaPx2_w(i,k) = (Main%theta(i+1,k) + Main%theta(i-1,k) - 2*Main%theta(i,k))/dx/dx
+			P2thetaPz2_w(i,k) = (Main%theta(i,k+1) + Main%theta(i,k-1) - 2*Main%theta(i,k))/dz/dz
+			D_theta(i,k) = Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k))
+	
+			tend_theta(i,k) = A_theta(i,k) + D_theta(i,k)
+		END DO
 	END DO
-END DO
-!OMP END PARALLEL DO
+	!OMP END PARALLEL DO
+ELSE
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			tend_theta(i,k) = A_theta(i,k)
+		END DO
+	END DO
+	!OMP END PARALLEL DO
+END IF
+
 !-------------------------------------------------
 IF (ANY(ISNAN(tend_theta(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_theta!!!"
 !=================================================

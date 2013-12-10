@@ -19,12 +19,6 @@ USE sp_module_debug
 IMPLICIT NONE
 !=================================================
 TYPE(grid) :: uGrid, wGrid, piGrid, virGrid
-!=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: u        ! wind speed along x-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: w        ! wind speed along z-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi_1     ! pi'
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1  ! theta'
 !-------------------------------------------------
 INTEGER :: i, k
 INTEGER :: t_start, t_end, rate
@@ -76,7 +70,7 @@ END SELECT
 CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr)
 CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 
-CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
+CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%qv,wGrid%qc,wGrid%qr)
 !=================================================
 ! Integrate.
 !-------------------------------------------------
@@ -87,7 +81,7 @@ DO i = 1, nstep
 	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr)
 	CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 	IF (MOD(i,100) == 0.) THEN
-		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1)
+		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%qv,wGrid%qc,wGrid%qr)
 	END IF
 	
 	CALL SYSTEM_CLOCK(t_end)
@@ -99,7 +93,7 @@ END DO
 !=================================================
 ! Finish.
 !-------------------------------------------------
-CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1)
+CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%qv,wGrid%qc,wGrid%qr)
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"

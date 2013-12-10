@@ -36,9 +36,9 @@ uGrid%u = new%u
 wGrid%w = new%w
 piGrid%pi_1 = new%pi_1
 wGrid%theta = new%theta
-wGrid%qv = 0.
-wGrid%qc = 0.
-wGrid%qr = 0.
+wGrid%qv = new%qv
+wGrid%qc = new%qc
+wGrid%qr = new%qr
 !=================================================
 END SUBROUTINE integrate
 !=================================================

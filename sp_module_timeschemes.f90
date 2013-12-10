@@ -65,6 +65,7 @@ TYPE(mainvar), INTENT(OUT) :: C
 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_u = undef, tend_w = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_pi_1 = undef, tend_theta = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_qv = undef, tend_qc = undef, tend_qr = undef
 
 INTEGER :: i, k
 !=================================================
@@ -73,7 +74,12 @@ CALL basic_interpolate(A,uGrid,wGrid,piGrid,virGrid)
 !-------------------------------------------------
 CALL tendency_u(B,tend_u,uGrid,wGrid,piGrid,virGrid)
 CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
-CALL tendency_theta(B,tend_theta,uGrid,wGrid,piGrid,virGrid)
+
+CALL tendency_theta(0,B,tend_theta,uGrid,wGrid,piGrid,virGrid)
+
+CALL tendency_theta(1,B,tend_qv,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_theta(2,B,tend_qc,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_theta(3,B,tend_qr,uGrid,wGrid,piGrid,virGrid)
 
 !-------------------------------------------------
 CALL set_area_u
@@ -91,9 +97,14 @@ CALL set_area_w
 DO k = kmin, kmax
 	DO i = imin, imax
 		C%w(i,k) = A%w(i,k) + dt/REAL(deno)*tend_w(i,k)
+
 		C%theta(i,k) = A%theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
 		wGrid%theta_M(i,k) = wGrid%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))*(1. - wGrid%qc(i,k))
 		wGrid%theta_M_1(i,k) = wGrid%theta_M(i,k) - wGrid%theta_M_0(i,k)
+
+		C%qv(i,k) = A%qv(i,k) + dt/REAL(deno)*tend_qv(i,k)
+		C%qc(i,k) = A%qc(i,k) + dt/REAL(deno)*tend_qc(i,k)
+		C%qr(i,k) = A%qr(i,k) + dt/REAL(deno)*tend_qr(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -115,7 +126,7 @@ END DO
 !OMP END PARALLEL DO
 
 !-------------------------------------------------
-CALL update_boundary(C%u,C%w,C%pi_1,C%theta)
+CALL update_boundary(C%u,C%w,C%pi_1,C%theta,C%qv,C%qc,C%qr)
 !=================================================
 END SUBROUTINE update
 !=================================================

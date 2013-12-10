@@ -37,14 +37,45 @@ CALL w2vir(Main%w,virGrid%w)
 
 CALL pi2vir(Main%pi_1,virGrid%pi_1)
 
-CALL w2pi(Main%theta,piGrid%theta)
+!CALL w2pi(Main%theta,piGrid%theta)
 
-CALL w2pi(Main%qv,piGrid%qv)
-CALL w2pi(Main%qc,piGrid%qc)
-CALL w2pi(Main%qr,piGrid%qr)
+!CALL w2pi(Main%qv,piGrid%qv)
+!CALL w2pi(Main%qc,piGrid%qc)
+!CALL w2pi(Main%qr,piGrid%qr)
+
+!CALL w2u(Main%qv,uGrid%qv)
+!CALL w2u(Main%qc,uGrid%qc)
+!CALL w2u(Main%qr,uGrid%qr)
+
+!CALL w2vir(Main%qv,virGrid%qv)
+!CALL w2vir(Main%qc,virGrid%qc)
+!CALL w2vir(Main%qr,virGrid%qr)
 !=================================================
 END SUBROUTINE basic_interpolate
 !=================================================
+
+
+!=================================================
+! Calculate virtual theta
+!=================================================
+SUBROUTINE calc_virTheta(uGrid,wGrid,piGrid,virGrid)
+IMPLICIT NONE
+TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!=================================================
+! theta_v, theta_M_0, theta_M_1
+!-------------------------------------------------
+wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
+wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc)
+wGrid%theta_M_0 = wGrid%theta_0*(1 + 0.61*wGrid%qv)*(1 - wGrid%qc)
+wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
+
+CALL w2u(wGrid%theta_M_0,uGrid%theta_M_0)
+CALL w2pi(wGrid%theta_M_0,piGrid%theta_M_0)
+CALL w2vir(wGrid%theta_M_0,virGrid%theta_M_0)
+!=================================================
+END SUBROUTINE calc_virTheta
+!=================================================
+
 !/////////////////////////////////////////////////////////////////////
 
 !=================================================

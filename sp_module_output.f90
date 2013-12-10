@@ -16,7 +16,7 @@ CONTAINS
 !=================================================
 ! Output the fields.
 !=================================================
-SUBROUTINE output(flag,u,w,pi_1,theta_1)
+SUBROUTINE output(flag,u,w,pi_1,theta_1,qv,qc,qr)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
@@ -24,6 +24,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: u        ! wind sp
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: pi_1     ! pi'
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: qv,qc,qr
 !=================================================
 SELECT CASE(flag)
 CASE (0)
@@ -43,6 +44,18 @@ CASE (0)
 		OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
 		WRITE(4) theta_1(its:ite,kts:kte)
 	END IF
+	IF (PRESENT(qv)) THEN
+		OPEN(5, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(5) qv(its:ite,kts:kte)
+	END IF
+	IF (PRESENT(qc)) THEN
+		OPEN(6, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(6) qc(its:ite,kts:kte)
+	END IF
+	IF (PRESENT(qr)) THEN
+		OPEN(7, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(7) qr(its:ite,kts:kte)
+	END IF
 CASE (1)
 	IF (PRESENT(u)) THEN
 		WRITE(1) u(its:ite,kts:kte)
@@ -56,6 +69,15 @@ CASE (1)
 	IF (PRESENT(theta_1)) THEN
 		WRITE(4) theta_1(its:ite,kts:kte)
 	END IF
+	IF (PRESENT(qv)) THEN
+		WRITE(5) qv(its:ite,kts:kte)
+	END IF
+	IF (PRESENT(qc)) THEN
+		WRITE(6) qc(its:ite,kts:kte)
+	END IF
+	IF (PRESENT(qr)) THEN
+		WRITE(7) qr(its:ite,kts:kte)
+	END IF
 CASE (99)
 	IF (PRESENT(u)) THEN
 		CLOSE(1)
@@ -68,6 +90,15 @@ CASE (99)
 	END IF
 	IF (PRESENT(theta_1)) THEN
 		CLOSE(4)
+	END IF
+	IF (PRESENT(qv)) THEN
+		CLOSE(5)
+	END IF
+	IF (PRESENT(qc)) THEN
+		CLOSE(6)
+	END IF
+	IF (PRESENT(qr)) THEN
+		CLOSE(7)
 	END IF
 CASE DEFAULT
 	WRITE(*,*) "==================================="
