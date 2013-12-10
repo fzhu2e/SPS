@@ -33,6 +33,9 @@ old%u = uGrid%u
 old%w = wGrid%w
 old%pi_1 = piGrid%pi_1
 old%theta = wGrid%theta
+old%qv = wGrid%qv
+old%qc = wGrid%qc
+old%qr = wGrid%qr
 !=================================================
 ! Step 1. phi* = phi(n) + dt/3.*tend(phi(n))
 !-------------------------------------------------
@@ -89,7 +92,8 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		C%w(i,k) = A%w(i,k) + dt/REAL(deno)*tend_w(i,k)
 		C%theta(i,k) = A%theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
-		wGrid%theta_1(i,k) = C%theta(i,k) - wGrid%theta_0(i,k)
+		wGrid%theta_M(i,k) = wGrid%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))*(1. - wGrid%qc(i,k))
+		wGrid%theta_M_1(i,k) = wGrid%theta_M(i,k) - wGrid%theta_M_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO

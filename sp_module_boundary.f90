@@ -16,13 +16,14 @@ CONTAINS
 !=================================================
 ! Initiate.
 !=================================================
-SUBROUTINE update_boundary(u,w,pi_1,theta)
+SUBROUTINE update_boundary(u,w,pi_1,theta, qv, qc, qr)
 IMPLICIT NONE
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: pi_1     ! pi'
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: qv, qc, qr
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -123,6 +124,77 @@ IF (PRESENT(theta)) THEN
 	
 END IF
 
+IF (PRESENT(qv)) THEN
+	
+	SELECT CASE (LateralBoundary)
+	CASE (1)
+		CALL no_flux_scalar_lateral_pi(qv)
+	CASE (2)
+		CALL periodic_lateral_pi(qv)
+	CASE (3)
+		CALL open_lateral_pi(qv)
+	CASE DEFAULT
+		STOP "Wrong lateral boundary scheme!!!"
+	END SELECT
+	
+	CALL no_flux_scalar_bottom_w(qv)
+
+	SELECT CASE (UpperBoundary)
+	CASE (1)
+		CALL no_flux_scalar_top_w(qv)
+	CASE DEFAULT
+		STOP "Wrong upper boundary scheme!!!"
+	END SELECT
+	
+END IF
+
+IF (PRESENT(qc)) THEN
+	
+	SELECT CASE (LateralBoundary)
+	CASE (1)
+		CALL no_flux_scalar_lateral_pi(qc)
+	CASE (2)
+		CALL periodic_lateral_pi(qc)
+	CASE (3)
+		CALL open_lateral_pi(qc)
+	CASE DEFAULT
+		STOP "Wrong lateral boundary scheme!!!"
+	END SELECT
+	
+	CALL no_flux_scalar_bottom_w(qc)
+
+	SELECT CASE (UpperBoundary)
+	CASE (1)
+		CALL no_flux_scalar_top_w(qc)
+	CASE DEFAULT
+		STOP "Wrong upper boundary scheme!!!"
+	END SELECT
+	
+END IF
+
+IF (PRESENT(qr)) THEN
+	
+	SELECT CASE (LateralBoundary)
+	CASE (1)
+		CALL no_flux_scalar_lateral_pi(qr)
+	CASE (2)
+		CALL periodic_lateral_pi(qr)
+	CASE (3)
+		CALL open_lateral_pi(qr)
+	CASE DEFAULT
+		STOP "Wrong lateral boundary scheme!!!"
+	END SELECT
+	
+	CALL no_flux_scalar_bottom_w(qr)
+
+	SELECT CASE (UpperBoundary)
+	CASE (1)
+		CALL no_flux_scalar_top_w(qr)
+	CASE DEFAULT
+		STOP "Wrong upper boundary scheme!!!"
+	END SELECT
+	
+END IF
 !=================================================
 END SUBROUTINE update_boundary
 !=================================================

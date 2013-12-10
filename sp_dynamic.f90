@@ -73,7 +73,7 @@ CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
 
-CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta)
+CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr)
 CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 
 CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
@@ -84,10 +84,10 @@ t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
 	CALL integrate(uGrid,wGrid,piGrid,virGrid) ! main integrate module
-	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta)
+	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr)
 	CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 	IF (MOD(i,100) == 0.) THEN
-		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
+		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1)
 	END IF
 	
 	CALL SYSTEM_CLOCK(t_end)
@@ -99,7 +99,7 @@ END DO
 !=================================================
 ! Finish.
 !-------------------------------------------------
-CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1)
+CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1)
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"

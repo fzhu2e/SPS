@@ -38,7 +38,7 @@ CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		P_u(i,k) = - Cp*uGrid%theta_0(i,k)*Ppi_1Px_u(i,k)
+		P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*Ppi_1Px_u(i,k)
 
 		P2uPx2_u(i,k) = (Main%u(i+1,k) + Main%u(i-1,k) - 2*Main%u(i,k))/dx/dx
 		P2uPz2_u(i,k) = (Main%u(i,k+1) + Main%u(i,k-1) - 2*Main%u(i,k))/dz/dz
@@ -78,9 +78,9 @@ CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		B_w(i,k) = g*wGrid%theta_1(i,k)/wGrid%theta_0(i,k)
+		B_w(i,k) = g*wGrid%theta_M_1(i,k)/wGrid%theta_M_0(i,k)
 
-		P_w(i,k) = - Cp*wGrid%theta_0(i,k)*Ppi_1Pz_w(i,k)
+		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*Ppi_1Pz_w(i,k)
 
 		P2wPx2_w(i,k) = (Main%w(i+1,k) + Main%w(i-1,k) - 2*Main%w(i,k))/dx/dx
 		P2wPz2_w(i,k) = (Main%w(i,k+1) + Main%w(i,k-1) - 2*Main%w(i,k))/dz/dz
@@ -117,7 +117,7 @@ CALL set_area_expand(expand)
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		urhotheta_u(i,k) = Main%u(i,k)*uGrid%rho_0(i,k)*uGrid%theta_0(i,k)
+		urhotheta_u(i,k) = Main%u(i,k)*uGrid%rho_0(i,k)*uGrid%theta_M_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -127,7 +127,7 @@ CALL set_area_expand(expand)
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		wrhotheta_w(i,k) = Main%w(i,k)*wGrid%rho_0(i,k)*wGrid%theta_0(i,k)
+		wrhotheta_w(i,k) = Main%w(i,k)*wGrid%rho_0(i,k)*wGrid%theta_M_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -139,7 +139,7 @@ CALL set_area_pi
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		F_pi(i,k) = - cs*cs/Cp/piGrid%rho_0(i,k)/piGrid%theta_0(i,k)/piGrid%theta_0(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
+		F_pi(i,k) = - cs*cs/Cp/piGrid%rho_0(i,k)/piGrid%theta_M_0(i,k)/piGrid%theta_M_0(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
 		tend_pi_1(i,k) = F_pi(i,k)
 	END DO
 END DO

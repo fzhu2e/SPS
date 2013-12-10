@@ -38,7 +38,10 @@ CALL w2vir(Main%w,virGrid%w)
 CALL pi2vir(Main%pi_1,virGrid%pi_1)
 
 CALL w2pi(Main%theta,piGrid%theta)
-!CALL w2pi(Main%theta_1,piGrid%theta_1)
+
+CALL w2pi(Main%qv,piGrid%qv)
+CALL w2pi(Main%qc,piGrid%qc)
+CALL w2pi(Main%qr,piGrid%qr)
 !=================================================
 END SUBROUTINE basic_interpolate
 !=================================================
