@@ -110,7 +110,7 @@ END DO
 !OMP END PARALLEL DO
 
 !-------------------------------------------------
-CALL update_boundary(C%u,C%w)
+CALL update_boundary(C%u,C%w,wGrid=wGrid)
 CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
 
 !-------------------------------------------------
@@ -126,7 +126,7 @@ END DO
 !OMP END PARALLEL DO
 
 !-------------------------------------------------
-CALL update_boundary(C%u,C%w,C%pi_1,C%theta,C%qv,C%qc,C%qr)
+CALL update_boundary(C%u,C%w,C%pi_1,C%theta,C%qv,C%qc,C%qr,wGrid)
 !=================================================
 END SUBROUTINE update
 !=================================================

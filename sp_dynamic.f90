@@ -61,13 +61,13 @@ CASE (2)
 	CALL initiate_tb(uGrid,wGrid,piGrid,virGrid)
 CASE (3)
 	CALL initiate_igw(uGrid,wGrid,piGrid,virGrid)
-!CASE (4)
-	!CALL initiate_Sm(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)  ! initiate the IGW case
+CASE (4)
+	CALL initiate_Sm(uGrid,wGrid,piGrid,virGrid)
 CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
 
-CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr)
+CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr,wGrid)
 CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 
 CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%qv,wGrid%qc,wGrid%qr)
@@ -78,7 +78,7 @@ t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
 	CALL integrate(uGrid,wGrid,piGrid,virGrid) ! main integrate module
-	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr)
+	CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta,wGrid%qv,wGrid%qc,wGrid%qr,wGrid)
 	CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 	IF (MOD(i,100) == 0.) THEN
 		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%qv,wGrid%qc,wGrid%qr)

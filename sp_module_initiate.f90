@@ -207,89 +207,67 @@ END DO
 END SUBROUTINE initiate_igw
 !=================================================
 
-
 !=================================================
 ! Initiate Schar mountain case.
 !=================================================
-!SUBROUTINE initiate_Sm(u,w,pi_1,pi_0,theta,theta_0,theta_1,rho_0)
-!IMPLICIT NONE
-!!-------------------------------------------------
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: u        ! wind speed along x-axis
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: w        ! wind speed along z-axis
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_1     ! pi'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: pi_0 
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_0  ! theta = theta_0 + theta'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: theta_1  ! theta'
-!REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: rho_0    ! density
-!!-------------------------------------------------
-!!REAL(kd), PARAMETER :: h0 = 250.0            ! (m)
-!!!REAL(kd), PARAMETER :: h0 = 50.0            ! (m)
-!!REAL(kd), PARAMETER :: a0 = 5.0*1000.        ! (m)
-!!REAL(kd), PARAMETER :: x_c = 25.0*1000.        ! (m)
-!!REAL(kd), PARAMETER :: lambda0 = 4.0*1000.   ! (m)
-!!REAL(kd), PARAMETER :: N0 = 0.01             ! (s-1)
+SUBROUTINE initiate_Sm(uGrid,wGrid,piGrid,virGrid)
+IMPLICIT NONE
+TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!-------------------------------------------------
+REAL(kd), PARAMETER :: h0 = 250.0            ! (m)
+!REAL(kd), PARAMETER :: h0 = 50.0            ! (m)
+REAL(kd), PARAMETER :: a0 = 5.0*1000.        ! (m)
+REAL(kd), PARAMETER :: x_c = 25.0*1000.        ! (m)
+REAL(kd), PARAMETER :: lambda0 = 4.0*1000.   ! (m)
+REAL(kd), PARAMETER :: N0 = 0.01             ! (s-1)
 
-!!REAL(kd), PARAMETER :: Ts = 280.             ! (K)
-!!!-------------------------------------------------
-!!REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi
-!!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_1_pi
-!!REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_pi
-!!!-------------------------------------------------
-!!INTEGER :: i, k 
-!!!=================================================
-!!! To initiate:
-!!! zs(i), zs_pi(i), PzsPx(i), PzsPx_pi(i)
-!!! u(i,k), w(i,k)
-!!! theta_0(i,k), pi_0(i,k), rho_0(i,k)
-!!! theta(i,k), theta_1(i,k), pi_1(i,k)
-!!!=================================================
-!!CALL initiate_grid
-!!!-------------------------------------------------
-!!zs = undef
-!!zs_pi = undef
-!!PzsPx = undef
-!!PzsPx_pi = undef
+REAL(kd), PARAMETER :: Ts = 280.             ! (K)
+!-------------------------------------------------
+INTEGER :: i, k 
+!=================================================
+CALL set_area_u
+DO i = imin, imax
+	DO k = kmin, kmax
+		uGrid%u(i,k) = 10.
+		uGrid%qc(i,k) = 0.
+		uGrid%qv(i,k) = 0.
+		uGrid%qr(i,k) = 0.
+	END DO
+END DO
 
-!!CALL set_area_u
-!!DO i = imin, imax
-	!!zs(i) = h0*EXP(-((xx(i) - x_c)/a0)**2)*COS(PI_math*(xx(i) - x_c)/lambda0)**2
-	!!PzsPx(i) = - 2*h0*EXP(-((xx(i) - x_c)/a0)**2)*COS(PI_math*(xx(i) - x_c)/lambda0)*((xx(i) - x_c)/a0**2*COS(PI_math*(xx(i) - x_c)/lambda0) + PI_math/lambda0*SIN(PI_math*(xx(i) - x_c)/lambda0))
-!!END DO
+CALL set_area_w
+DO i = imin, imax
+	DO k = kmin, kmax
+		wGrid%w(i,k) = 0.
+		wGrid%theta_1(i,k) = 0.
+		wGrid%theta(i,k) = theta_0(i,k)
+		wGrid%qc(i,k) = 0.
+		wGrid%qv(i,k) = 0.
+		wGrid%qr(i,k) = 0.
+	END DO
+END DO
 
-!!CALL set_area_pi
-!!DO i = imin, imax
-	!!zs_pi(i) = h0*EXP(-((xpi(i) - x_c)/a0)**2)*COS(PI_math*(xpi(i) - x_c)/lambda0)**2
-	!!PzsPx_pi(i) = (zs(i) - zs(i-1))/dx
-!!END DO
-!!!-------------------------------------------------
-!!CALL initiate_virertcoords
-!!CALL initiate_basic_state(theta_0,pi_0,rho_0)
-!!!-------------------------------------------------
-!!CALL set_area_u
-!!DO i = imin, imax
-	!!DO k = kmin, kmax
-		!!u(i,k) = 10.
-	!!END DO
-!!END DO
+CALL set_area_pi
+DO i = imin, imax
+	DO k = kmin, kmax
+		piGrid%pi_1(i,k) = 0.
+		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
+		piGrid%qc(i,k) = 0.
+		piGrid%qv(i,k) = 0.
+		piGrid%qr(i,k) = 0.
+	END DO
+END DO
 
-!!CALL set_area_w
-!!DO i = imin, imax
-	!!DO k = kmin, kmax
-		!!w(i,k) = 0.
-		!!theta_1(i,k) = 0.
-		!!theta(i,k) = theta_0(i,k)
-	!!END DO
-!!END DO
-
-!!CALL set_area_pi
-!!DO i = imin, imax
-	!!DO k = kmin, kmax
-		!!pi_1(i,k) = 0.
-	!!END DO
-!!END DO
-!!=================================================
-!END SUBROUTINE initiate_Sm
+CALL set_area_vir
+DO i = imin, imax
+	DO k = kmin, kmax
+		virGrid%qc(i,k) = 0.
+		virGrid%qv(i,k) = 0.
+		virGrid%qr(i,k) = 0.
+	END DO
+END DO
+!=================================================
+END SUBROUTINE initiate_Sm
 !=================================================
 
 !=================================================
@@ -346,6 +324,18 @@ IF (RunCase /= 4) THEN
 		uGrid%zs(i) = 0.
 		piGrid%zs(i) = 0.
 	END DO
+
+ELSE IF (RunCase == 4) THEN
+	DO i = ims, ime
+		uGrid%zs(i) = h0*EXP(-((uGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(uGrid%xx(i) - x_c)/lambda0)**2
+		!uGrid%PzsPx(i) = - 2*h0*EXP(-((uGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(uGrid%xx(i) - x_c)/lambda0)*((uGrid%xx(i) - x_c)/a0**2*COS(PI_math*(uGrid%xx(i) - x_c)/lambda0) + PI_math/lambda0*SIN(PI_math*(uGrid%xx(i) - x_c)/lambda0))
+	END DO
+	
+	DO i = ims, ime
+		piGrid%zs(i) = h0*EXP(-((piGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(piGrid%xx(i) - x_c)/lambda0)**2
+		!piGrid%PzsPx(i) = - 2*h0*EXP(-((piGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(piGrid%xx(i) - x_c)/lambda0)*((piGrid%xx(i) - x_c)/a0**2*COS(PI_math*(piGrid%xx(i) - x_c)/lambda0) + PI_math/lambda0*SIN(PI_math*(piGrid%xx(i) - x_c)/lambda0))
+	END DO
+
 ELSE
 	STOP "WRONG RunCase!!!"
 END IF

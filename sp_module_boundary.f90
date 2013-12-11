@@ -9,6 +9,7 @@
 MODULE sp_module_boundary
 USE sp_module_constant
 USE sp_module_model
+USE sp_module_gridvar
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
@@ -16,8 +17,9 @@ CONTAINS
 !=================================================
 ! Initiate.
 !=================================================
-SUBROUTINE update_boundary(u,w,pi_1,theta, qv, qc, qr)
+SUBROUTINE update_boundary(u,w,pi_1,theta, qv, qc, qr, wGrid)
 IMPLICIT NONE
+TYPE(grid), INTENT(IN) :: wGrid
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: w        ! wind speed along z-axis
@@ -64,7 +66,7 @@ IF (PRESENT(w)) THEN
 		STOP "Wrong lateral boundary scheme!!!"
 	END SELECT
 	
-	CALL no_flux_vector_bottom_w(w)
+	CALL no_flux_vector_bottom_w(w,wGrid)
 
 	SELECT CASE (UpperBoundary)
 	CASE (1)
@@ -260,13 +262,14 @@ END SUBROUTINE no_flux_vector_top_w
 !=================================================
 ! No Flux - Vector - Bottom [w]
 !=================================================
-SUBROUTINE no_flux_vector_bottom_w(vector)
+SUBROUTINE no_flux_vector_bottom_w(vector,wGrid)
 IMPLICIT NONE
+TYPE(grid), INTENT(IN) :: wGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: vector
 !-------------------------------------------------
 CALL set_area_w
 vector(:,kms:kmin-1) = - vector(:,2*kmin-kms:kmin+1:-1)
-vector(:,kmin) = 0.
+vector(:,kmin) = wGrid%u(:,kmin)*wGrid%PzsPx(:)
 END SUBROUTINE no_flux_vector_bottom_w
 !=================================================
 
