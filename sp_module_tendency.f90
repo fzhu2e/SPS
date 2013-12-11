@@ -39,7 +39,8 @@ CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
+		!P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
+		P_u(i,k) = - Cp*uGrid%theta_M(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
 
 		P2uPx2_u(i,k) = (Main%u(i+1,k) + Main%u(i-1,k) - 2*Main%u(i,k))/dx/dx
 		P2uPz2_u(i,k) = (Main%u(i,k+1) + Main%u(i,k-1) - 2*Main%u(i,k))/dz/dz
@@ -81,7 +82,8 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		B_w(i,k) = g*wGrid%theta_M_1(i,k)/wGrid%theta_M_0(i,k)
 
-		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
+		!P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
+		P_w(i,k) = - Cp*wGrid%theta_M(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
 
 		P2wPx2_w(i,k) = (Main%w(i+1,k) + Main%w(i-1,k) - 2*Main%w(i,k))/dx/dx
 		P2wPz2_w(i,k) = (Main%w(i,k+1) + Main%w(i,k-1) - 2*Main%w(i,k))/dz/dz
@@ -113,6 +115,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPzeta_pi = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: PwrhothetaPzeta_pi = undef
 
+REAL(kd) :: temp
 !REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPx_pi = undef, PuPzeta_pi = undef, PwPzeta_pi = undef
 INTEGER :: i, k
 !=================================================
@@ -143,19 +146,16 @@ CALL ppx_pi(urhotheta_u,PurhothetaPx_pi)
 CALL ppzeta_pi(wrhotheta_w,PwrhothetaPzeta_pi)
 CALL ppzeta_pi(urhotheta_w,PurhothetaPzeta_pi)
 
-!CALL ppx_pi(uGrid%u,PuPx_pi)
-!CALL ppzeta_pi(wGrid%u,PuPzeta_pi)
-!CALL ppzeta_pi(wGrid%w,PwPzeta_pi)
 
 CALL calc_advection_pi(Main%pi_1,A_pi_1,uGrid,wGrid,piGrid,virGrid)
 !A_pi_1 = 0.
 
 CALL set_area_pi
-!OMP PARALLEL DO
+!OMP PARALLEL DO PRIVATE(temp)
 DO k = kmin, kmax
 	DO i = imin, imax
-		Diff_pi_1(i,k) = - cs*cs/Cp/piGrid%rho_0(i,k)/piGrid%theta_M_0(i,k)/piGrid%theta_M_0(i,k)*(PurhothetaPx_pi(i,k) + piGrid%G(i,k)*PurhothetaPzeta_pi(i,k) + piGrid%H(i)*PwrhothetaPzeta_pi(i,k))
-		!Diff_pi_1(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*(PuPx_pi(i,k) + piGrid%G(i,k)*PuPzeta_pi(i,k) + piGrid%H(i)*PwPzeta_pi(i,k))
+		temp = PurhothetaPx_pi(i,k) + piGrid%G(i,k)*PurhothetaPzeta_pi(i,k) + piGrid%H(i)*PwrhothetaPzeta_pi(i,k)
+		Diff_pi_1(i,k) = - Rd*piGrid%pi_0(i,k)/Cv/piGrid%rho_0(i,k)/piGrid%theta_M_0(i,k)*temp
 		tend_pi_1(i,k) = A_pi_1(i,k) + Diff_pi_1(i,k)
 	END DO
 END DO

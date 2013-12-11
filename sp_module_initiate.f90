@@ -35,9 +35,6 @@ CALL set_area_u
 DO k = kmin, kmax
 	DO i = imin, imax
 		uGrid%u(i,k) = 0
-		uGrid%qc(i,k) = 0.
-		uGrid%qv(i,k) = 0.
-		uGrid%qr(i,k) = 0.
 	END DO
 END DO
 
@@ -63,18 +60,6 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
-		piGrid%qc(i,k) = 0.
-		piGrid%qv(i,k) = 0.
-		piGrid%qr(i,k) = 0.
-	END DO
-END DO
-
-CALL set_area_vir
-DO i = imin, imax
-	DO k = kmin, kmax
-		virGrid%qc(i,k) = 0.
-		virGrid%qv(i,k) = 0.
-		virGrid%qr(i,k) = 0.
 	END DO
 END DO
 !=================================================
@@ -100,9 +85,6 @@ CALL set_area_u
 DO i = imin, imax
 	DO k = kmin, kmax
 		uGrid%u(i,k) = 0.
-		uGrid%qc(i,k) = 0.
-		uGrid%qv(i,k) = 0.
-		uGrid%qr(i,k) = 0.
 	END DO
 END DO
 
@@ -124,18 +106,6 @@ DO i = imin, imax
 	DO k = kmin, kmax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
-		piGrid%qc(i,k) = 0.
-		piGrid%qv(i,k) = 0.
-		piGrid%qr(i,k) = 0.
-	END DO
-END DO
-
-CALL set_area_vir
-DO i = imin, imax
-	DO k = kmin, kmax
-		virGrid%qc(i,k) = 0.
-		virGrid%qv(i,k) = 0.
-		virGrid%qr(i,k) = 0.
 	END DO
 END DO
 !=================================================
@@ -165,9 +135,6 @@ CALL set_area_u
 DO i = imin, imax
 	DO k = kmin, kmax
 		uGrid%u(i,k) = 20.
-		uGrid%qc(i,k) = 0.
-		uGrid%qv(i,k) = 0.
-		uGrid%qr(i,k) = 0.
 	END DO
 END DO
 
@@ -189,18 +156,6 @@ DO i = imin, imax
 	DO k = kmin, kmax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
-		piGrid%qc(i,k) = 0.
-		piGrid%qv(i,k) = 0.
-		piGrid%qr(i,k) = 0.
-	END DO
-END DO
-
-CALL set_area_vir
-DO i = imin, imax
-	DO k = kmin, kmax
-		virGrid%qc(i,k) = 0.
-		virGrid%qv(i,k) = 0.
-		virGrid%qr(i,k) = 0.
 	END DO
 END DO
 !=================================================
@@ -220,9 +175,6 @@ CALL set_area_u
 DO i = imin, imax
 	DO k = kmin, kmax
 		uGrid%u(i,k) = 10.
-		uGrid%qc(i,k) = 0.
-		uGrid%qv(i,k) = 0.
-		uGrid%qr(i,k) = 0.
 	END DO
 END DO
 
@@ -243,18 +195,6 @@ DO i = imin, imax
 	DO k = kmin, kmax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
-		piGrid%qc(i,k) = 0.
-		piGrid%qv(i,k) = 0.
-		piGrid%qr(i,k) = 0.
-	END DO
-END DO
-
-CALL set_area_vir
-DO i = imin, imax
-	DO k = kmin, kmax
-		virGrid%qc(i,k) = 0.
-		virGrid%qv(i,k) = 0.
-		virGrid%qr(i,k) = 0.
 	END DO
 END DO
 !=================================================
@@ -285,15 +225,6 @@ DO k = kms, kme
 	piGrid%zeta(k) = wGrid%zeta(k) + dz/2.
 	uGrid%zeta(k) = piGrid%zeta(k)
 END DO
-!WRITE(*,*) uGrid%xx
-!WRITE(*,*) piGrid%xx
-!WRITE(*,*) virGrid%xx
-!WRITE(*,*) wGrid%xx
-
-!WRITE(*,*) uGrid%zeta
-!WRITE(*,*) piGrid%zeta
-!WRITE(*,*) virGrid%zeta
-!WRITE(*,*) wGrid%zeta
 !=================================================
 END SUBROUTINE initiate_grid
 !=================================================
@@ -360,10 +291,10 @@ IF (VertCoords == 1) THEN
 	END DO
 
 	DO i = ims, ime
-		uGrid%H = ztop/(ztop - uGrid%zs(i))
-		wGrid%H = ztop/(ztop - wGrid%zs(i))
-		piGrid%H = ztop/(ztop - piGrid%zs(i))
-		virGrid%H = ztop/(ztop - virGrid%zs(i))
+		uGrid%H(i) = ztop/(ztop - uGrid%zs(i))
+		wGrid%H(i) = ztop/(ztop - wGrid%zs(i))
+		piGrid%H(i) = ztop/(ztop - piGrid%zs(i))
+		virGrid%H(i) = ztop/(ztop - virGrid%zs(i))
 	END DO
 
 	DO k = kms, kme
