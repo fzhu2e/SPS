@@ -23,7 +23,7 @@ TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Px_u = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Px_u = undef, Ppi_1Pzeta_u = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u = undef, P2uPz2_u = undef
 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_u = undef, P_u = undef, D_u = undef
@@ -33,12 +33,13 @@ INTEGER :: i, k
 CALL calc_advection_u(Main%u,A_u,uGrid,wGrid,piGrid,virGrid)
 
 CALL ppx_u(Main%pi_1,Ppi_1Px_u)
+CALL ppzeta_u(Main%pi_1,Ppi_1Pzeta_u)
 
 CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*Ppi_1Px_u(i,k)
+		P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
 
 		P2uPx2_u(i,k) = (Main%u(i+1,k) + Main%u(i-1,k) - 2*Main%u(i,k))/dx/dx
 		P2uPz2_u(i,k) = (Main%u(i,k+1) + Main%u(i,k-1) - 2*Main%u(i,k))/dz/dz
@@ -80,7 +81,7 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		B_w(i,k) = g*wGrid%theta_M_1(i,k)/wGrid%theta_M_0(i,k)
 
-		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*Ppi_1Pz_w(i,k)
+		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
 
 		P2wPx2_w(i,k) = (Main%w(i+1,k) + Main%w(i-1,k) - 2*Main%w(i,k))/dx/dx
 		P2wPz2_w(i,k) = (Main%w(i,k+1) + Main%w(i,k-1) - 2*Main%w(i,k))/dz/dz

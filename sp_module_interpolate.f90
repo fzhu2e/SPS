@@ -69,9 +69,12 @@ wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc)
 wGrid%theta_M_0 = wGrid%theta_0*(1 + 0.61*wGrid%qv)*(1 - wGrid%qc)
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
 
-CALL w2u(wGrid%theta_M_0,uGrid%theta_M_0)
-CALL w2pi(wGrid%theta_M_0,piGrid%theta_M_0)
-CALL w2vir(wGrid%theta_M_0,virGrid%theta_M_0)
+uGrid%theta_M_0 = uGrid%theta_0*(1 + 0.61*uGrid%qv)*(1 - uGrid%qc)
+piGrid%theta_M_0 = piGrid%theta_0*(1 + 0.61*piGrid%qv)*(1 - piGrid%qc)
+virGrid%theta_M_0 = virGrid%theta_0*(1 + 0.61*virGrid%qv)*(1 - virGrid%qc)
+!CALL w2u(wGrid%theta_M_0,uGrid%theta_M_0)
+!CALL w2pi(wGrid%theta_M_0,piGrid%theta_M_0)
+!CALL w2vir(wGrid%theta_M_0,virGrid%theta_M_0)
 !=================================================
 END SUBROUTINE calc_virTheta
 !=================================================
