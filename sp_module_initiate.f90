@@ -214,15 +214,6 @@ SUBROUTINE initiate_Sm(uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
 TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 !-------------------------------------------------
-REAL(kd), PARAMETER :: h0 = 250.0            ! (m)
-!REAL(kd), PARAMETER :: h0 = 50.0            ! (m)
-REAL(kd), PARAMETER :: a0 = 5.0*1000.        ! (m)
-REAL(kd), PARAMETER :: x_c = 25.0*1000.        ! (m)
-REAL(kd), PARAMETER :: lambda0 = 4.0*1000.   ! (m)
-REAL(kd), PARAMETER :: N0 = 0.01             ! (s-1)
-
-REAL(kd), PARAMETER :: Ts = 280.             ! (K)
-!-------------------------------------------------
 INTEGER :: i, k 
 !=================================================
 CALL set_area_u
@@ -240,7 +231,7 @@ DO i = imin, imax
 	DO k = kmin, kmax
 		wGrid%w(i,k) = 0.
 		wGrid%theta_1(i,k) = 0.
-		wGrid%theta(i,k) = theta_0(i,k)
+		wGrid%theta(i,k) = wGrid%theta_0(i,k)
 		wGrid%qc(i,k) = 0.
 		wGrid%qv(i,k) = 0.
 		wGrid%qr(i,k) = 0.
@@ -313,6 +304,12 @@ END SUBROUTINE initiate_grid
 SUBROUTINE initiate_terrain(uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
 TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!-------------------------------------------------
+! for Sm
+REAL(kd), PARAMETER :: h0 = 250.0            ! (m)
+REAL(kd), PARAMETER :: a0 = 5.0*1000.        ! (m)
+REAL(kd), PARAMETER :: x_c = 25.0*1000.        ! (m)
+REAL(kd), PARAMETER :: lambda0 = 4.0*1000.   ! (m)
 !-------------------------------------------------
 INTEGER :: i, k
 REAL(kd), PARAMETER :: s = 3000.  ! km
@@ -421,7 +418,7 @@ IMPLICIT NONE
 !-------------------------------------------------
 TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 !-------------------------------------------------
-REAL(kd), PARAMETER :: Ts = 300.         ! (K)
+REAL(kd) :: Ts
 REAL(kd), PARAMETER :: N0 = 0.01         ! (s-1)
 !-------------------------------------------------
 INTEGER :: i, k
@@ -431,7 +428,7 @@ INTEGER :: i, k
 
 ! theta_0, pi_0
 IF (RunCase == 1 .OR. RunCase == 2) THEN
-
+	Ts = 300.
 	DO k = kms, kme
 		DO i = ims, ime
 			uGrid%theta_0(i,k) = Ts
@@ -450,7 +447,7 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 
 
 ELSE IF (RunCase == 3 .OR. RunCase == 4) THEN
-
+	Ts = 280.
 	DO k = kms, kme
 		DO i = ims, ime
 			uGrid%theta_0(i,k) = Ts*EXP(N0*N0/g*uGrid%zz(i,k))

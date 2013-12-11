@@ -117,7 +117,7 @@ REAL(kd) :: Kh = 20.        !(K s)
 !!INTEGER :: nstep = 1000
 !!INTEGER :: nstep = 300
 
-!REAL :: Km, Kh
+!REAL :: Km = 0., Kh = 0.
 !-------------------------------------------------
 INTEGER, PARAMETER :: its = 1
 INTEGER, PARAMETER :: ite = its + nx - 1
