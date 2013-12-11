@@ -105,10 +105,15 @@ TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi_1
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: F_pi
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_pi_1 = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: Diff_pi_1 = undef
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u = undef, wrhotheta_w = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef, PwrhothetaPz_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u = undef, urhotheta_w = undef, wrhotheta_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPzeta_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PwrhothetaPzeta_pi = undef
+
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPx_pi = undef, PuPzeta_pi = undef, PwPzeta_pi = undef
 INTEGER :: i, k
 !=================================================
 ! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)
@@ -128,20 +133,30 @@ CALL set_area_expand(expand)
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
+		urhotheta_w(i,k) = Main%u(i,k)*wGrid%rho_0(i,k)*wGrid%theta_M_0(i,k)
 		wrhotheta_w(i,k) = Main%w(i,k)*wGrid%rho_0(i,k)*wGrid%theta_M_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
 
 CALL ppx_pi(urhotheta_u,PurhothetaPx_pi)
-CALL ppzeta_pi(wrhotheta_w,PwrhothetaPz_pi)
+CALL ppzeta_pi(wrhotheta_w,PwrhothetaPzeta_pi)
+CALL ppzeta_pi(urhotheta_w,PurhothetaPzeta_pi)
+
+!CALL ppx_pi(uGrid%u,PuPx_pi)
+!CALL ppzeta_pi(wGrid%u,PuPzeta_pi)
+!CALL ppzeta_pi(wGrid%w,PwPzeta_pi)
+
+CALL calc_advection_pi(Main%pi_1,A_pi_1,uGrid,wGrid,piGrid,virGrid)
+!A_pi_1 = 0.
 
 CALL set_area_pi
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		F_pi(i,k) = - cs*cs/Cp/piGrid%rho_0(i,k)/piGrid%theta_M_0(i,k)/piGrid%theta_M_0(i,k)*(PurhothetaPx_pi(i,k) + PwrhothetaPz_pi(i,k))
-		tend_pi_1(i,k) = F_pi(i,k)
+		Diff_pi_1(i,k) = - cs*cs/Cp/piGrid%rho_0(i,k)/piGrid%theta_M_0(i,k)/piGrid%theta_M_0(i,k)*(PurhothetaPx_pi(i,k) + piGrid%G(i,k)*PurhothetaPzeta_pi(i,k) + piGrid%H(i)*PwrhothetaPzeta_pi(i,k))
+		!Diff_pi_1(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*(PuPx_pi(i,k) + piGrid%G(i,k)*PuPzeta_pi(i,k) + piGrid%H(i)*PwPzeta_pi(i,k))
+		tend_pi_1(i,k) = A_pi_1(i,k) + Diff_pi_1(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -159,7 +174,10 @@ TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_theta
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_theta = undef, D_theta = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_theta = undef, D_theta = undef, M_theta = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qv = undef, D_qv = undef, M_qv = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qc = undef, D_qc = undef, M_qc = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qr = undef, D_qr = undef, M_qr = undef
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w = undef, P2thetaPz2_w = undef
 INTEGER :: i, k
@@ -167,18 +185,7 @@ INTEGER :: i, k
 SELECT CASE (flag)
 CASE (0)
 	CALL calc_advection_w(Main%theta,A_theta,uGrid,wGrid,piGrid,virGrid)
-CASE (1)
-	CALL calc_advection_w(Main%qv,A_theta,uGrid,wGrid,piGrid,virGrid)
-CASE (2)
-	CALL calc_advection_w(Main%qc,A_theta,uGrid,wGrid,piGrid,virGrid)
-CASE (3)
-	CALL calc_advection_w(Main%qr,A_theta,uGrid,wGrid,piGrid,virGrid)
-CASE DEFAULT
-	WRITE(*,*) "Wrong flag of tendency_theta"
-END SELECT
-
-CALL set_area_w
-IF (flag == 0) THEN
+	CALL set_area_w
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
@@ -186,20 +193,54 @@ IF (flag == 0) THEN
 			P2thetaPz2_w(i,k) = (Main%theta(i,k+1) + Main%theta(i,k-1) - 2*Main%theta(i,k))/dz/dz
 			D_theta(i,k) = Kh*(P2thetaPx2_w(i,k) + P2thetaPz2_w(i,k))
 	
-			tend_theta(i,k) = A_theta(i,k) + D_theta(i,k)
+			M_theta(i,k) = 0.
+			tend_theta(i,k) = A_theta(i,k) + D_theta(i,k) + M_theta(i,k)
 		END DO
 	END DO
 	!OMP END PARALLEL DO
-ELSE
+
+CASE (1)
+	CALL calc_advection_w(Main%qv,A_qv,uGrid,wGrid,piGrid,virGrid)
+	CALL set_area_w
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			tend_theta(i,k) = A_theta(i,k)
+			D_qv(i,k) = 0.
+			M_qv(i,k) = 0.
+			tend_theta(i,k) = A_qv(i,k) + D_qv(i,k) + M_qv(i,k)
 		END DO
 	END DO
 	!OMP END PARALLEL DO
-END IF
 
+CASE (2)
+	CALL calc_advection_w(Main%qc,A_qc,uGrid,wGrid,piGrid,virGrid)
+	CALL set_area_w
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			D_qc(i,k) = 0.
+			M_qc(i,k) = 0.
+			tend_theta(i,k) = A_qc(i,k) + D_qc(i,k) + M_qc(i,k)
+		END DO
+	END DO
+	!OMP END PARALLEL DO
+
+CASE (3)
+	CALL calc_advection_w(Main%qr,A_qr,uGrid,wGrid,piGrid,virGrid)
+	CALL set_area_w
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			D_qr(i,k) = 0.
+			M_qr(i,k) = 0.
+			tend_theta(i,k) = A_qr(i,k) + D_qr(i,k) + M_qr(i,k)
+		END DO
+	END DO
+	!OMP END PARALLEL DO
+
+CASE DEFAULT
+	WRITE(*,*) "Wrong flag of tendency_theta"
+END SELECT
 !-------------------------------------------------
 IF (ANY(ISNAN(tend_theta(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_theta!!!"
 !=================================================
