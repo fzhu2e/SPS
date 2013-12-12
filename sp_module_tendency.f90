@@ -110,10 +110,16 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi_1
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_pi_1 = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: Diff_pi_1 = undef
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u = undef, urhotheta_w = undef, wrhotheta_w = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPzeta_pi = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PwrhothetaPzeta_pi = undef
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: urhotheta_u = undef, urhotheta_w = undef, wrhotheta_w = undef
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPx_pi = undef
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PurhothetaPzeta_pi = undef
+!REAL(kd), DIMENSION(ims:ime,kms:kme) :: PwrhothetaPzeta_pi = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPx_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPzeta_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PwPzeta_pi = undef
+
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_w = undef
 
 REAL(kd) :: temp
 !REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPx_pi = undef, PuPzeta_pi = undef, PwPzeta_pi = undef
@@ -121,41 +127,49 @@ INTEGER :: i, k
 !=================================================
 ! 5.1 F_pi = - c^2/(rho_0*theta_0^2)*(PurhothetaPx + PwrhothetaPz)
 !-------------------------------------------------
-CALL set_area_u
-CALL set_area_expand(expand)
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		urhotheta_u(i,k) = Main%u(i,k)*uGrid%rho_0(i,k)*uGrid%theta_M_0(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
+!CALL set_area_u
+!CALL set_area_expand(expand)
+!!OMP PARALLEL DO
+!DO k = kmin, kmax
+	!DO i = imin, imax
+		!urhotheta_u(i,k) = Main%u(i,k)*uGrid%rho_0(i,k)*uGrid%theta_M_0(i,k)
+	!END DO
+!END DO
+!!OMP END PARALLEL DO
 
-CALL set_area_w
-CALL set_area_expand(expand)
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		urhotheta_w(i,k) = Main%u(i,k)*wGrid%rho_0(i,k)*wGrid%theta_M_0(i,k)
-		wrhotheta_w(i,k) = Main%w(i,k)*wGrid%rho_0(i,k)*wGrid%theta_M_0(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
+!CALL set_area_w
+!CALL set_area_expand(expand)
+!!OMP PARALLEL DO
+!DO k = kmin, kmax
+	!DO i = imin, imax
+		!urhotheta_w(i,k) = Main%u(i,k)*wGrid%rho_0(i,k)*wGrid%theta_M_0(i,k)
+		!wrhotheta_w(i,k) = Main%w(i,k)*wGrid%rho_0(i,k)*wGrid%theta_M_0(i,k)
+	!END DO
+!END DO
+!!OMP END PARALLEL DO
 
-CALL ppx_pi(urhotheta_u,PurhothetaPx_pi)
-CALL ppzeta_pi(wrhotheta_w,PwrhothetaPzeta_pi)
-CALL ppzeta_pi(urhotheta_w,PurhothetaPzeta_pi)
+!CALL ppx_pi(urhotheta_u,PurhothetaPx_pi)
+!CALL ppzeta_pi(wrhotheta_w,PwrhothetaPzeta_pi)
+!CALL ppzeta_pi(urhotheta_w,PurhothetaPzeta_pi)
+
+CALL u2w(Main%u,u_w)
+CALL ppx_pi(Main%u,PuPx_pi)
+CALL ppzeta_pi(u_w,PuPzeta_pi)
+CALL ppzeta_pi(Main%w,PwPzeta_pi)
 
 
 CALL calc_advection_pi(Main%pi_1,A_pi_1,uGrid,wGrid,piGrid,virGrid)
-!A_pi_1 = 0.
 
 CALL set_area_pi
 !OMP PARALLEL DO PRIVATE(temp)
 DO k = kmin, kmax
 	DO i = imin, imax
-		temp = PurhothetaPx_pi(i,k) + piGrid%G(i,k)*PurhothetaPzeta_pi(i,k) + piGrid%H(i)*PwrhothetaPzeta_pi(i,k)
-		Diff_pi_1(i,k) = - Rd*piGrid%pi_0(i,k)/Cv/piGrid%rho_0(i,k)/piGrid%theta_M_0(i,k)*temp
+		!------------------------- A ---------------------
+		!temp = PurhothetaPx_pi(i,k) + piGrid%G(i,k)*PurhothetaPzeta_pi(i,k) + piGrid%H(i)*PwrhothetaPzeta_pi(i,k)
+		!Diff_pi_1(i,k) = - Rd*piGrid%pi_0(i,k)/Cv/piGrid%rho_0(i,k)/piGrid%theta_M_0(i,k)*temp
+		!------------------------- B ---------------------
+		temp = PuPx_pi(i,k) + piGrid%G(i,k)*PuPzeta_pi(i,k) + piGrid%H(i)*PwPzeta_pi(i,k)
+		Diff_pi_1(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*temp
 		tend_pi_1(i,k) = A_pi_1(i,k) + Diff_pi_1(i,k)
 	END DO
 END DO
