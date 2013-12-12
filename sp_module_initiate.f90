@@ -32,13 +32,16 @@ INTEGER :: i, k
 ! u, w, pi_1, theta, qc, qv, qr
 !-------------------------------------------------
 CALL set_area_u
+!OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		uGrid%u(i,k) = 0
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_w
+!OMP PARALLEL DO PRIVATE(L)
 DO k = kmin, kmax
 	DO i = imin, imax
 		wGrid%w(i,k) = 0
@@ -54,14 +57,17 @@ DO k = kmin, kmax
 		wGrid%qr(i,k) = 0.
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_pi
+!OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_dc
 !=================================================
@@ -82,15 +88,18 @@ REAL(kd) :: L
 INTEGER :: i, k
 !=================================================
 CALL set_area_u
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		uGrid%u(i,k) = 0.
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_w
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO PRIVATE(L)
+DO k = kmin, kmax
+	DO i = imin, imax
 		wGrid%w(i,k) = 0.
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
 		wGrid%theta_1(i,k) = 2.*MAX(0.,1. - L/R)
@@ -100,14 +109,17 @@ DO i = imin, imax
 		wGrid%qr(i,k) = 0.
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_pi
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_tb
 !=================================================
@@ -132,15 +144,18 @@ REAL(kd) :: L
 INTEGER :: i, k
 !=================================================
 CALL set_area_u
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		uGrid%u(i,k) = 20.
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_w
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO PRIVATE(L)
+DO k = kmin, kmax
+	DO i = imin, imax
 		wGrid%w(i,k) = 0.
 		L = SIN(PI_math*wGrid%zz(i,k)/H)/(1. + (wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c)/a/a)
 		wGrid%theta_1(i,k) = 0.01*L
@@ -150,14 +165,17 @@ DO i = imin, imax
 		wGrid%qr(i,k) = 0.
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_pi
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_igw
 !=================================================
@@ -172,15 +190,18 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 INTEGER :: i, k 
 !=================================================
 CALL set_area_u
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		uGrid%u(i,k) = 10.
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_w
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		wGrid%w(i,k) = 0.
 		wGrid%theta_1(i,k) = 0.
 		wGrid%theta(i,k) = wGrid%theta_0(i,k)
@@ -189,14 +210,17 @@ DO i = imin, imax
 		wGrid%qr(i,k) = 0.
 	END DO
 END DO
+!OMP END PARALLEL DO
 
 CALL set_area_pi
-DO i = imin, imax
-	DO k = kmin, kmax
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		piGrid%pi_1(i,k) = 0.
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
 	END DO
 END DO
+!OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_Sm
 !=================================================
@@ -212,19 +236,23 @@ INTEGER :: i, k
 !=================================================
 ! xx, zeta
 !-------------------------------------------------
+!OMP PARALLEL DO
 DO i = ims, ime
 	uGrid%xx(i) = dx*(i - its)
 	virGrid%xx(i) = uGrid%xx(i)
 	piGrid%xx(i) = uGrid%xx(i) - dx/2.
 	wGrid%xx(i) = piGrid%xx(i)
 END DO
+!OMP END PARALLEL DO
 
+!OMP PARALLEL DO
 DO k = kms, kme
 	wGrid%zeta(k) = dz*(k - kts)
 	virGrid%zeta(k) = wGrid%zeta(k)
 	piGrid%zeta(k) = wGrid%zeta(k) + dz/2.
 	uGrid%zeta(k) = piGrid%zeta(k)
 END DO
+!OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_grid
 !=================================================
@@ -248,21 +276,27 @@ REAL(kd), PARAMETER :: s = 3000.  ! km
 ! zs, zz, G, H
 !-------------------------------------------------
 IF (RunCase /= 4) THEN
+	!OMP PARALLEL DO
 	DO i = ims, ime
 		uGrid%zs(i) = 0.
 		piGrid%zs(i) = 0.
 	END DO
+	!OMP END PARALLEL DO
 
 ELSE IF (RunCase == 4) THEN
+	!OMP PARALLEL DO
 	DO i = ims, ime
 		uGrid%zs(i) = h0*EXP(-((uGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(uGrid%xx(i) - x_c)/lambda0)**2
 		!uGrid%PzsPx(i) = - 2*h0*EXP(-((uGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(uGrid%xx(i) - x_c)/lambda0)*((uGrid%xx(i) - x_c)/a0**2*COS(PI_math*(uGrid%xx(i) - x_c)/lambda0) + PI_math/lambda0*SIN(PI_math*(uGrid%xx(i) - x_c)/lambda0))
 	END DO
+	!OMP END PARALLEL DO
 	
+	!OMP PARALLEL DO
 	DO i = ims, ime
 		piGrid%zs(i) = h0*EXP(-((piGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(piGrid%xx(i) - x_c)/lambda0)**2
 		!piGrid%PzsPx(i) = - 2*h0*EXP(-((piGrid%xx(i) - x_c)/a0)**2)*COS(PI_math*(piGrid%xx(i) - x_c)/lambda0)*((piGrid%xx(i) - x_c)/a0**2*COS(PI_math*(piGrid%xx(i) - x_c)/lambda0) + PI_math/lambda0*SIN(PI_math*(piGrid%xx(i) - x_c)/lambda0))
 	END DO
+	!OMP END PARALLEL DO
 
 ELSE
 	STOP "WRONG RunCase!!!"
@@ -271,32 +305,41 @@ END IF
 virGrid%zs = uGrid%zs
 wGrid%zs = piGrid%zs
 
+!OMP PARALLEL DO
 DO i = ims, ime - 1
 	uGrid%PzsPx(i) = (piGrid%zs(i+1) - piGrid%zs(i))/dx
 END DO
+!OMP END PARALLEL DO
 
+!OMP PARALLEL DO
 DO i = ims + 1, ime
 	piGrid%PzsPx(i) = (piGrid%zs(i) - piGrid%zs(i-1))/dx
 END DO
+!OMP END PARALLEL DO
 
 virGrid%PzsPx = uGrid%PzsPx
 wGrid%PzsPx = piGrid%PzsPx
 
 IF (VertCoords == 1) THEN
+	!OMP PARALLEL DO
 	DO k = kms, kme
 		uGrid%b(k) = 1. - uGrid%zeta(k)/ztop
 		wGrid%b(k) = 1. - wGrid%zeta(k)/ztop
 		piGrid%b(k) = 1. - piGrid%zeta(k)/ztop
 		virGrid%b(k) = 1. - virGrid%zeta(k)/ztop
 	END DO
+	!OMP END PARALLEL DO
 
+	!OMP PARALLEL DO
 	DO i = ims, ime
 		uGrid%H(i) = ztop/(ztop - uGrid%zs(i))
 		wGrid%H(i) = ztop/(ztop - wGrid%zs(i))
 		piGrid%H(i) = ztop/(ztop - piGrid%zs(i))
 		virGrid%H(i) = ztop/(ztop - virGrid%zs(i))
 	END DO
+	!OMP END PARALLEL DO
 
+	!OMP PARALLEL DO
 	DO k = kms, kme
 		DO i = ims + 1, ime - 1
 			uGrid%G(i,k) = (uGrid%zeta(k) - ztop)/(ztop - uGrid%zs(i))*uGrid%PzsPx(i)
@@ -305,19 +348,23 @@ IF (VertCoords == 1) THEN
 			virGrid%G(i,k) = (virGrid%zeta(k) - ztop)/(ztop - virGrid%zs(i))*virGrid%PzsPx(i)
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 
 ELSE IF (VertCoords == 2) THEN
+	!OMP PARALLEL DO
 	DO k = kms, kme
 		uGrid%b(k) = SINH((ztop - uGrid%zeta(k))/s)/SINH(ztop/s)
 		wGrid%b(k) = SINH((ztop - wGrid%zeta(k))/s)/SINH(ztop/s)
 		piGrid%b(k) = SINH((ztop - piGrid%zeta(k))/s)/SINH(ztop/s)
 		virGrid%b(k) = SINH((ztop - virGrid%zeta(k))/s)/SINH(ztop/s)
 	END DO
+	!OMP END PARALLEL DO
 
 ELSE
 	STOP "WRONG VertCoord!!!"
 END IF
 
+!OMP PARALLEL DO
 DO k = kms, kme
 	DO i = ims, ime
 		uGrid%zz(i,k) = uGrid%zeta(k) + uGrid%zs(i)*uGrid%b(k)
@@ -326,11 +373,7 @@ DO k = kms, kme
 		virGrid%zz(i,k) = virGrid%zeta(k) + virGrid%zs(i)*virGrid%b(k)
 	END DO
 END DO
-
-!CALL debug_ascii_output(uGrid%zz)
-!CALL debug_ascii_output(wGrid%zz)
-!CALL debug_ascii_output(piGrid%zz)
-!CALL debug_ascii_output(virGrid%zz)
+!OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_terrain
 !=================================================
@@ -360,6 +403,7 @@ INTEGER :: i, k
 ! theta_0, pi_0
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	Ts = 300.
+	!OMP PARALLEL DO
 	DO k = kms, kme
 		DO i = ims, ime
 			uGrid%theta_0(i,k) = Ts
@@ -375,10 +419,13 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 			virGrid%pi_0(i,k) = 1. - g*virGrid%zz(i,k)/2./Cp/Ts
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 
 
 ELSE IF (RunCase == 3 .OR. RunCase == 4) THEN
-	Ts = 280.
+	IF (RunCase == 3) Ts = 300.
+	IF (RunCase == 4) Ts = 280.
+	!OMP PARALLEL DO
 	DO k = kms, kme
 		DO i = ims, ime
 			uGrid%theta_0(i,k) = Ts*EXP(N0*N0/g*uGrid%zz(i,k))
@@ -394,12 +441,14 @@ ELSE IF (RunCase == 3 .OR. RunCase == 4) THEN
 			virGrid%pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*virGrid%zz(i,k)/g) - EXP(-N0*N0*virGrid%zs(i)/g))
 		END DO
 	END DO
+	!OMP END PARALLEL DO
 
 ELSE
 	STOP "WRONG RunCase!!!"
 END IF
 
 ! rho_0
+!OMP PARALLEL DO
 DO k = kms, kme
 	DO i = ims, ime
 		uGrid%rho_0(i,k) = p0/Rd/uGrid%theta_0(i,k)*uGrid%pi_0(i,k)*uGrid%pi_0(i,k)**(Cp/Rd)
@@ -408,21 +457,7 @@ DO k = kms, kme
 		virGrid%rho_0(i,k) = p0/Rd/virGrid%theta_0(i,k)*virGrid%pi_0(i,k)*virGrid%pi_0(i,k)**(Cp/Rd)
 	END DO
 END DO
-
-!CALL debug_ascii_output(uGrid%theta_0)
-!CALL debug_ascii_output(wGrid%theta_0)
-!CALL debug_ascii_output(piGrid%theta_0)
-!CALL debug_ascii_output(virGrid%theta_0)
-
-!CALL debug_ascii_output(uGrid%pi_0)
-!CALL debug_ascii_output(wGrid%pi_0)
-!CALL debug_ascii_output(piGrid%pi_0)
-!CALL debug_ascii_output(virGrid%pi_0)
-
-!CALL debug_ascii_output(uGrid%rho_0)
-!CALL debug_ascii_output(wGrid%rho_0)
-!CALL debug_ascii_output(piGrid%rho_0)
-!CALL debug_ascii_output(virGrid%rho_0)
+!OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_basic_state
 !=================================================
