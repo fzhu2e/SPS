@@ -30,53 +30,53 @@ SELECT CASE(flag)
 CASE (0)
 	IF (PRESENT(u)) THEN
 		OPEN(1, FILE="./output/modelvar_u.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(1) u(its:ite,kts:kte)
+		WRITE(1) u
 	END IF
 	IF (PRESENT(w)) THEN
 		OPEN(2, FILE="./output/modelvar_w.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(2) w(its:ite,kts:kte)
+		WRITE(2) w
 	END IF
 	IF (PRESENT(pi_1)) THEN
 		OPEN(3, FILE="./output/modelvar_pi_1.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(3) pi_1(its:ite,kts:kte)
+		WRITE(3) pi_1
 	END IF
 	IF (PRESENT(theta_1)) THEN
 		OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(4) theta_1(its:ite,kts:kte)
+		WRITE(4) theta_1
 	END IF
 	IF (PRESENT(qv)) THEN
 		OPEN(5, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(5) qv(its:ite,kts:kte)
+		WRITE(5) qv
 	END IF
 	IF (PRESENT(qc)) THEN
 		OPEN(6, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(6) qc(its:ite,kts:kte)
+		WRITE(6) qc
 	END IF
 	IF (PRESENT(qr)) THEN
 		OPEN(7, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(7) qr(its:ite,kts:kte)
+		WRITE(7) qr
 	END IF
 CASE (1)
 	IF (PRESENT(u)) THEN
-		WRITE(1) u(its:ite,kts:kte)
+		WRITE(1) u
 	END IF
 	IF (PRESENT(w)) THEN
-		WRITE(2) w(its:ite,kts:kte)
+		WRITE(2) w
 	END IF
 	IF (PRESENT(pi_1)) THEN
-		WRITE(3) pi_1(its:ite,kts:kte)
+		WRITE(3) pi_1
 	END IF
 	IF (PRESENT(theta_1)) THEN
-		WRITE(4) theta_1(its:ite,kts:kte)
+		WRITE(4) theta_1
 	END IF
 	IF (PRESENT(qv)) THEN
-		WRITE(5) qv(its:ite,kts:kte)
+		WRITE(5) qv
 	END IF
 	IF (PRESENT(qc)) THEN
-		WRITE(6) qc(its:ite,kts:kte)
+		WRITE(6) qc
 	END IF
 	IF (PRESENT(qr)) THEN
-		WRITE(7) qr(its:ite,kts:kte)
+		WRITE(7) qr
 	END IF
 CASE (99)
 	IF (PRESENT(u)) THEN
