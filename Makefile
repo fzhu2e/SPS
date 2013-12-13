@@ -39,7 +39,7 @@ sp_module_advection.o: sp_module_constant.o sp_module_debug.o \
 sp_module_boundary.o: sp_module_constant.o sp_module_debug.o \
 	sp_module_gridvar.o sp_module_model.o
 sp_module_debug.o: sp_module_constant.o sp_module_model.o
-sp_module_gridvar.o: sp_module_constant.o sp_module_model.o
+sp_module_gridvar.o: sp_module_constant.o sp_module_debug.o sp_module_model.o
 sp_module_initiate.o: sp_module_constant.o sp_module_debug.o \
 	sp_module_gridvar.o sp_module_model.o
 sp_module_integrate.o: sp_module_boundary.o sp_module_constant.o \

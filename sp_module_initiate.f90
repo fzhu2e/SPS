@@ -403,18 +403,40 @@ INTEGER :: i, k
 ! theta_0, pi_0
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	Ts = 300.
+	CALL set_area_u
 	!OMP PARALLEL DO
 	DO k = kms, kme
 		DO i = ims, ime
 			uGrid%theta_0(i,k) = Ts
 			uGrid%pi_0(i,k) = 1. - g*uGrid%zz(i,k)/2./Cp/Ts
+		END DO
+	END DO
+	!OMP END PARALLEL DO
 
+	CALL set_area_w
+	!OMP PARALLEL DO
+	DO k = kms, kme
+		DO i = ims, ime
 			wGrid%theta_0(i,k) = Ts
 			wGrid%pi_0(i,k) = 1. - g*wGrid%zz(i,k)/2./Cp/Ts
+		END DO
+	END DO
+	!OMP END PARALLEL DO
 
+	CALL set_area_pi
+	!OMP PARALLEL DO
+	DO k = kms, kme
+		DO i = ims, ime
 			piGrid%theta_0(i,k) = Ts
 			piGrid%pi_0(i,k) = 1. - g*piGrid%zz(i,k)/2./Cp/Ts
+		END DO
+	END DO
+	!OMP END PARALLEL DO
 
+	CALL set_area_vir
+	!OMP PARALLEL DO
+	DO k = kms, kme
+		DO i = ims, ime
 			virGrid%theta_0(i,k) = Ts
 			virGrid%pi_0(i,k) = 1. - g*virGrid%zz(i,k)/2./Cp/Ts
 		END DO
@@ -425,18 +447,41 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 ELSE IF (RunCase == 3 .OR. RunCase == 4) THEN
 	IF (RunCase == 3) Ts = 300.
 	IF (RunCase == 4) Ts = 280.
+
+	CALL set_area_u
 	!OMP PARALLEL DO
 	DO k = kms, kme
 		DO i = ims, ime
 			uGrid%theta_0(i,k) = Ts*EXP(N0*N0/g*uGrid%zz(i,k))
 			uGrid%pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*uGrid%zz(i,k)/g) - EXP(-N0*N0*uGrid%zs(i)/g))
+		END DO
+	END DO
+	!OMP END PARALLEL DO
 
+	CALL set_area_w
+	!OMP PARALLEL DO
+	DO k = kms, kme
+		DO i = ims, ime
 			wGrid%theta_0(i,k) = Ts*EXP(N0*N0/g*wGrid%zz(i,k))
 			wGrid%pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*wGrid%zz(i,k)/g) - EXP(-N0*N0*wGrid%zs(i)/g))
+		END DO
+	END DO
+	!OMP END PARALLEL DO
 
+	CALL set_area_pi
+	!OMP PARALLEL DO
+	DO k = kms, kme
+		DO i = ims, ime
 			piGrid%theta_0(i,k) = Ts*EXP(N0*N0/g*piGrid%zz(i,k))
 			piGrid%pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*piGrid%zz(i,k)/g) - EXP(-N0*N0*piGrid%zs(i)/g))
+		END DO
+	END DO
+	!OMP END PARALLEL DO
 
+	CALL set_area_vir
+	!OMP PARALLEL DO
+	DO k = kms, kme
+		DO i = ims, ime
 			virGrid%theta_0(i,k) = Ts*EXP(N0*N0/g*virGrid%zz(i,k))
 			virGrid%pi_0(i,k) = 1. + g*g/Cp/N0/N0/Ts*(EXP(-N0*N0*virGrid%zz(i,k)/g) - EXP(-N0*N0*virGrid%zs(i)/g))
 		END DO
@@ -448,12 +493,37 @@ ELSE
 END IF
 
 ! rho_0
+CALL set_area_u
 !OMP PARALLEL DO
 DO k = kms, kme
 	DO i = ims, ime
 		uGrid%rho_0(i,k) = p0/Rd/uGrid%theta_0(i,k)*uGrid%pi_0(i,k)*uGrid%pi_0(i,k)**(Cp/Rd)
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_w
+!OMP PARALLEL DO
+DO k = kms, kme
+	DO i = ims, ime
 		wGrid%rho_0(i,k) = p0/Rd/wGrid%theta_0(i,k)*wGrid%pi_0(i,k)*wGrid%pi_0(i,k)**(Cp/Rd)
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kms, kme
+	DO i = ims, ime
 		piGrid%rho_0(i,k) = p0/Rd/piGrid%theta_0(i,k)*piGrid%pi_0(i,k)*piGrid%pi_0(i,k)**(Cp/Rd)
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_vir
+!OMP PARALLEL DO
+DO k = kms, kme
+	DO i = ims, ime
 		virGrid%rho_0(i,k) = p0/Rd/virGrid%theta_0(i,k)*virGrid%pi_0(i,k)*virGrid%pi_0(i,k)**(Cp/Rd)
 	END DO
 END DO
