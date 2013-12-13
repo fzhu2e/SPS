@@ -55,6 +55,48 @@ CALL w2u(wGrid%theta_M,uGrid%theta_M)
 !=================================================
 END SUBROUTINE basic_interpolate
 !=================================================
+
+!=================================================
+! Calculate virtual theta
+!=================================================
+SUBROUTINE calc_virTheta(uGrid,wGrid,piGrid,virGrid)
+IMPLICIT NONE
+TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!=================================================
+! theta_v, theta_M_0, theta_M_1
+!-------------------------------------------------
+wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
+wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc)
+wGrid%theta_0 = wGrid%theta
+CALL w2pi(wGrid%theta_0,piGrid%theta_0)
+CALL w2u(wGrid%theta_0,uGrid%theta_0)
+
+wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
+
+!CALL debug_ascii_output(wGrid%theta,"theta")
+!CALL debug_ascii_output(wGrid%theta_M,"theta_M")
+!CALL debug_ascii_output(wGrid%theta_M_0,"theta_M_0")
+!CALL debug_ascii_output(wGrid%theta_M_1,"theta_M_1")
+
+!CALL debug_ascii_output(wGrid%qv,"qv")
+!CALL debug_ascii_output(wGrid%qc,"qc")
+!CALL debug_ascii_output(wGrid%qr,"qr")
+
+!CALL debug_ascii_output(piGrid%rho_0,"rho_0_pi")
+!CALL debug_ascii_output(uGrid%rho_0,"rho_0_u")
+!CALL debug_ascii_output(wGrid%rho_0,"rho_0_w")
+!CALL debug_ascii_output(virGrid%rho_0,"rho_0_vir")
+
+!CALL debug_ascii_output(piGrid%pi_0,"pi_0_pi")
+!CALL debug_ascii_output(uGrid%pi_0,"pi_0_u")
+!CALL debug_ascii_output(wGrid%pi_0,"pi_0_w")
+!CALL debug_ascii_output(virGrid%pi_0,"pi_0_vir")
+
+!CALL debug_SFSG
+!=================================================
+END SUBROUTINE calc_virTheta
+!=================================================
+
 !/////////////////////////////////////////////////////////////////////
 !=================================================
 END MODULE sp_module_interpolate
