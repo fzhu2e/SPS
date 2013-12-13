@@ -24,14 +24,13 @@ nz = 100
 ;nt = 11
 ;nt = 16
 ;nt = 31
-nt = 50
 ;nt = 65
 ;nt = 83
 ;nt = 101
 ;nt = 188
 ;nt = 161
 ;nt = 201
-;nt = 301
+nt = 301
 ;nt = 311
 ;nt = 401
 ;nt = 1001
@@ -40,15 +39,17 @@ var = "theta_1"
 ;var = "pi_1"
 ;var = "u"
 ;var = "w"
-halo = 4
 ;=================================
 ;Read data.
 ;---------------------------------
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
-;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
-data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz+2*halo,nx+2*halo/),"double")
+;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
+data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
+;data_1 = cbinread("../output/modelvar_theta_1.bin",(/nt,nz,nx/),"double")
+;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nzm,nxm/),"double")
 data@_FillValue = -9999.
 ;print(data)
+;last = data(nt-1,:,:)
 ;=================================
 ; Plot.
 ;---------------------------------
@@ -140,7 +141,6 @@ do i = 0, nt-1
 	;res@gsnRightString  = "Step: " + i
 	res@gsnRightStringFontHeightF   = 0.015
 	plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
-	;plots(0) = gsn_csm_contour(wks,data(i,halo:halo+nz-1,halo:halo+nx-1),res)
 end do
 ;tt = 299
 ;last = data(tt,:,:)
