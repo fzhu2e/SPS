@@ -72,6 +72,11 @@ CALL update_boundary(uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta, &
                      wGrid%qv,wGrid%qc,wGrid%qr,wGrid,        &
                      piGrid%rho_0,uGrid%rho_0,wGrid%rho_0,virGrid%rho_0, &
                      wGrid%theta_0)
+
+wGrid%theta_M_0 = wGrid%theta_0
+CALL w2pi(wGrid%theta_M_0,piGrid%theta_M_0)
+CALL w2u(wGrid%theta_M_0,uGrid%theta_M_0)
+
 CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 
 CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%qv,wGrid%qc,wGrid%qr)

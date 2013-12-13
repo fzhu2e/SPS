@@ -67,10 +67,6 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 !-------------------------------------------------
 wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
 wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc)
-wGrid%theta_0 = wGrid%theta
-CALL w2pi(wGrid%theta_0,piGrid%theta_0)
-CALL w2u(wGrid%theta_0,uGrid%theta_0)
-
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
 
 !CALL debug_ascii_output(wGrid%theta,"theta")

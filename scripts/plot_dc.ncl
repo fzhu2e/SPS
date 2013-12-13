@@ -27,7 +27,7 @@ nx = 512
 ;nt = 26
 ;nt = 28
 ;nt = 32
-;nt = 41
+nt = 41
 ;nt = 47
 ;nt = 49
 ;nt = 51
@@ -36,7 +36,7 @@ nx = 512
 ;nt = 69
 ;nt = 85
 ;nt = 86
-nt = 91
+;nt = 91
 ;nt = 101
 ;nt = 1001
 ;nt = 201
@@ -52,12 +52,13 @@ var = "theta_1"
 ;var = "pi_1"
 ;var = "u"
 ;var = "w"
+halo = 4
 ;=================================
 ; Read data.
 ;---------------------------------
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
-data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
+data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz+2*halo,nx+2*halo/),"double")
 ;print(data)
 pi_data = (data(:,0:nz-2,:) + data(:,1:nz-1,:))/2.
 ;=================================
@@ -104,10 +105,10 @@ res@gsnSpreadColors = True
 res@gsnSpreadColorStart = 250
 res@gsnSpreadColorEnd = 2
 
-res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
-res@cnMinLevelValF          = -14.
-res@cnMaxLevelValF          = -1.
-res@cnLevelSpacingF         = 1.
+;res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
+;res@cnMinLevelValF          = -14.
+;res@cnMaxLevelValF          = -1.
+;res@cnLevelSpacingF         = 1.
 ;res@cnMinLevelValF          = 0.10
 ;res@cnMaxLevelValF          = 0.20
 ;res@cnLevelSpacingF         = 0.001
@@ -150,7 +151,8 @@ do i = 0, nt-1
 	res@gsnRightString  = "Step: " + k
 	;res@gsnRightString  = "Step: " + i
 	res@gsnRightStringFontHeightF   = 0.015
-	plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
+	;plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
+	plots(0) = gsn_csm_contour(wks,data(i,halo:halo+nz-1,halo:halo+nx-1),res)
 end do
 
 ;=================================

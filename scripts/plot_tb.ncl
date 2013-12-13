@@ -31,12 +31,13 @@ var = "theta_1"
 ;var = "qv"
 ;var = "qc"
 ;var = "qr"
+halo = 4
 ;=================================
 ; Read data.
 ;---------------------------------
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
-data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
+data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz+2*halo,nx+2*halo/),"double")
 ;print(data)
 pi_data = (data(:,0:nz-2,:) + data(:,1:nz-1,:))/2.
 ;=================================

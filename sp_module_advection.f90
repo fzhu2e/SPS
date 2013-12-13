@@ -163,9 +163,9 @@ CALL set_area_w
 !OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
 DO k = kmin, kmax
 	DO i = imin, imax
-		temp_a = - 1./uGrid%rho_0(i,k)*(PrhouvarPx_w(i,k) - var_w(i,k)*PrhouPx_w(i,k))
-		temp_b = - uGrid%G(i,k)/uGrid%rho_0(i,k)*(PrhouvarPzeta_w(i,k) - var_w(i,k)*PrhouPzeta_w(i,k))
-		temp_c = - uGrid%H(k)/uGrid%rho_0(i,k)*(PrhowvarPzeta_w(i,k) - var_w(i,k)*PrhowPzeta_w(i,k))
+		temp_a = - 1./wGrid%rho_0(i,k)*(PrhouvarPx_w(i,k) - var_w(i,k)*PrhouPx_w(i,k))
+		temp_b = - wGrid%G(i,k)/wGrid%rho_0(i,k)*(PrhouvarPzeta_w(i,k) - var_w(i,k)*PrhouPzeta_w(i,k))
+		temp_c = - wGrid%H(k)/wGrid%rho_0(i,k)*(PrhowvarPzeta_w(i,k) - var_w(i,k)*PrhowPzeta_w(i,k))
 		A_w(i,k) = temp_a + temp_b + temp_c
 	END DO
 END DO
@@ -247,8 +247,8 @@ CALL set_area_pi
 DO k = kmin, kmax
 	DO i = imin, imax
 		temp_a = - 1./piGrid%rho_0(i,k)*(PrhouvarPx_pi(i,k) - var_pi(i,k)*PrhouPx_pi(i,k))
-		temp_b = - piGrid%G(i,k)/piGrid%rho_0(i,k)*(PrhouvarPzeta_pi(i,k) - (var_pi(i,k) + piGrid%pi_0(i,k))*PrhouPzeta_pi(i,k))
-		temp_c = - piGrid%H(k)/piGrid%rho_0(i,k)*(PrhowvarPzeta_pi(i,k) - (var_pi(i,k) + piGrid%pi_0(i,k))*PrhowPzeta_pi(i,k))
+		temp_b = - piGrid%G(i,k)/piGrid%rho_0(i,k)*(PrhouvarPzeta_pi(i,k) - var_pi(i,k)*PrhouPzeta_pi(i,k))
+		temp_c = - piGrid%H(k)/piGrid%rho_0(i,k)*(PrhowvarPzeta_pi(i,k) - var_pi(i,k)*PrhowPzeta_pi(i,k))
 		A_pi(i,k) = temp_a + temp_b + temp_c
 	END DO
 END DO
