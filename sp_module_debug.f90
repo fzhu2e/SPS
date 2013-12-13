@@ -25,7 +25,7 @@ CHARACTER(*) :: filename
 INTEGER :: i, k
 !=================================================
 OPEN(1, FILE = 'debug/'//TRIM(ADJUSTL(filename)))
-DO k = kms, kme
+DO k = kme, kms, -1
 	DO i = ims, ime - 1
 		WRITE(1, "(F11.5\)") var(i,k)
 	END DO
