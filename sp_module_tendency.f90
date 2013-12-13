@@ -128,6 +128,7 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		temp = PuPx_pi(i,k) + piGrid%G(i,k)*PuPzeta_pi(i,k) + piGrid%H(i)*PwPzeta_pi(i,k)
 		Div_pi_1(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*temp
+		!Div_pi_1(i,k) = - Rd*piGrid%pi_0(i,k)/Cv*temp
 		tend_pi_1(i,k) = A_pi_1(i,k) + Div_pi_1(i,k)
 	END DO
 END DO

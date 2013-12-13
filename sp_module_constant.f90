@@ -26,7 +26,6 @@ REAL(kd), PARAMETER :: omega = 7.292E-5
 REAL(kd), PARAMETER :: latitude = 45*PI_math/180.
 REAL(kd), PARAMETER :: f = 2*omega*SIN(latitude)
 REAL(kd), PARAMETER :: cs = 340.        ! speed of sound (m/s)
-!REAL(kd), PARAMETER :: cs = 300.         ! speed of sound (m/s)
 REAL(kd), PARAMETER :: Cp = 1005.4152    ! 0.2403 (cal/g/K) = 0.2403*4.184*1000 (J/kg/K) = 1005.4152 (J/kg/K)
 REAL(kd), PARAMETER :: Cv = 717.556      ! 0.1715 (cal/g/K) = 0.1715*4.184*1000 (J/kg/K) = 717.556 (J/kg/K)
 REAL(kd), PARAMETER :: p0 = 100000.      ! (Pa)

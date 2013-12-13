@@ -29,6 +29,7 @@ REAL(kd) :: t_lapse, t_left, t_all
 WRITE(*,*) "====================="
 WRITE(*,*) " Initial model..."
 WRITE(*,*) "====================="
+WRITE(*,*) " Kind:            ", kd
 WRITE(*,*) " RunCase:         ", RunCase
 WRITE(*,*) " TimeScheme:      ", TimeScheme
 WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
