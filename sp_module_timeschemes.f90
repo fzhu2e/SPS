@@ -100,7 +100,7 @@ DO k = kmin, kmax
 		C%w(i,k) = A%w(i,k) + dt/REAL(deno)*tend_w(i,k)
 
 		C%theta(i,k) = A%theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
-		wGrid%theta_M(i,k) = wGrid%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))*(1. - wGrid%qc(i,k))
+		wGrid%theta_M(i,k) = C%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))*(1. - wGrid%qc(i,k))
 		wGrid%theta_M_1(i,k) = wGrid%theta_M(i,k) - wGrid%theta_M_0(i,k)
 
 		C%qv(i,k) = A%qv(i,k) + dt/REAL(deno)*tend_qv(i,k)

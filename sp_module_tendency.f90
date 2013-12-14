@@ -36,6 +36,11 @@ CALL ppx_u(Main%pi_1,Ppi_1Px_u)
 CALL ppzeta_u(Main%pi_1,Ppi_1Pzeta_u)
 
 CALL set_area_u
+IF (ANY(uGrid%theta_M_0(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
+IF (ANY(Ppi_1Px_u(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
+IF (ANY(uGrid%G(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
+IF (ANY(Ppi_1Pzeta_u(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
+IF (ANY(Main%u(imin-1:imax+1,kmin-1:kmax+1) == undef)) STOP "tend_u"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -67,22 +72,27 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_w = undef, B_w = undef, P_w = undef, D
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Pz_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Pzeta_w = undef
 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w = undef, P2wPz2_w = undef
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
 CALL calc_advection_w(Main%w,A_w,uGrid,wGrid,piGrid,virGrid)
-CALL ppzeta_w(Main%pi_1,Ppi_1Pz_w)
+CALL ppzeta_w(Main%pi_1,Ppi_1Pzeta_w)
 
 CALL set_area_w
+IF (ANY(wGrid%theta_M_1(imin:imax,kmin:kmax) == undef)) STOP "tend_w"
+IF (ANY(wGrid%theta_M_0(imin:imax,kmin:kmax) == undef)) STOP "tend_w"
+IF (ANY(wGrid%H(imin:imax) == undef)) STOP "tend_w"
+IF (ANY(Ppi_1Pzeta_w(imin:imax,kmin:kmax) == undef)) STOP "tend_w"
+IF (ANY(Main%w(imin-1:imax+1,kmin-1:kmax+1) == undef)) STOP "tend_w"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		B_w(i,k) = g*wGrid%theta_M_1(i,k)/wGrid%theta_M_0(i,k)
 
-		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
+		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pzeta_w(i,k)
 		!P_w(i,k) = - Cp*wGrid%theta_M(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
 
 		P2wPx2_w(i,k) = (Main%w(i+1,k) + Main%w(i-1,k) - 2*Main%w(i,k))/dx/dx
@@ -119,10 +129,15 @@ CALL ppx_pi(Main%u,PuPx_pi)
 CALL ppzeta_pi(wGrid%u,PuPzeta_pi)
 CALL ppzeta_pi(Main%w,PwPzeta_pi)
 
-
 CALL calc_advection_pi(Main%pi_1,A_pi_1,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_pi
+IF (ANY(PuPx_pi(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
+IF (ANY(piGrid%G(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
+IF (ANY(PuPzeta_pi(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
+IF (ANY(piGrid%H(imin:imax) == undef)) STOP "tend_pi"
+IF (ANY(PwPzeta_pi(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
+IF (ANY(piGrid%theta_M_0(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
 !OMP PARALLEL DO PRIVATE(temp)
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -159,6 +174,7 @@ SELECT CASE (flag)
 CASE (0)
 	CALL calc_advection_w(Main%theta,A_theta,uGrid,wGrid,piGrid,virGrid)
 	CALL set_area_w
+	IF (ANY(Main%theta(imin-1:imax+1,kmin-1:kmax+1) == undef)) STOP "tend_theta"
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
