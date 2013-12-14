@@ -53,6 +53,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_pi
 INTEGER :: i, k
 CALL set_area_pi
 CALL set_area_expand(expand)
+IF (ANY(var_u(imin-1:imax,kmin:kmax) == undef)) STOP "u2pi WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -71,6 +72,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_vir
 INTEGER :: i, k
 CALL set_area_vir
 CALL set_area_expand(expand)
+IF (ANY(var_u(imin:imax,kmin-1:kmax) == undef)) STOP "u2vir WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -89,6 +91,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_w
 INTEGER :: i, k
 CALL set_area_w
 CALL set_area_expand(expand)
+IF (ANY(var_u(imin-1:imax,kmin-1:kmax) == undef)) STOP "u2w WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -107,6 +110,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_u
 INTEGER :: i, k
 CALL set_area_u
 CALL set_area_expand(expand)
+IF (ANY(var_pi(imin:imax+1,kmin:kmax) == undef)) STOP "pi2u WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -125,6 +129,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_w
 INTEGER :: i, k
 CALL set_area_w
 CALL set_area_expand(expand)
+IF (ANY(var_pi(imin:imax,kmin-1:kmax) == undef)) STOP "pi2w WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -143,6 +148,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_vir
 INTEGER :: i, k
 CALL set_area_vir
 CALL set_area_expand(expand)
+IF (ANY(var_pi(imin:imax+1,kmin-1:kmax) == undef)) STOP "pi2vir WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -161,6 +167,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_vir
 INTEGER :: i, k
 CALL set_area_vir
 CALL set_area_expand(expand)
+IF (ANY(var_w(imin:imax+1,kmin:kmax) == undef)) STOP "w2vir WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -179,6 +186,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_pi
 INTEGER :: i, k
 CALL set_area_pi
 CALL set_area_expand(expand)
+IF (ANY(var_w(imin:imax,kmin:kmax+1) == undef)) STOP "w2pi WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -197,6 +205,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_u
 INTEGER :: i, k
 CALL set_area_u
 CALL set_area_expand(expand)
+IF (ANY(var_w(imin:imax+1,kmin:kmax+1) == undef)) STOP "w2u WRONG!!!"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -214,6 +223,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_u
+IF (ANY(var_pi(imin:imax+1,kmin:kmax) == undef)) STOP "ppx_u WRONG!!!"
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_pi(i+1,k) - var_pi(i,k))/dx
@@ -229,6 +239,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_u
+IF (ANY(var_vir(imin:imax,kmin:kmax+1) == undef)) STOP "ppzeta_u WRONG!!!"
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_vir(i,k+1) - var_vir(i,k))/dz
@@ -244,6 +255,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_w
+IF (ANY(var_vir(imin-1:imax,kmin:kmax) == undef)) STOP "ppx_w WRONG!!!"
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_vir(i,k) - var_vir(i-1,k))/dx
@@ -259,6 +271,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_w
+IF (ANY(var_pi(imin:imax,kmin-1:kmax) == undef)) STOP "ppzeta_w WRONG!!!"
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_pi(i,k) - var_pi(i,k-1))/dz
@@ -274,6 +287,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_pi
+IF (ANY(var_u(imin-1:imax,kmin:kmax) == undef)) STOP "ppx_pi WRONG!!!"
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_u(i,k) - var_u(i-1,k))/dx
@@ -289,6 +303,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_pi
+IF (ANY(var_w(imin:imax,kmin:kmax+1) == undef)) STOP "ppzeta_pi WRONG!!!"
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_w(i,k+1) - var_w(i,k))/dz

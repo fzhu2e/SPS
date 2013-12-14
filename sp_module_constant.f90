@@ -15,7 +15,8 @@ IMPLICIT NONE
 ! Numerical settings.
 !-------------------------------------------------
 INTEGER, PARAMETER :: kd = KIND(1d0)
-REAL(kd), PARAMETER :: undef = -9999.
+!REAL(kd), PARAMETER :: undef = -9999.
+REAL(kd), PARAMETER :: undef = -999999999.
 INTEGER, PARAMETER :: expand = 1
 !=================================================
 ! Physical settings.

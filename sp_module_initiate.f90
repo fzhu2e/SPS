@@ -226,6 +226,59 @@ END SUBROUTINE initiate_Sm
 !=================================================
 
 !=================================================
+! Initiate wet bubble case.
+!=================================================
+SUBROUTINE initiate_wb(uGrid,wGrid,piGrid,virGrid)
+IMPLICIT NONE
+TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!-------------------------------------------------
+REAL(kd), PARAMETER :: x_c = 5000. ! (m)
+REAL(kd), PARAMETER :: z_c = 2500.  ! (m)
+REAL(kd), PARAMETER :: R = 750    ! (m)
+!-------------------------------------------------
+REAL(kd) :: L
+!-------------------------------------------------
+INTEGER :: i, k
+!=================================================
+CALL set_area_u
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		uGrid%u(i,k) = 0.
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_w
+!OMP PARALLEL DO PRIVATE(L)
+DO k = kmin, kmax
+	DO i = imin, imax
+		wGrid%w(i,k) = 0.
+		wGrid%theta_1(i,k) = 0.
+		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
+		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
+		wGrid%qv(i,k) = 0.
+		!wGrid%qv(i,k) = 0.01*MAX(0.,1. - L/R)
+		wGrid%qc(i,k) = 0.
+		wGrid%qr(i,k) = 0.
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		piGrid%pi_1(i,k) = 0.
+		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
+!=================================================
+END SUBROUTINE initiate_wb
+!=================================================
+
+!=================================================
 ! Initiate Grid Position
 !=================================================
 SUBROUTINE initiate_grid(uGrid,wGrid,piGrid,virGrid)
@@ -444,9 +497,12 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP END PARALLEL DO
 
 
-ELSE IF (RunCase == 3 .OR. RunCase == 4) THEN
-	IF (RunCase == 3) Ts = 300.
-	IF (RunCase == 4) Ts = 280.
+ELSE IF (RunCase == 3 .OR. RunCase == 4 .OR. RunCase == 5) THEN
+	IF (RunCase == 3) THEN
+		Ts = 300.
+	ELSE
+		Ts = 280.
+	END IF
 
 	CALL set_area_u
 	!OMP PARALLEL DO

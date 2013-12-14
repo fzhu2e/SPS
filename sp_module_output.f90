@@ -16,7 +16,7 @@ CONTAINS
 !=================================================
 ! Output the fields.
 !=================================================
-SUBROUTINE output(flag,u,w,pi_1,theta_1,qv,qc,qr)
+SUBROUTINE output(flag,u,w,pi_1,theta_1,theta,qv,qc,qr)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
@@ -24,6 +24,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: u        ! wind sp
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: pi_1     ! pi'
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: qv,qc,qr
 !=================================================
 SELECT CASE(flag)
@@ -44,17 +45,21 @@ CASE (0)
 		OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
 		WRITE(4) theta_1
 	END IF
+	IF (PRESENT(theta)) THEN
+		OPEN(5, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(5) theta
+	END IF
 	IF (PRESENT(qv)) THEN
-		OPEN(5, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(5) qv
+		OPEN(6, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(6) qv
 	END IF
 	IF (PRESENT(qc)) THEN
-		OPEN(6, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(6) qc
+		OPEN(7, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(7) qc
 	END IF
 	IF (PRESENT(qr)) THEN
-		OPEN(7, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(7) qr
+		OPEN(8, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(8) qr
 	END IF
 CASE (1)
 	IF (PRESENT(u)) THEN
@@ -69,14 +74,17 @@ CASE (1)
 	IF (PRESENT(theta_1)) THEN
 		WRITE(4) theta_1
 	END IF
+	IF (PRESENT(theta)) THEN
+		WRITE(5) theta
+	END IF
 	IF (PRESENT(qv)) THEN
-		WRITE(5) qv
+		WRITE(6) qv
 	END IF
 	IF (PRESENT(qc)) THEN
-		WRITE(6) qc
+		WRITE(7) qc
 	END IF
 	IF (PRESENT(qr)) THEN
-		WRITE(7) qr
+		WRITE(8) qr
 	END IF
 CASE (99)
 	IF (PRESENT(u)) THEN
@@ -91,14 +99,17 @@ CASE (99)
 	IF (PRESENT(theta_1)) THEN
 		CLOSE(4)
 	END IF
-	IF (PRESENT(qv)) THEN
+	IF (PRESENT(theta)) THEN
 		CLOSE(5)
 	END IF
-	IF (PRESENT(qc)) THEN
+	IF (PRESENT(qv)) THEN
 		CLOSE(6)
 	END IF
-	IF (PRESENT(qr)) THEN
+	IF (PRESENT(qc)) THEN
 		CLOSE(7)
+	END IF
+	IF (PRESENT(qr)) THEN
+		CLOSE(8)
 	END IF
 CASE DEFAULT
 	WRITE(*,*) "==================================="

@@ -69,14 +69,17 @@ wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
 wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc)
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
 
+!CALL debug_ascii_output(uGrid%u,"u")
+!CALL debug_ascii_output(wGrid%w,"w")
+!CALL debug_ascii_output(piGrid%pi_1,"pi_1")
 !CALL debug_ascii_output(wGrid%theta,"theta")
-!CALL debug_ascii_output(wGrid%theta_M,"theta_M")
-!CALL debug_ascii_output(wGrid%theta_M_0,"theta_M_0")
-!CALL debug_ascii_output(wGrid%theta_M_1,"theta_M_1")
-
 !CALL debug_ascii_output(wGrid%qv,"qv")
 !CALL debug_ascii_output(wGrid%qc,"qc")
 !CALL debug_ascii_output(wGrid%qr,"qr")
+
+!CALL debug_ascii_output(wGrid%theta_M,"theta_M")
+!CALL debug_ascii_output(wGrid%theta_M_0,"theta_M_0")
+!CALL debug_ascii_output(wGrid%theta_M_1,"theta_M_1")
 
 !CALL debug_ascii_output(piGrid%rho_0,"rho_0_pi")
 !CALL debug_ascii_output(uGrid%rho_0,"rho_0_u")

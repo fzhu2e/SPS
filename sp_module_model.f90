@@ -118,7 +118,23 @@ REAL :: Km = 0., Kh = 0.
 !!INTEGER :: nstep = 300
 
 !REAL :: Km = 0., Kh = 0.
+
 !-------------------------------------------------
+! 5. Wet bubble.
+!-------------------------------------------------
+!INTEGER, PARAMETER :: RunCase = 5
+!INTEGER, PARAMETER :: nx = 100                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 100.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
+
+!REAL(kd), PARAMETER :: dt = 0.1                               ! delta t (s)
+!INTEGER :: nstep = 10000
+
+!REAL(kd) :: Km = 20.        !(m s)
+!REAL(kd) :: Kh = 20.        !(K s)
+
+!=================================================
 INTEGER, PARAMETER :: its = 1
 INTEGER, PARAMETER :: ite = its + nx - 1
 INTEGER, PARAMETER :: kts = 1

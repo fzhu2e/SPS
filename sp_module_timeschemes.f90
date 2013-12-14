@@ -69,6 +69,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_qv = undef, tend_qc = undef, tend_q
 
 INTEGER :: i, k
 !=================================================
+C = A
 CALL basic_interpolate(A,uGrid,wGrid,piGrid,virGrid)
 
 !-------------------------------------------------
@@ -112,6 +113,7 @@ END DO
 !-------------------------------------------------
 CALL update_boundary(C%u,C%w,wGrid=wGrid)
 CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
+!CALL debug_SFSG
 
 !-------------------------------------------------
 CALL tendency_pi(C,tend_pi_1,uGrid,wGrid,piGrid,virGrid)
