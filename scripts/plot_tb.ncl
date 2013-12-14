@@ -129,7 +129,8 @@ do i = 0, nt-1
 	res@gsnRightString  = "Step: " + k
 	;res@gsnRightString  = "Step: " + i
 	res@gsnRightStringFontHeightF   = 0.015
-	plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
+	;plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
+	plots(0) = gsn_csm_contour(wks,data(i,halo:halo+nz-1,halo:halo+nx-1),res)
 end do
 
 ;=================================
