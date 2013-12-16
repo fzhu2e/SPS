@@ -249,6 +249,9 @@ DO k = kmin, kmax
 		wGrid%qv(i,k) = 0.1*MAX(0.02,1. - L/R)
 		wGrid%qc(i,k) = 0.
 		wGrid%qr(i,k) = 0.
+		wGrid%qi(i,k) = 0.
+		wGrid%qs(i,k) = 0.
+		wGrid%qg(i,k) = 0.
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -304,6 +307,9 @@ DO k = kmin, kmax
 		!wGrid%qv(i,k) = 0.
 		wGrid%qc(i,k) = 0.
 		wGrid%qr(i,k) = 0.
+		wGrid%qi(i,k) = 0.
+		wGrid%qs(i,k) = 0.
+		wGrid%qg(i,k) = 0.
 	END DO
 END DO
 !OMP END PARALLEL DO

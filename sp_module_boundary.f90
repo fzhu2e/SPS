@@ -201,6 +201,78 @@ IF (PRESENT(qr)) THEN
 	
 END IF
 
+IF (PRESENT(qi)) THEN
+	
+	SELECT CASE (LateralBoundary)
+	CASE (1)
+		CALL no_flux_scalar_lateral_pi(qi)
+	CASE (2)
+		CALL periodic_lateral_pi(qi)
+	CASE (3)
+		CALL open_lateral_pi(qi)
+	CASE DEFAULT
+		STOP "Wrong lateral boundary scheme!!!"
+	END SELECT
+	
+	CALL no_flux_scalar_bottom_w(qi)
+
+	SELECT CASE (UpperBoundary)
+	CASE (1)
+		CALL no_flux_scalar_top_w(qi)
+	CASE DEFAULT
+		STOP "Wrong upper boundary scheme!!!"
+	END SELECT
+	
+END IF
+
+IF (PRESENT(qs)) THEN
+	
+	SELECT CASE (LateralBoundary)
+	CASE (1)
+		CALL no_flux_scalar_lateral_pi(qs)
+	CASE (2)
+		CALL periodic_lateral_pi(qs)
+	CASE (3)
+		CALL open_lateral_pi(qs)
+	CASE DEFAULT
+		STOP "Wrong lateral boundary scheme!!!"
+	END SELECT
+	
+	CALL no_flux_scalar_bottom_w(qs)
+
+	SELECT CASE (UpperBoundary)
+	CASE (1)
+		CALL no_flux_scalar_top_w(qs)
+	CASE DEFAULT
+		STOP "Wrong upper boundary scheme!!!"
+	END SELECT
+	
+END IF
+
+IF (PRESENT(qg)) THEN
+	
+	SELECT CASE (LateralBoundary)
+	CASE (1)
+		CALL no_flux_scalar_lateral_pi(qg)
+	CASE (2)
+		CALL periodic_lateral_pi(qg)
+	CASE (3)
+		CALL open_lateral_pi(qg)
+	CASE DEFAULT
+		STOP "Wrong lateral boundary scheme!!!"
+	END SELECT
+	
+	CALL no_flux_scalar_bottom_w(qg)
+
+	SELECT CASE (UpperBoundary)
+	CASE (1)
+		CALL no_flux_scalar_top_w(qg)
+	CASE DEFAULT
+		STOP "Wrong upper boundary scheme!!!"
+	END SELECT
+	
+END IF
+
 IF (PRESENT(rho_0_pi)) THEN
 	
 	SELECT CASE (LateralBoundary)

@@ -80,15 +80,15 @@ CALL basic_interpolate(A,uGrid,wGrid,piGrid,virGrid)
 CALL tendency_u(B,tend_u,uGrid,wGrid,piGrid,virGrid)
 CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
 
-CALL tendency_theta(0,B,tend_theta,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_q(B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
 
 IF (Vapor /= 0) THEN
-	CALL tendency_theta(1,B,tend_qv,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_theta(2,B,tend_qc,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_theta(3,B,tend_qr,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_theta(4,B,tend_qi,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_theta(5,B,tend_qs,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_theta(6,B,tend_qg,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qv,tend_qv,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qc,tend_qc,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qr,tend_qr,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qi,tend_qi,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qs,tend_qs,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qg,tend_qg,uGrid,wGrid,piGrid,virGrid)
 END IF
 
 !-------------------------------------------------

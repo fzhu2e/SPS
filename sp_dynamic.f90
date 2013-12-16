@@ -48,14 +48,14 @@ WRITE(*,*)
 CALL initiate_grid(uGrid,wGrid,piGrid,virGrid)
 CALL initiate_terrain(uGrid,wGrid,piGrid,virGrid)
 CALL initiate_basic_state(uGrid,wGrid,piGrid,virGrid)
-!IF (Vapor == 0) THEN
+IF (Vapor == 0) THEN
 	wGrid%qc = 0.
 	wGrid%qv = 0.
 	wGrid%qr = 0.
 	wGrid%qi = 0.
 	wGrid%qs = 0.
 	wGrid%qg = 0.
-!END IF
+END IF
 !-------------------------------------------------
 ! Initiate.
 !-------------------------------------------------
