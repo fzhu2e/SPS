@@ -17,7 +17,9 @@ CONTAINS
 !=================================================
 ! Initiate.
 !=================================================
-SUBROUTINE update_boundary(u,w,pi_1,theta, qv, qc, qr, wGrid, rho_0_pi, rho_0_u, rho_0_w, rho_0_vir, theta_0_w)
+SUBROUTINE update_boundary(u, w, wGrid, pi_1, theta,                       &
+                           qv, qc, qr, qi, qs, qg,                         &
+                           rho_0_pi, rho_0_u, rho_0_w, rho_0_vir, theta_0_w)
 IMPLICIT NONE
 TYPE(grid), INTENT(IN) :: wGrid
 !-------------------------------------------------
@@ -25,8 +27,8 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: pi_1     ! pi'
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: qv, qc, qr
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_pi, rho_0_u, rho_0_w, rho_0_vir, theta_0_w
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: qv, qc, qr, qi, qs, qg
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================

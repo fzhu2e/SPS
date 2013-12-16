@@ -36,11 +36,6 @@ CALL ppx_u(Main%pi_1,Ppi_1Px_u)
 CALL ppzeta_u(Main%pi_1,Ppi_1Pzeta_u)
 
 CALL set_area_u
-IF (ANY(uGrid%theta_M_0(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
-IF (ANY(Ppi_1Px_u(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
-IF (ANY(uGrid%G(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
-IF (ANY(Ppi_1Pzeta_u(imin:imax,kmin:kmax) == undef)) STOP "tend_u"
-IF (ANY(Main%u(imin-1:imax+1,kmin-1:kmax+1) == undef)) STOP "tend_u"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -82,11 +77,6 @@ CALL calc_advection_w(Main%w,A_w,uGrid,wGrid,piGrid,virGrid)
 CALL ppzeta_w(Main%pi_1,Ppi_1Pzeta_w)
 
 CALL set_area_w
-IF (ANY(wGrid%theta_M_1(imin:imax,kmin:kmax) == undef)) STOP "tend_w"
-IF (ANY(wGrid%theta_M_0(imin:imax,kmin:kmax) == undef)) STOP "tend_w"
-IF (ANY(wGrid%H(imin:imax) == undef)) STOP "tend_w"
-IF (ANY(Ppi_1Pzeta_w(imin:imax,kmin:kmax) == undef)) STOP "tend_w"
-IF (ANY(Main%w(imin-1:imax+1,kmin-1:kmax+1) == undef)) STOP "tend_w"
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -132,12 +122,6 @@ CALL ppzeta_pi(Main%w,PwPzeta_pi)
 CALL calc_advection_pi(Main%pi_1,A_pi_1,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_pi
-IF (ANY(PuPx_pi(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
-IF (ANY(piGrid%G(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
-IF (ANY(PuPzeta_pi(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
-IF (ANY(piGrid%H(imin:imax) == undef)) STOP "tend_pi"
-IF (ANY(PwPzeta_pi(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
-IF (ANY(piGrid%theta_M_0(imin:imax,kmin:kmax) == undef)) STOP "tend_pi"
 !OMP PARALLEL DO PRIVATE(temp)
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -166,15 +150,23 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_theta = undef, D_theta = undef, M_thet
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qv = undef, D_qv = undef, M_qv = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qc = undef, D_qc = undef, M_qc = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qr = undef, D_qr = undef, M_qr = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qi = undef, D_qi = undef, M_qi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qs = undef, D_qs = undef, M_qs = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_qg = undef, D_qg = undef, M_qg = undef
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2thetaPx2_w = undef, P2thetaPz2_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qvPx2_w = undef, P2qvPz2_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qcPx2_w = undef, P2qcPz2_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qrPx2_w = undef, P2qrPz2_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qiPx2_w = undef, P2qiPz2_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qsPx2_w = undef, P2qsPz2_w = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qgPx2_w = undef, P2qgPz2_w = undef
 INTEGER :: i, k
 !=================================================
 SELECT CASE (flag)
 CASE (0)
 	CALL calc_advection_w(Main%theta,A_theta,uGrid,wGrid,piGrid,virGrid)
 	CALL set_area_w
-	IF (ANY(Main%theta(imin-1:imax+1,kmin-1:kmax+1) == undef)) STOP "tend_theta"
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
@@ -194,7 +186,11 @@ CASE (1)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			D_qv(i,k) = 0.
+			P2qvPx2_w(i,k) = (Main%qv(i+1,k) + Main%qv(i-1,k) - 2*Main%qv(i,k))/dx/dx
+			P2qvPz2_w(i,k) = (Main%qv(i,k+1) + Main%qv(i,k-1) - 2*Main%qv(i,k))/dz/dz
+			D_qv(i,k) = Kh*(P2qvPx2_w(i,k) + P2qvPz2_w(i,k))
+
+			!D_qv(i,k) = 0.
 			M_qv(i,k) = 0.
 			tend_theta(i,k) = A_qv(i,k) + D_qv(i,k) + M_qv(i,k)
 		END DO
@@ -207,7 +203,11 @@ CASE (2)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			D_qc(i,k) = 0.
+			P2qcPx2_w(i,k) = (Main%qc(i+1,k) + Main%qc(i-1,k) - 2*Main%qc(i,k))/dx/dx
+			P2qcPz2_w(i,k) = (Main%qc(i,k+1) + Main%qc(i,k-1) - 2*Main%qc(i,k))/dz/dz
+			D_qc(i,k) = Kh*(P2qcPx2_w(i,k) + P2qcPz2_w(i,k))
+
+			!D_qc(i,k) = 0.
 			M_qc(i,k) = 0.
 			tend_theta(i,k) = A_qc(i,k) + D_qc(i,k) + M_qc(i,k)
 		END DO
@@ -220,9 +220,64 @@ CASE (3)
 	!OMP PARALLEL DO
 	DO k = kmin, kmax
 		DO i = imin, imax
-			D_qr(i,k) = 0.
+			P2qrPx2_w(i,k) = (Main%qr(i+1,k) + Main%qr(i-1,k) - 2*Main%qr(i,k))/dx/dx
+			P2qrPz2_w(i,k) = (Main%qr(i,k+1) + Main%qr(i,k-1) - 2*Main%qr(i,k))/dz/dz
+			D_qr(i,k) = Kh*(P2qrPx2_w(i,k) + P2qrPz2_w(i,k))
+
+			!D_qr(i,k) = 0.
 			M_qr(i,k) = 0.
 			tend_theta(i,k) = A_qr(i,k) + D_qr(i,k) + M_qr(i,k)
+		END DO
+	END DO
+	!OMP END PARALLEL DO
+
+CASE (4)
+	CALL calc_advection_w(Main%qi,A_qi,uGrid,wGrid,piGrid,virGrid)
+	CALL set_area_w
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			P2qiPx2_w(i,k) = (Main%qi(i+1,k) + Main%qi(i-1,k) - 2*Main%qi(i,k))/dx/dx
+			P2qiPz2_w(i,k) = (Main%qi(i,k+1) + Main%qi(i,k-1) - 2*Main%qi(i,k))/dz/dz
+			D_qi(i,k) = Kh*(P2qiPx2_w(i,k) + P2qiPz2_w(i,k))
+
+			!D_qi(i,k) = 0.
+			M_qi(i,k) = 0.
+			tend_theta(i,k) = A_qi(i,k) + D_qi(i,k) + M_qi(i,k)
+		END DO
+	END DO
+	!OMP END PARALLEL DO
+
+CASE (5)
+	CALL calc_advection_w(Main%qs,A_qs,uGrid,wGrid,piGrid,virGrid)
+	CALL set_area_w
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			P2qsPx2_w(i,k) = (Main%qs(i+1,k) + Main%qs(i-1,k) - 2*Main%qs(i,k))/dx/dx
+			P2qsPz2_w(i,k) = (Main%qs(i,k+1) + Main%qs(i,k-1) - 2*Main%qs(i,k))/dz/dz
+			D_qs(i,k) = Kh*(P2qsPx2_w(i,k) + P2qsPz2_w(i,k))
+
+			!D_qs(i,k) = 0.
+			M_qs(i,k) = 0.
+			tend_theta(i,k) = A_qs(i,k) + D_qs(i,k) + M_qs(i,k)
+		END DO
+	END DO
+	!OMP END PARALLEL DO
+
+CASE (6)
+	CALL calc_advection_w(Main%qg,A_qg,uGrid,wGrid,piGrid,virGrid)
+	CALL set_area_w
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			P2qgPx2_w(i,k) = (Main%qg(i+1,k) + Main%qg(i-1,k) - 2*Main%qg(i,k))/dx/dx
+			P2qgPz2_w(i,k) = (Main%qg(i,k+1) + Main%qg(i,k-1) - 2*Main%qg(i,k))/dz/dz
+			D_qg(i,k) = Kh*(P2qgPx2_w(i,k) + P2qgPz2_w(i,k))
+
+			!D_qg(i,k) = 0.
+			M_qg(i,k) = 0.
+			tend_theta(i,k) = A_qg(i,k) + D_qg(i,k) + M_qg(i,k)
 		END DO
 	END DO
 	!OMP END PARALLEL DO

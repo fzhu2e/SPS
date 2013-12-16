@@ -29,12 +29,13 @@ nt = 101
 ;var = "pi_1"
 ;var = "u"
 var = "w"
+halo = 4
 ;=================================
 ; Read data.
 ;---------------------------------
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
-data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
+data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz+2*halo,nx+2*halo/),"double")
 ;print(data)
 ;=================================
 ; Plot.
@@ -121,7 +122,8 @@ do i = 0, nt-1
 	res@gsnRightString  = "Step: " + k
 	;res@gsnRightString  = "Step: " + i
 	res@gsnRightStringFontHeightF   = 0.015
-	plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
+	;plots(0) = gsn_csm_contour(wks,data(i,:,:),res)
+	plots(0) = gsn_csm_contour(wks,data(i,halo:halo+nz-1,halo:halo+nx-1),res)
 end do
 
 ;=================================

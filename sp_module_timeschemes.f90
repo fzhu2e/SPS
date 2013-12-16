@@ -36,6 +36,9 @@ old%theta = wGrid%theta
 old%qv = wGrid%qv
 old%qc = wGrid%qc
 old%qr = wGrid%qr
+old%qi = wGrid%qi
+old%qs = wGrid%qs
+old%qg = wGrid%qg
 !=================================================
 ! Step 1. phi* = phi(n) + dt/3.*tend(phi(n))
 !-------------------------------------------------
@@ -66,6 +69,7 @@ TYPE(mainvar), INTENT(OUT) :: C
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_u = undef, tend_w = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_pi_1 = undef, tend_theta = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_qv = undef, tend_qc = undef, tend_qr = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: tend_qi = undef, tend_qs = undef, tend_qg = undef
 
 INTEGER :: i, k
 !=================================================
@@ -78,9 +82,14 @@ CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
 
 CALL tendency_theta(0,B,tend_theta,uGrid,wGrid,piGrid,virGrid)
 
-CALL tendency_theta(1,B,tend_qv,uGrid,wGrid,piGrid,virGrid)
-CALL tendency_theta(2,B,tend_qc,uGrid,wGrid,piGrid,virGrid)
-CALL tendency_theta(3,B,tend_qr,uGrid,wGrid,piGrid,virGrid)
+IF (Vapor /= 0) THEN
+	CALL tendency_theta(1,B,tend_qv,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_theta(2,B,tend_qc,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_theta(3,B,tend_qr,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_theta(4,B,tend_qi,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_theta(5,B,tend_qs,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_theta(6,B,tend_qg,uGrid,wGrid,piGrid,virGrid)
+END IF
 
 !-------------------------------------------------
 CALL set_area_u
@@ -102,16 +111,33 @@ DO k = kmin, kmax
 		C%theta(i,k) = A%theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
 		wGrid%theta_M(i,k) = C%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))*(1. - wGrid%qc(i,k))
 		wGrid%theta_M_1(i,k) = wGrid%theta_M(i,k) - wGrid%theta_M_0(i,k)
-
-		C%qv(i,k) = A%qv(i,k) + dt/REAL(deno)*tend_qv(i,k)
-		C%qc(i,k) = A%qc(i,k) + dt/REAL(deno)*tend_qc(i,k)
-		C%qr(i,k) = A%qr(i,k) + dt/REAL(deno)*tend_qr(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
 
+IF (Vapor == 0) THEN
+	C%qv = 0.
+	C%qc = 0.
+	C%qr = 0.
+	C%qi = 0.
+	C%qs = 0.
+	C%qg = 0.
+ELSE
+	!OMP PARALLEL DO
+	DO k = kmin, kmax
+		DO i = imin, imax
+			C%qv(i,k) = A%qv(i,k) + dt/REAL(deno)*tend_qv(i,k)
+			C%qc(i,k) = A%qc(i,k) + dt/REAL(deno)*tend_qc(i,k)
+			C%qr(i,k) = A%qr(i,k) + dt/REAL(deno)*tend_qr(i,k)
+			C%qi(i,k) = A%qi(i,k) + dt/REAL(deno)*tend_qi(i,k)
+			C%qs(i,k) = A%qs(i,k) + dt/REAL(deno)*tend_qs(i,k)
+			C%qg(i,k) = A%qg(i,k) + dt/REAL(deno)*tend_qg(i,k)
+		END DO
+	END DO
+	!OMP END PARALLEL DO
+END IF
 !-------------------------------------------------
-CALL update_boundary(C%u,C%w,wGrid=wGrid)
+CALL update_boundary(C%u,C%w,wGrid)
 CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
 !CALL debug_SFSG
 
@@ -128,7 +154,8 @@ END DO
 !OMP END PARALLEL DO
 
 !-------------------------------------------------
-CALL update_boundary(C%u,C%w,C%pi_1,C%theta,C%qv,C%qc,C%qr,wGrid)
+CALL update_boundary(C%u,C%w,wGrid,C%pi_1,C%theta,&
+                     C%qv,C%qc,C%qr,C%qi,C%qs,C%qg)
 !=================================================
 END SUBROUTINE update
 !=================================================

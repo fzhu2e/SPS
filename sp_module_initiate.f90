@@ -52,9 +52,6 @@ DO k = kmin, kmax
 			wGrid%theta_1(i,k) = 0.
 		END IF
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)   ! <= I want this.
-		wGrid%qc(i,k) = 0.
-		wGrid%qv(i,k) = 0.
-		wGrid%qr(i,k) = 0.
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -104,9 +101,6 @@ DO k = kmin, kmax
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
 		wGrid%theta_1(i,k) = 2.*MAX(0.,1. - L/R)
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
-		wGrid%qc(i,k) = 0.
-		wGrid%qv(i,k) = 0.
-		wGrid%qr(i,k) = 0.
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -160,9 +154,6 @@ DO k = kmin, kmax
 		L = SIN(PI_math*wGrid%zz(i,k)/H)/(1. + (wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c)/a/a)
 		wGrid%theta_1(i,k) = 0.01*L
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
-		wGrid%qc(i,k) = 0.
-		wGrid%qv(i,k) = 0.
-		wGrid%qr(i,k) = 0.
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -205,9 +196,6 @@ DO k = kmin, kmax
 		wGrid%w(i,k) = 0.
 		wGrid%theta_1(i,k) = 0.
 		wGrid%theta(i,k) = wGrid%theta_0(i,k)
-		wGrid%qc(i,k) = 0.
-		wGrid%qv(i,k) = 0.
-		wGrid%qr(i,k) = 0.
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -232,9 +220,9 @@ SUBROUTINE initiate_wb(uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
 TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 !-------------------------------------------------
-REAL(kd), PARAMETER :: x_c = 5000. ! (m)
-REAL(kd), PARAMETER :: z_c = 2500.  ! (m)
-REAL(kd), PARAMETER :: R = 750    ! (m)
+REAL(kd), PARAMETER :: x_c = 250. ! (m)
+REAL(kd), PARAMETER :: z_c = 125.  ! (m)
+REAL(kd), PARAMETER :: R = 75    ! (m)
 !-------------------------------------------------
 REAL(kd) :: L
 !-------------------------------------------------
@@ -257,8 +245,8 @@ DO k = kmin, kmax
 		wGrid%theta_1(i,k) = 0.
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
-		wGrid%qv(i,k) = 0.
-		!wGrid%qv(i,k) = 0.01*MAX(0.,1. - L/R)
+		!wGrid%qv(i,k) = 0.
+		wGrid%qv(i,k) = 0.1*MAX(0.02,1. - L/R)
 		wGrid%qc(i,k) = 0.
 		wGrid%qr(i,k) = 0.
 	END DO
@@ -276,6 +264,61 @@ END DO
 !OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE initiate_wb
+!=================================================
+
+!=================================================
+! Initiate thunderstorm case.
+!=================================================
+SUBROUTINE initiate_th(uGrid,wGrid,piGrid,virGrid)
+IMPLICIT NONE
+TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
+!-------------------------------------------------
+REAL(kd), PARAMETER :: x_c = 25.*1000. ! (m)
+REAL(kd), PARAMETER :: z_c = 4.*1000.  ! (m)
+REAL(kd), PARAMETER :: R = 4.*1000. ! (m)
+!-------------------------------------------------
+REAL(kd) :: L
+!-------------------------------------------------
+INTEGER :: i, k
+!=================================================
+CALL set_area_u
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		uGrid%u(i,k) = 1.2*MAX(0., REAL(11 - k))
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_w
+!OMP PARALLEL DO PRIVATE(L)
+DO k = kmin, kmax
+	DO i = imin, imax
+		wGrid%w(i,k) = 0.
+		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
+		wGrid%theta_1(i,k) = 3.*MAX(0.,1. - L/R)
+		!wGrid%theta_1(i,k) = 0.
+		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
+
+		wGrid%qv(i,k) = 0.01*MAX(0.01,1. - L/R)
+		!wGrid%qv(i,k) = 0.
+		wGrid%qc(i,k) = 0.
+		wGrid%qr(i,k) = 0.
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		piGrid%pi_1(i,k) = 0.
+		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
+!=================================================
+END SUBROUTINE initiate_th
 !=================================================
 
 !=================================================
@@ -497,7 +540,7 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 	!OMP END PARALLEL DO
 
 
-ELSE IF (RunCase == 3 .OR. RunCase == 4 .OR. RunCase == 5) THEN
+ELSE IF (RunCase /= 1 .AND. RunCase /= 2) THEN
 	IF (RunCase == 3) THEN
 		Ts = 300.
 	ELSE

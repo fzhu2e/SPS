@@ -39,6 +39,9 @@ wGrid%theta = new%theta
 wGrid%qv = new%qv
 wGrid%qc = new%qc
 wGrid%qr = new%qr
+wGrid%qi = new%qi
+wGrid%qs = new%qs
+wGrid%qg = new%qg
 !=================================================
 END SUBROUTINE integrate
 !=================================================

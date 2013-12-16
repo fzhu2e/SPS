@@ -5,11 +5,11 @@ begin
 ;=================================
 ; Settings.
 ;---------------------------------
-;nx = 600
-;nz = 200
+nx = 600
+nz = 200
 
-nx = 300
-nz = 100
+;nx = 300
+;nz = 100
 
 ;nx = 150
 ;nz = 50
@@ -122,8 +122,8 @@ res@tiMainFontHeightF  = 0.015                    ; change font heights
 ;res@tiXAxisFontHeightF  = 0.015                    ; change font heights
 ;res@tiYAxisFontHeightF  = 0.015                    ; change font heights
 
-;res@gsnLeftString   = "dx = 500m; dz = 50m; dt = 0.1s"               ; add the gsn titles
-res@gsnLeftString   = "dx = 1000m; dz = 100m; dt = 0.1s"               ; add the gsn titles
+res@gsnLeftString   = "dx = 500m; dz = 50m; dt = 0.1s"               ; add the gsn titles
+;res@gsnLeftString   = "dx = 1000m; dz = 100m; dt = 0.1s"               ; add the gsn titles
 ;res@gsnLeftString   = "dx = 2500m; dz = 250m; dt = 0.1s"               ; add the gsn titles
 res@gsnLeftStringFontHeightF   = 0.015
 

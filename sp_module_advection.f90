@@ -30,9 +30,6 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_pi
 CALL set_area_expand(expand)
-IF (ANY(piGrid%rho_0(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(piGrid%u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(var_u(imin-3:imax+2,kmin:kmax) == undef)) STOP "A_u"
 !OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -51,10 +48,6 @@ END DO
 
 CALL set_area_vir
 CALL set_area_expand(expand)
-IF (ANY(virGrid%rho_0(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(virGrid%u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(virGrid%w(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(var_u(imin:imax,kmin-3:kmax+2) == undef)) STOP "A_u"
 !OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
@@ -84,16 +77,6 @@ CALL ppzeta_u(rhow_vir,PrhowPzeta_u)
 CALL ppzeta_u(rhowvar_vir,PrhowvarPzeta_u)
 
 CALL set_area_u
-IF (ANY(uGrid%rho_0(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(PrhouvarPx_u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(var_u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(PrhouPx_u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(uGrid%G(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(PrhouvarPzeta_u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(PrhouPzeta_u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(uGrid%H(imin:imax) == undef)) STOP "A_u"
-IF (ANY(PrhowvarPzeta_u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
-IF (ANY(PrhowPzeta_u(imin:imax,kmin:kmax) == undef)) STOP "A_u"
 !OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
 DO k = kmin, kmax
 	DO i = imin, imax

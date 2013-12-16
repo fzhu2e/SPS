@@ -16,101 +16,75 @@ CONTAINS
 !=================================================
 ! Output the fields.
 !=================================================
-SUBROUTINE output(flag,u,w,pi_1,theta_1,theta,qv,qc,qr)
+SUBROUTINE output(flag,u,w,pi_1,theta_1,theta,qv,qc,qr,qi,qs,qg)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: u        ! wind speed along x-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: w        ! wind speed along z-axis
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: pi_1     ! pi'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta_1  ! theta'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: theta
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: qv,qc,qr
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u        ! wind speed along x-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w        ! wind speed along z-axis
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: qv,qc,qr,qi,qs,qg
 !=================================================
 SELECT CASE(flag)
 CASE (0)
-	IF (PRESENT(u)) THEN
-		OPEN(1, FILE="./output/modelvar_u.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(1) u
-	END IF
-	IF (PRESENT(w)) THEN
-		OPEN(2, FILE="./output/modelvar_w.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(2) w
-	END IF
-	IF (PRESENT(pi_1)) THEN
-		OPEN(3, FILE="./output/modelvar_pi_1.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(3) pi_1
-	END IF
-	IF (PRESENT(theta_1)) THEN
-		OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(4) theta_1
-	END IF
-	IF (PRESENT(theta)) THEN
-		OPEN(5, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(5) theta
-	END IF
-	IF (PRESENT(qv)) THEN
-		OPEN(6, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(6) qv
-	END IF
-	IF (PRESENT(qc)) THEN
-		OPEN(7, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(7) qc
-	END IF
-	IF (PRESENT(qr)) THEN
-		OPEN(8, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(8) qr
-	END IF
+	OPEN(1, FILE="./output/modelvar_u.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(1) u
+
+	OPEN(2, FILE="./output/modelvar_w.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(2) w
+
+	OPEN(3, FILE="./output/modelvar_pi_1.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(3) pi_1
+
+	OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(4) theta_1
+
+	OPEN(5, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(5) theta
+
+	OPEN(6, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(6) qv
+
+	OPEN(7, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(7) qc
+
+	OPEN(8, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(8) qr
+
+	OPEN(9, FILE="./output/modelvar_qi.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(9) qi
+
+	OPEN(10, FILE="./output/modelvar_qs.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(10) qs
+
+	OPEN(11, FILE="./output/modelvar_qg.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(11) qg
 CASE (1)
-	IF (PRESENT(u)) THEN
-		WRITE(1) u
-	END IF
-	IF (PRESENT(w)) THEN
-		WRITE(2) w
-	END IF
-	IF (PRESENT(pi_1)) THEN
-		WRITE(3) pi_1
-	END IF
-	IF (PRESENT(theta_1)) THEN
-		WRITE(4) theta_1
-	END IF
-	IF (PRESENT(theta)) THEN
-		WRITE(5) theta
-	END IF
-	IF (PRESENT(qv)) THEN
-		WRITE(6) qv
-	END IF
-	IF (PRESENT(qc)) THEN
-		WRITE(7) qc
-	END IF
-	IF (PRESENT(qr)) THEN
-		WRITE(8) qr
-	END IF
+	WRITE(1) u
+	WRITE(2) w
+	WRITE(3) pi_1
+	WRITE(4) theta_1
+	WRITE(5) theta
+	WRITE(6) qv
+	WRITE(7) qc
+	WRITE(8) qr
+	WRITE(9) qi
+	WRITE(10) qs
+	WRITE(11) qg
 CASE (99)
-	IF (PRESENT(u)) THEN
-		CLOSE(1)
-	END IF
-	IF (PRESENT(w)) THEN
-		CLOSE(2)
-	END IF
-	IF (PRESENT(pi_1)) THEN
-		CLOSE(3)
-	END IF
-	IF (PRESENT(theta_1)) THEN
-		CLOSE(4)
-	END IF
-	IF (PRESENT(theta)) THEN
-		CLOSE(5)
-	END IF
-	IF (PRESENT(qv)) THEN
-		CLOSE(6)
-	END IF
-	IF (PRESENT(qc)) THEN
-		CLOSE(7)
-	END IF
-	IF (PRESENT(qr)) THEN
-		CLOSE(8)
-	END IF
+	CLOSE(1)
+	CLOSE(2)
+	CLOSE(3)
+	CLOSE(4)
+	CLOSE(5)
+	CLOSE(6)
+	CLOSE(7)
+	CLOSE(8)
+	CLOSE(9)
+	CLOSE(10)
+	CLOSE(11)
 CASE DEFAULT
 	WRITE(*,*) "==================================="
 	WRITE(*,*) " WARNING: Illegal flag of output."
