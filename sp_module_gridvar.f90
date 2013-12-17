@@ -22,6 +22,7 @@ TYPE, EXTENDS(mainvar) :: grid
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_v = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_M = undef, theta_M_0 = undef, theta_M_1 = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0 = undef
+	REAL(kd), DIMENSION(ims:ime,kms:kme) :: qt = undef  ! qt = qv + qc + qr + qi + qs + qg
 	!REAL(kd), DIMENSION(ims:ime,kms:kme) :: Du = undef, Dw = undef
 	!REAL(kd), DIMENSION(ims:ime,kms:kme) :: Dqv = undef, Dqc = undef, Dqr = undef
 	!REAL(kd), DIMENSION(ims:ime,kms:kme) :: Dqi = undef, Dqs = undef, Dqg = undef
