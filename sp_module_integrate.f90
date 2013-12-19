@@ -25,7 +25,17 @@ TYPE(grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 TYPE(mainvar) :: new
 !=================================================
 CALL subgrid(uGrid,wGrid,piGrid,virGrid)
-CALL mp_wsm6(uGrid,wGrid,piGrid,virGrid)
+
+wGrid%Mtheta = 0.
+wGrid%Mqv = 0.
+wGrid%Mqc = 0.
+wGrid%Mqr = 0.
+wGrid%Mqi = 0.
+wGrid%Mqs = 0.
+wGrid%Mqg = 0.
+
+!CALL set_area_w
+!CALL mp_wsm6(imin,imax,kmin,kmax,uGrid,wGrid,piGrid,virGrid)
 
 SELECT CASE (TimeScheme)
 CASE (1)

@@ -33,5 +33,25 @@ REAL(kd), PARAMETER :: p0 = 100000.      ! (Pa)
 REAL(kd), PARAMETER :: p_top = 100.       ! (Pa)
 REAL(kd), PARAMETER :: Rd = 287.04       ! 2.8704E+6 (erg/g/K) = 287.04 (J/kg/K)
 !=================================================
+! for WSM6
+!-------------------------------------------------
+REAL(kd), PARAMETER :: xlv0 = 3.15e6
+REAL(kd), PARAMETER :: xlv1 = 2370.
+REAL(kd), PARAMETER :: t0c = 273.15
+REAL(kd), PARAMETER :: qmin = 0.0
+REAL(kd), PARAMETER :: cpd = 1005.46
+REAL(kd), PARAMETER :: cpv = 1869.46
+REAL(kd), PARAMETER :: rv = 4.6150e+2
+REAL(kd), PARAMETER :: den0 = 1.28
+REAL(kd), PARAMETER :: xls = 2.834e6
+REAL(kd), PARAMETER :: cliq = 4.1855e+3
+REAL(kd), PARAMETER :: cice = 2.1060e+3
+REAL(kd), PARAMETER :: psat = 6.1078e+2
+REAL(kd), PARAMETER :: ep1 = rv/Rd - 1.
+REAL(kd), PARAMETER :: ep2 = Rd/rv
+REAL(kd), PARAMETER :: denr = 1000.
+REAL(kd), PARAMETER :: xlf0 = 3.50e5
+
+!=================================================
 END MODULE sp_module_constant
 !=================================================
