@@ -208,10 +208,20 @@ REAL(kd)                     ::                              temp
       conden(a,b,c,d,e) = (max(b,qmin)-c)/(1.+d*d/(rv*e)*c/(a*a))
 
 !=================================================
-! transfer some vars
+! transfer some vars - SPS
 !-------------------------------------------------
-q = wGrid%qv
-delz = dz
+DO k = kts, kte
+	DO i = its, ite
+		delz(i,k) = dz
+		t(i,k) = wGrid%th(i,k)*wGrid*pi(i,k)
+		q(i,k) = wGrid%qv(i,k)
+		qci(i,k,1) = wGrid%qc(i,k)
+		qci(i,k,2) = wGrid%qi(i,k)
+		qrs(i,k,1) = wGrid%qr(i,k)
+		qrs(i,k,2) = wGrid%qs(i,k)
+		qrs(i,k,3) = wGrid%qg(i,k)
+	END DO
+END DO
 delt = dt
 !=================================================
 !
@@ -1207,9 +1217,13 @@ delt = dt
 enddo                  ! big loops
 !=================================================
 
+!=================================================
+! transfer some vars - SPS
+!-------------------------------------------------
 DO k = kts, kte
 	DO i = its, ite
-		!wGrid%theta(i,k) = t(i,k)/pii(i,k)
+		wGrid%theta(i,k) = t(i,k)/wGrid%pi(i,k)
+		wGrid%qv(i,k) = q(i,k)
 		wGrid%qc(i,k) = qci(i,k,1)
 		wGrid%qi(i,k) = qci(i,k,2)
 		wGrid%qr(i,k) = qrs(i,k,1)

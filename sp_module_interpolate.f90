@@ -75,6 +75,9 @@ wGrid%qt = wGrid%qv + wGrid%qc + wGrid%qr + wGrid%qi + wGrid%qs + wGrid%qg
 wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc)
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
 
+piGrid%pi = piGrid%pi_1 + piGrid%pi_0
+CALL pi2w(piGrid%pi,wGrid%pi)
+
 !CALL debug_ascii_output(uGrid%u,"u")
 !CALL debug_ascii_output(wGrid%w,"w")
 !CALL debug_ascii_output(piGrid%pi_1,"pi_1")

@@ -34,9 +34,6 @@ wGrid%Mqi = 0.
 wGrid%Mqs = 0.
 wGrid%Mqg = 0.
 
-!CALL set_area_w
-!CALL mp_wsm6(imin,imax,kmin,kmax,uGrid,wGrid,piGrid,virGrid)
-
 SELECT CASE (TimeScheme)
 CASE (1)
 	! Runge-Kutta Scheme
@@ -56,6 +53,9 @@ wGrid%qr = new%qr
 wGrid%qi = new%qi
 wGrid%qs = new%qs
 wGrid%qg = new%qg
+
+CALL set_area_w
+CALL mp_wsm6(imin,imax,kmin,kmax,uGrid,wGrid,piGrid,virGrid)
 !=================================================
 END SUBROUTINE integrate
 !=================================================
