@@ -213,7 +213,7 @@ REAL(kd)                     ::                              temp
 DO k = kts, kte
 	DO i = its, ite
 		delz(i,k) = dz
-		t(i,k) = wGrid%th(i,k)*wGrid*pi(i,k)
+		t(i,k) = wGrid%theta(i,k)*wGrid%pi(i,k)
 		q(i,k) = wGrid%qv(i,k)
 		qci(i,k,1) = wGrid%qc(i,k)
 		qci(i,k,2) = wGrid%qi(i,k)
@@ -1233,7 +1233,7 @@ DO k = kts, kte
 END DO
 
 !-------------------------------------------------
-CALL debug_SFSG
+!CALL debug_SFSG
 !=================================================
 END SUBROUTINE mp_wsm6
 !=================================================
