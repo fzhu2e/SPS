@@ -1,7 +1,7 @@
 !=================================================
 ! The flux module of SPS-dynamic-integrate
 !-------------------------------------------------
-! Version: 0.11
+! Version: 0.15
 ! Author: Zhu F.
 ! Email: lyricorpse@gmail.com
 ! Date: 2013-05-04 13:59:46 
@@ -24,7 +24,6 @@ TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Px_u = undef, Ppi_1Pzeta_u = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2uPx2_u = undef, P2uPz2_u = undef
 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_u = undef, P_u = undef, D_u = undef
 !-------------------------------------------------
@@ -41,8 +40,8 @@ CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
-		!P_u(i,k) = - Cp*uGrid%theta_M(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
+		!P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
+		P_u(i,k) = - Cp*uGrid%theta_M(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
 
 		tend_u(i,k) = A_u(i,k) + P_u(i,k) + D_u(i,k)
 	END DO
@@ -63,11 +62,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_w
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_w = undef, B_w = undef, P_w = undef, D_w = undef
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: fa, fb, fc, fd, fe, ff
-!-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Pzeta_w = undef
-
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2wPx2_w = undef, P2wPz2_w = undef
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -82,8 +77,8 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		B_w(i,k) = g*wGrid%theta_M_1(i,k)/wGrid%theta_M_0(i,k)
 
-		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pzeta_w(i,k)
-		!P_w(i,k) = - Cp*wGrid%theta_M(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
+		!P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pzeta_w(i,k)
+		P_w(i,k) = - Cp*wGrid%theta_M(i,k)*wGrid%H(i)*Ppi_1Pzeta_w(i,k)
 
 		tend_w(i,k) = A_w(i,k) + B_w(i,k) + P_w(i,k) + D_w(i,k)
 	END DO
@@ -104,9 +99,9 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi_1
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_pi_1 = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: Div_pi_1 = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPx_pi = undef, PuPzeta_pi = undef, PwPzeta_pi = undef
 !-------------------------------------------------
 REAL(kd) :: temp
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPx_pi = undef, PuPzeta_pi = undef, PwPzeta_pi = undef
 INTEGER :: i, k
 !=================================================
 !-------------------------------------------------
@@ -143,7 +138,6 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_q
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_q = undef, D_q = undef, M_q = undef
 !-------------------------------------------------
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qPx2_w = undef, P2qPz2_w = undef
 INTEGER :: i, k
 !=================================================
 CALL calc_advection_w(q,A_q,uGrid,wGrid,piGrid,virGrid)
