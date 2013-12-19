@@ -35,16 +35,14 @@ CALL calc_advection_u(Main%u,A_u,uGrid,wGrid,piGrid,virGrid)
 CALL ppx_u(Main%pi_1,Ppi_1Px_u)
 CALL ppzeta_u(Main%pi_1,Ppi_1Pzeta_u)
 
+D_u = uGrid%Du
+
 CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
 		!P_u(i,k) = - Cp*uGrid%theta_M(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
-
-		P2uPx2_u(i,k) = (Main%u(i+1,k) + Main%u(i-1,k) - 2*Main%u(i,k))/dx/dx
-		P2uPz2_u(i,k) = (Main%u(i,k+1) + Main%u(i,k-1) - 2*Main%u(i,k))/dz/dz
-		D_u(i,k) = Km*(P2uPx2_u(i,k) + P2uPz2_u(i,k))
 
 		tend_u(i,k) = A_u(i,k) + P_u(i,k) + D_u(i,k)
 	END DO
@@ -76,6 +74,8 @@ INTEGER :: i, k
 CALL calc_advection_w(Main%w,A_w,uGrid,wGrid,piGrid,virGrid)
 CALL ppzeta_w(Main%pi_1,Ppi_1Pzeta_w)
 
+D_w = wGrid%Dw
+
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
@@ -84,10 +84,6 @@ DO k = kmin, kmax
 
 		P_w(i,k) = - Cp*wGrid%theta_M_0(i,k)*wGrid%H(i)*Ppi_1Pzeta_w(i,k)
 		!P_w(i,k) = - Cp*wGrid%theta_M(i,k)*wGrid%H(i)*Ppi_1Pz_w(i,k)
-
-		P2wPx2_w(i,k) = (Main%w(i+1,k) + Main%w(i-1,k) - 2*Main%w(i,k))/dx/dx
-		P2wPz2_w(i,k) = (Main%w(i,k+1) + Main%w(i,k-1) - 2*Main%w(i,k))/dz/dz
-		D_w(i,k) = Km*(P2wPx2_w(i,k) + P2wPz2_w(i,k))
 
 		tend_w(i,k) = A_w(i,k) + B_w(i,k) + P_w(i,k) + D_w(i,k)
 	END DO
@@ -98,7 +94,6 @@ IF (ANY(ISNAN(tend_w(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITHT tend_w!!
 !=================================================
 END SUBROUTINE tendency_w
 !=================================================
-
 
 !=================================================
 SUBROUTINE tendency_pi(Main,tend_pi_1,uGrid,wGrid,piGrid,virGrid )
@@ -139,8 +134,9 @@ END SUBROUTINE tendency_pi
 !=================================================
 
 !=================================================
-SUBROUTINE tendency_q(q,tend_q,uGrid,wGrid,piGrid,virGrid)
+SUBROUTINE tendency_q(flag,q,tend_q,uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
+INTEGER, INTENT(IN) :: flag
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: q
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_q
@@ -151,15 +147,37 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: P2qPx2_w = undef, P2qPz2_w = undef
 INTEGER :: i, k
 !=================================================
 CALL calc_advection_w(q,A_q,uGrid,wGrid,piGrid,virGrid)
+
+SELECT CASE (flag)
+CASE (0)
+	D_q = wGrid%Dtheta
+	M_q = wGrid%Mtheta
+CASE (1)
+	D_q = wGrid%Dqv
+	M_q = wGrid%Mqv
+CASE (2)
+	D_q = wGrid%Dqc
+	M_q = wGrid%Mqc
+CASE (3)
+	D_q = wGrid%Dqr
+	M_q = wGrid%Mqr
+CASE (4)
+	D_q = wGrid%Dqi
+	M_q = wGrid%Mqi
+CASE (5)
+	D_q = wGrid%Dqs
+	M_q = wGrid%Mqs
+CASE (6)
+	D_q = wGrid%Dqg
+	M_q = wGrid%Mqg
+CASE DEFAULT
+	STOP "WRONG flag of calc_advection_w"
+END SELECT
+
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		P2qPx2_w(i,k) = (q(i+1,k) + q(i-1,k) - 2*q(i,k))/dx/dx
-		P2qPz2_w(i,k) = (q(i,k+1) + q(i,k-1) - 2*q(i,k))/dz/dz
-		D_q(i,k) = Kh*(P2qPx2_w(i,k) + P2qPz2_w(i,k))
-
-		M_q(i,k) = 0.
 		tend_q(i,k) = A_q(i,k) + D_q(i,k) + M_q(i,k)
 	END DO
 END DO

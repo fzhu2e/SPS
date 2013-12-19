@@ -108,7 +108,7 @@ END DO
 !OMP END PARALLEL DO
 
 !-------------------------------------------------
-CALL tendency_q(B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_q(0,B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
@@ -121,12 +121,12 @@ END DO
 !OMP END PARALLEL DO
 
 IF (Vapor /= 0) THEN
-	CALL tendency_q(B%qv,tend_qv,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qc,tend_qc,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qr,tend_qr,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qi,tend_qi,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qs,tend_qs,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qg,tend_qg,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(1,B%qv,tend_qv,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(2,B%qc,tend_qc,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(3,B%qr,tend_qr,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(4,B%qi,tend_qi,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(5,B%qs,tend_qs,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(6,B%qg,tend_qg,uGrid,wGrid,piGrid,virGrid)
 END IF
 IF (Vapor == 0) THEN
 	C%qv = 0.

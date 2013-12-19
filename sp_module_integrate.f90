@@ -13,6 +13,7 @@ USE sp_module_model
 USE sp_module_gridvar
 USE sp_module_timeschemes
 USE sp_module_boundary
+USE sp_module_physics
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
@@ -23,6 +24,9 @@ IMPLICIT NONE
 TYPE(grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 TYPE(mainvar) :: new
 !=================================================
+CALL subgrid(uGrid,wGrid,piGrid,virGrid)
+CALL mp_wsm6(uGrid,wGrid,piGrid,virGrid)
+
 SELECT CASE (TimeScheme)
 CASE (1)
 	! Runge-Kutta Scheme
