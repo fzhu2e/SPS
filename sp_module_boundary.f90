@@ -19,7 +19,8 @@ CONTAINS
 !=================================================
 SUBROUTINE update_boundary(u, w, wGrid, pi_1, theta,                       &
                            qv, qc, qr, qi, qs, qg,                         &
-                           rho_0_pi, rho_0_u, rho_0_w, rho_0_vir, theta_0_w)
+                           rho_0_pi, rho_0_u, rho_0_w, rho_0_vir,          &
+                           theta_0_w, pi_0_pi)
 IMPLICIT NONE
 TYPE(grid), INTENT(IN) :: wGrid
 !-------------------------------------------------
@@ -29,6 +30,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: pi_1     ! pi'
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: rho_0_pi, rho_0_u, rho_0_w, rho_0_vir, theta_0_w
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: qv, qc, qr, qi, qs, qg
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: pi_0_pi
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -387,6 +389,30 @@ IF (PRESENT(theta_0_w)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(theta_0_w)
+	CASE DEFAULT
+		STOP "Wrong upper boundary scheme!!!"
+	END SELECT
+	
+END IF
+
+IF (PRESENT(pi_0_pi)) THEN
+	
+	SELECT CASE (LateralBoundary)
+	CASE (1)
+		CALL no_flux_scalar_lateral_pi(pi_0_pi)
+	CASE (2)
+		CALL periodic_lateral_pi(pi_0_pi)
+	CASE (3)
+		CALL open_lateral_pi(pi_0_pi)
+	CASE DEFAULT
+		STOP "Wrong lateral boundary scheme!!!"
+	END SELECT
+	
+	CALL no_flux_scalar_bottom_pi(pi_0_pi)
+
+	SELECT CASE (UpperBoundary)
+	CASE (1)
+		CALL no_flux_scalar_top_pi(pi_0_pi)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT

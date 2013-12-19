@@ -97,9 +97,11 @@ TYPE(mainvar), INTENT(IN) :: Main
 TYPE(grid), INTENT(IN) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_pi_1
 !=================================================
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_pi_1 = undef
-REAL(kd), DIMENSION(ims:ime,kms:kme) :: Div_pi_1 = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: Div_pi = undef
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: PuPx_pi = undef, PuPzeta_pi = undef, PwPzeta_pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi = undef
+REAL(kd), DIMENSION(ims:ime,kms:kme) :: Th_pi = undef
 !-------------------------------------------------
 REAL(kd) :: temp
 INTEGER :: i, k
@@ -109,16 +111,22 @@ CALL ppx_pi(Main%u,PuPx_pi)
 CALL ppzeta_pi(wGrid%u,PuPzeta_pi)
 CALL ppzeta_pi(Main%w,PwPzeta_pi)
 
-CALL calc_advection_pi(Main%pi_1,A_pi_1,uGrid,wGrid,piGrid,virGrid)
+pi = Main%pi_1 + piGrid%pi_0
+CALL calc_advection_pi(pi,A_pi,uGrid,wGrid,piGrid,virGrid)
+!CALL calc_advection_pi(Main%pi_1,A_pi,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_pi
 !OMP PARALLEL DO PRIVATE(temp)
 DO k = kmin, kmax
 	DO i = imin, imax
 		temp = PuPx_pi(i,k) + piGrid%G(i,k)*PuPzeta_pi(i,k) + piGrid%H(i)*PwPzeta_pi(i,k)
-		Div_pi_1(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*temp
-		!Div_pi_1(i,k) = - Rd*piGrid%pi_0(i,k)/Cv*temp
-		tend_pi_1(i,k) = A_pi_1(i,k) + Div_pi_1(i,k)
+		!Div_pi_1(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*temp
+		Div_pi(i,k) = - Rd*pi(i,k)/Cv*temp
+
+		temp = (piGrid%Mtheta(i,k) + piGrid%Dtheta(i,k))*(1. + 0.61*piGrid%qv(i,k)) + (0.61*piGrid%theta(i,k)*(piGrid%Mqv(i,k) + piGrid%Dqv(i,k)))
+		Th_pi(i,k) = - Rd*pi(i,k)/Cv/piGrid%theta_v(i,k)*temp
+
+		tend_pi_1(i,k) = A_pi(i,k) + Div_pi(i,k) + Th_pi(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO

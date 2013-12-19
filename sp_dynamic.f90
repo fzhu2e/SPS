@@ -82,7 +82,8 @@ END SELECT
 
 CALL update_boundary(uGrid%u,wGrid%w,wGrid,piGrid%pi_1,wGrid%theta,                   &
                      wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,           &
-                     piGrid%rho_0,uGrid%rho_0,wGrid%rho_0,virGrid%rho_0, wGrid%theta_0)
+                     piGrid%rho_0,uGrid%rho_0,wGrid%rho_0,virGrid%rho_0,              &
+                     wGrid%theta_0, piGrid%pi_0)
 
 wGrid%theta_M_0 = wGrid%theta_0
 piGrid%theta_M_0 = piGrid%theta_0

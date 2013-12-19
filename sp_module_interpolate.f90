@@ -41,9 +41,13 @@ CALL w2u(wGrid%theta_M,uGrid%theta_M)
 
 !CALL w2pi(Main%theta,piGrid%theta)
 
-!CALL w2pi(Main%qv,piGrid%qv)
-!CALL w2pi(Main%qc,piGrid%qc)
-!CALL w2pi(Main%qr,piGrid%qr)
+CALL w2pi(Main%qv,piGrid%qv)
+CALL w2pi(wGrid%Mqv,piGrid%Mqv)
+CALL w2pi(wGrid%Dqv,piGrid%Dqv)
+
+CALL w2pi(wGrid%theta,piGrid%theta)
+CALL w2pi(wGrid%Mtheta,piGrid%Mtheta)
+CALL w2pi(wGrid%Dtheta,piGrid%Dtheta)
 
 !CALL w2u(Main%qv,uGrid%qv)
 !CALL w2u(Main%qc,uGrid%qc)
@@ -66,6 +70,7 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 ! theta_v, theta_M_0, theta_M_1
 !-------------------------------------------------
 wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
+CALL w2pi(wGrid%theta_v,piGrid%theta_v)
 wGrid%qt = wGrid%qv + wGrid%qc + wGrid%qr + wGrid%qi + wGrid%qs + wGrid%qg
 wGrid%theta_M = wGrid%theta_v/(1. + wGrid%qt)
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
