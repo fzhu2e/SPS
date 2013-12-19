@@ -88,33 +88,16 @@ END DO
 !OMP END PARALLEL DO
 
 CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
+CALL tendency_q(0,B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
+
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		C%w(i,k) = A%w(i,k) + dt/REAL(deno)*tend_w(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
 
-CALL tendency_pi(B,tend_pi_1,uGrid,wGrid,piGrid,virGrid)
-CALL set_area_pi
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		C%pi_1(i,k) = A%pi_1(i,k) + dt/REAL(deno)*tend_pi_1(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
-
-!-------------------------------------------------
-CALL tendency_q(0,B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
-CALL set_area_w
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
 		C%theta(i,k) = A%theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
-		wGrid%theta_M(i,k) = C%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))/(1. + wGrid%qt(i,k))
+		wGrid%theta_M(i,k) = C%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))*(1. - wGrid%qc(i,k))
 		wGrid%theta_M_1(i,k) = wGrid%theta_M(i,k) - wGrid%theta_M_0(i,k)
 	END DO
 END DO
@@ -149,10 +132,20 @@ ELSE
 	END DO
 	!OMP END PARALLEL DO
 END IF
+
 !-------------------------------------------------
-!CALL update_boundary(C%u,C%w,wGrid)
-!CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
-!CALL debug_SFSG
+CALL update_boundary(C%u,C%w,wGrid)
+CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
+
+CALL tendency_pi(C,tend_pi_1,uGrid,wGrid,piGrid,virGrid)
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		C%pi_1(i,k) = A%pi_1(i,k) + dt/REAL(deno)*tend_pi_1(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
 
 !-------------------------------------------------
 CALL update_boundary(C%u,C%w,wGrid,C%pi_1,C%theta,&

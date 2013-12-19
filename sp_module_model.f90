@@ -128,36 +128,36 @@ INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 !-------------------------------------------------
 ! 5. Wet bubble
 !-------------------------------------------------
-!INTEGER, PARAMETER :: RunCase = 5
-!INTEGER, PARAMETER :: Vapor = 1
+INTEGER, PARAMETER :: RunCase = 5
+INTEGER, PARAMETER :: Vapor = 1
 
-!INTEGER, PARAMETER :: nx = 100                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!REAL(kd), PARAMETER :: dx = 5.                        ! delta x (m)
-!REAL(kd), PARAMETER :: dz = 5.                       ! (m)
+INTEGER, PARAMETER :: nx = 100                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+REAL(kd), PARAMETER :: dx = 5.                        ! delta x (m)
+REAL(kd), PARAMETER :: dz = 5.                       ! (m)
 
-!REAL(kd), PARAMETER :: dt = 0.01                               ! delta t (s)
-!INTEGER :: nstep = 180000
+REAL(kd), PARAMETER :: dt = 0.01                               ! delta t (s)
+INTEGER :: nstep = 180000
 
-!REAL(kd) :: Km = 20.        !(m s)
-!REAL(kd) :: Kh = 20.        !(K s)
+REAL(kd) :: Km = 20.        !(m s)
+REAL(kd) :: Kh = 20.        !(K s)
 
 !-------------------------------------------------
 ! 6. Thunderstorm
 !-------------------------------------------------
-INTEGER, PARAMETER :: RunCase = 6
-INTEGER, PARAMETER :: Vapor = 1
+!INTEGER, PARAMETER :: RunCase = 6
+!INTEGER, PARAMETER :: Vapor = 1
 
-INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
-REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
-REAL(kd), PARAMETER :: dz = 250.                       ! (m)
+!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 250.                       ! (m)
 
-REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
-INTEGER :: nstep = 18000
+!REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
+!INTEGER :: nstep = 18000
 
-REAL(kd) :: Km = 20.        !(m s)
-REAL(kd) :: Kh = 20.        !(K s)
+!REAL(kd) :: Km = 20.        !(m s)
+!REAL(kd) :: Kh = 20.        !(K s)
 
 !=================================================
 INTEGER, PARAMETER :: its = 1
