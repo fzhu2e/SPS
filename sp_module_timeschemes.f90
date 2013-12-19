@@ -78,20 +78,6 @@ CALL basic_interpolate(A,uGrid,wGrid,piGrid,virGrid)
 
 !-------------------------------------------------
 CALL tendency_u(B,tend_u,uGrid,wGrid,piGrid,virGrid)
-CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
-
-CALL tendency_q(B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
-
-IF (Vapor /= 0) THEN
-	CALL tendency_q(B%qv,tend_qv,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qc,tend_qc,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qr,tend_qr,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qi,tend_qi,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qs,tend_qs,uGrid,wGrid,piGrid,virGrid)
-	CALL tendency_q(B%qg,tend_qg,uGrid,wGrid,piGrid,virGrid)
-END IF
-
-!-------------------------------------------------
 CALL set_area_u
 !OMP PARALLEL DO
 DO k = kmin, kmax
@@ -101,20 +87,47 @@ DO k = kmin, kmax
 END DO
 !OMP END PARALLEL DO
 
-!-------------------------------------------------
+CALL tendency_w(B,tend_w,uGrid,wGrid,piGrid,virGrid)
 CALL set_area_w
 !OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		C%w(i,k) = A%w(i,k) + dt/REAL(deno)*tend_w(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
 
+CALL tendency_pi(B,tend_pi_1,uGrid,wGrid,piGrid,virGrid)
+CALL set_area_pi
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
+		C%pi_1(i,k) = A%pi_1(i,k) + dt/REAL(deno)*tend_pi_1(i,k)
+	END DO
+END DO
+!OMP END PARALLEL DO
+
+!-------------------------------------------------
+CALL tendency_q(B%theta,tend_theta,uGrid,wGrid,piGrid,virGrid)
+CALL set_area_w
+!OMP PARALLEL DO
+DO k = kmin, kmax
+	DO i = imin, imax
 		C%theta(i,k) = A%theta(i,k) + dt/REAL(deno)*tend_theta(i,k)
-		wGrid%theta_M(i,k) = C%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))*(1. - wGrid%qc(i,k))
+		wGrid%theta_M(i,k) = C%theta(i,k)*(1. + 0.61*wGrid%qv(i,k))/(1. + wGrid%qt(i,k))
 		wGrid%theta_M_1(i,k) = wGrid%theta_M(i,k) - wGrid%theta_M_0(i,k)
 	END DO
 END DO
 !OMP END PARALLEL DO
 
+IF (Vapor /= 0) THEN
+	CALL tendency_q(B%qv,tend_qv,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qc,tend_qc,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qr,tend_qr,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qi,tend_qi,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qs,tend_qs,uGrid,wGrid,piGrid,virGrid)
+	CALL tendency_q(B%qg,tend_qg,uGrid,wGrid,piGrid,virGrid)
+END IF
 IF (Vapor == 0) THEN
 	C%qv = 0.
 	C%qc = 0.
@@ -137,21 +150,9 @@ ELSE
 	!OMP END PARALLEL DO
 END IF
 !-------------------------------------------------
-CALL update_boundary(C%u,C%w,wGrid)
-CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
+!CALL update_boundary(C%u,C%w,wGrid)
+!CALL basic_interpolate(C,uGrid,wGrid,piGrid,virGrid)
 !CALL debug_SFSG
-
-!-------------------------------------------------
-CALL tendency_pi(C,tend_pi_1,uGrid,wGrid,piGrid,virGrid)
-
-CALL set_area_pi
-!OMP PARALLEL DO
-DO k = kmin, kmax
-	DO i = imin, imax
-		C%pi_1(i,k) = A%pi_1(i,k) + dt/REAL(deno)*tend_pi_1(i,k)
-	END DO
-END DO
-!OMP END PARALLEL DO
 
 !-------------------------------------------------
 CALL update_boundary(C%u,C%w,wGrid,C%pi_1,C%theta,&
