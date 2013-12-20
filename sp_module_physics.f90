@@ -62,7 +62,7 @@ CONTAINS
 !=================================================
 
 !=================================================
-! Microphysics - WSM6 
+! Subgrid
 !=================================================
 SUBROUTINE subgrid(uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
@@ -225,6 +225,71 @@ END DO
 delt = dt
 !=================================================
 !
+   pi = 4.*atan(1.)
+   qc0  = 4./3.*pi*denr*r0**3*xncr/den0  ! 0.419e-3 -- .61e-3
+   qck1 = .104*9.8*peaut/(xncr*denr)**(1./3.)/xmyu*den0**(4./3.) ! 7.03
+!
+   bvtr1 = 1.+bvtr
+   bvtr2 = 2.5+.5*bvtr
+   bvtr3 = 3.+bvtr
+   bvtr4 = 4.+bvtr
+   bvtr6 = 6.+bvtr
+   g1pbr = rgmma(bvtr1)
+   g3pbr = rgmma(bvtr3)
+   g4pbr = rgmma(bvtr4)            ! 17.837825
+   g6pbr = rgmma(bvtr6)
+   g5pbro2 = rgmma(bvtr2)          ! 1.8273
+   pvtr = avtr*g4pbr/6.
+   eacrr = 1.0
+   pacrr = pi*n0r*avtr*g3pbr*.25*eacrr
+   precr1 = 2.*pi*n0r*.78
+   precr2 = 2.*pi*n0r*.31*avtr**.5*g5pbro2
+   roqimax = 2.08e22*dimax**8
+!
+   bvts1 = 1.+bvts
+   bvts2 = 2.5+.5*bvts
+   bvts3 = 3.+bvts
+   bvts4 = 4.+bvts
+   g1pbs = rgmma(bvts1)    !.8875
+   g3pbs = rgmma(bvts3)
+   g4pbs = rgmma(bvts4)    ! 12.0786
+   g5pbso2 = rgmma(bvts2)
+   pvts = avts*g4pbs/6.
+   pacrs = pi*n0s*avts*g3pbs*.25
+   precs1 = 4.*n0s*.65
+   precs2 = 4.*n0s*.44*avts**.5*g5pbso2
+   pidn0r =  pi*denr*n0r
+   pidn0s =  pi*dens*n0s
+!
+   pacrc = pi*n0s*avts*g3pbs*.25*eacrc
+!
+   bvtg1 = 1.+bvtg
+   bvtg2 = 2.5+.5*bvtg
+   bvtg3 = 3.+bvtg
+   bvtg4 = 4.+bvtg
+   g1pbg = rgmma(bvtg1)
+   g3pbg = rgmma(bvtg3)
+   g4pbg = rgmma(bvtg4)
+   pacrg = pi*n0g*avtg*g3pbg*.25
+   g5pbgo2 = rgmma(bvtg2)
+   pvtg = avtg*g4pbg/6.
+   precg1 = 2.*pi*n0g*.78
+   precg2 = 2.*pi*n0g*.31*avtg**.5*g5pbgo2
+   pidn0g =  pi*deng*n0g
+!
+   rslopermax = 1./lamdarmax
+   rslopesmax = 1./lamdasmax
+   rslopegmax = 1./lamdagmax
+   rsloperbmax = rslopermax ** bvtr
+   rslopesbmax = rslopesmax ** bvts
+   rslopegbmax = rslopegmax ** bvtg
+   rsloper2max = rslopermax * rslopermax
+   rslopes2max = rslopesmax * rslopesmax
+   rslopeg2max = rslopegmax * rslopegmax
+   rsloper3max = rsloper2max * rslopermax
+   rslopes3max = rslopes2max * rslopesmax
+   rslopeg3max = rslopeg2max * rslopegmax
+!-------------------------------------------------
 
       idim = ite-its+1
       kdim = kte-kts+1
@@ -1965,6 +2030,29 @@ END SUBROUTINE mp_wsm6
         enddo
       enddo
   END subroutine slope_graup
+!=================================================
+
+!=================================================
+     REAL(kd) FUNCTION rgmma(x)
+!-------------------------------------------------------------------
+  IMPLICIT NONE
+!-------------------------------------------------------------------
+!     rgmma function:  use infinite product form
+      REAL(kd) :: euler
+      PARAMETER (euler=0.577215664901532)
+      REAL(kd) :: x, y
+      INTEGER :: i
+      if(x.eq.1.)then
+        rgmma=0.
+          else
+        rgmma=x*exp(euler*x)
+        do i=1,10000
+          y=float(i)
+          rgmma=rgmma*(1.000+x/y)*exp(-x/y)
+        enddo
+        rgmma=1./rgmma
+      endif
+      END FUNCTION rgmma
 !=================================================
 
 subroutine vrec(y,x,n)
