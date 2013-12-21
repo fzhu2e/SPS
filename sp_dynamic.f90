@@ -96,6 +96,7 @@ CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, &
 !=================================================
 ! Integrate.
 !-------------------------------------------------
+CALL wsm6init(rhoair0,rhowater,rhosnow,cliq,cpv)
 t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)

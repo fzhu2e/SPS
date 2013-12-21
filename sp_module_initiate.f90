@@ -246,7 +246,7 @@ DO k = kmin, kmax
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
 		!wGrid%qv(i,k) = 0.
-		wGrid%qv(i,k) = 0.05*MAX(0.01,1. - L/R)
+		wGrid%qv(i,k) = 0.01*MAX(0.01,1. - L/R)
 		wGrid%qc(i,k) = 0.
 		wGrid%qr(i,k) = 0.
 		wGrid%qi(i,k) = 0.
@@ -549,6 +549,8 @@ IF (RunCase == 1 .OR. RunCase == 2) THEN
 ELSE IF (RunCase /= 1 .AND. RunCase /= 2) THEN
 	IF (RunCase == 3) THEN
 		Ts = 300.
+	ELSE IF (RunCase == 5) THEN
+		Ts = 270.
 	ELSE
 		Ts = 280.
 	END IF

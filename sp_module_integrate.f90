@@ -55,8 +55,8 @@ wGrid%qi = new%qi
 wGrid%qs = new%qs
 wGrid%qg = new%qg
 
-!CALL set_area_w
-!CALL mp_wsm6(imin,imax,kmin,kmax,wGrid)
+CALL set_area_w
+CALL mp_wsm6(imin,imax,kmin,kmax,wGrid)
 !=================================================
 END SUBROUTINE integrate
 !=================================================
