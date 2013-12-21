@@ -137,10 +137,12 @@ REAL(kd), PARAMETER :: dx = 5.                        ! delta x (m)
 REAL(kd), PARAMETER :: dz = 5.                       ! (m)
 
 REAL(kd), PARAMETER :: dt = 0.01                               ! delta t (s)
-INTEGER :: nstep = 180000
+INTEGER :: nstep = 10000
 
-REAL(kd) :: Km = 20.        !(m s)
-REAL(kd) :: Kh = 20.        !(K s)
+!REAL(kd) :: Km = 20.        !(m s)
+!REAL(kd) :: Kh = 20.        !(K s)
+REAL(kd) :: Km = 0.        !(m s)
+REAL(kd) :: Kh = 0.        !(K s)
 
 !-------------------------------------------------
 ! 6. Thunderstorm

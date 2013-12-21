@@ -1,7 +1,7 @@
 !=================================================
 ! The integrate module of SPS-dynamic.
 !-------------------------------------------------
-! Version: 0.11
+! Version: 0.2
 ! Author: Zhu F.
 ! Email: lyricorpse@gmail.com
 ! Date: 2013-05-04 13:59:46 
@@ -13,7 +13,8 @@ USE sp_module_model
 USE sp_module_gridvar
 USE sp_module_timeschemes
 USE sp_module_boundary
-USE sp_module_physics
+USE sp_module_subgrid
+USE sp_module_wsm6
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
@@ -54,12 +55,11 @@ wGrid%qi = new%qi
 wGrid%qs = new%qs
 wGrid%qg = new%qg
 
-CALL set_area_w
-CALL mp_wsm6(imin,imax,kmin,kmax,uGrid,wGrid,piGrid,virGrid)
+!CALL set_area_w
+!CALL mp_wsm6(imin,imax,kmin,kmax,wGrid)
 !=================================================
 END SUBROUTINE integrate
 !=================================================
-
 
 !=================================================
 END MODULE sp_module_integrate
