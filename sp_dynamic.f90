@@ -96,6 +96,9 @@ CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%t
 !=================================================
 ! Integrate.
 !-------------------------------------------------
+IF (OpenUp == 2) THEN
+	CALL calc_tau(uGrid,wGrid)
+END IF
 CALL wsm6init(rhoair0,rhowater,rhosnow,cliq,cpv)
 t_all = 0.
 DO i = 1, nstep

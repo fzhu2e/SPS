@@ -52,8 +52,6 @@ IF (PRESENT(u)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_pi(u)
-	CASE (2)
-		CALL open_top_pi(u)
 	CASE DEFAULT
 		STOP "Wrong vertical boundary scheme!!!"
 	END SELECT
@@ -78,8 +76,6 @@ IF (PRESENT(w)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_vector_top_w(w)
-	CASE (2)
-		CALL open_top_w(w)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -105,8 +101,6 @@ IF (PRESENT(pi_1)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_pi(pi_1)
-	CASE (2)
-		CALL open_top_pi(pi_1)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -131,8 +125,6 @@ IF (PRESENT(theta)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(theta)
-	CASE (2)
-		CALL open_top_w(theta)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -157,8 +149,6 @@ IF (PRESENT(qv)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(qv)
-	CASE (2)
-		CALL open_top_w(qv)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -183,8 +173,6 @@ IF (PRESENT(qc)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(qc)
-	CASE (2)
-		CALL open_top_w(qc)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -209,8 +197,6 @@ IF (PRESENT(qr)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(qr)
-	CASE (2)
-		CALL open_top_w(qr)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -235,8 +221,6 @@ IF (PRESENT(qi)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(qi)
-	CASE (2)
-		CALL open_top_w(qi)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -261,8 +245,6 @@ IF (PRESENT(qs)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(qs)
-	CASE (2)
-		CALL open_top_w(qs)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -287,8 +269,6 @@ IF (PRESENT(qg)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(qg)
-	CASE (2)
-		CALL open_top_w(qg)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -313,8 +293,6 @@ IF (PRESENT(rho_0_pi)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_pi(rho_0_pi)
-	CASE (2)
-		CALL open_top_pi(rho_0_pi)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -339,8 +317,6 @@ IF (PRESENT(rho_0_u)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_pi(rho_0_u)
-	CASE (2)
-		CALL open_top_pi(rho_0_u)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -365,8 +341,6 @@ IF (PRESENT(rho_0_w)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(rho_0_w)
-	CASE (2)
-		CALL open_top_w(rho_0_w)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -391,8 +365,6 @@ IF (PRESENT(rho_0_vir)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(rho_0_vir)
-	CASE (2)
-		CALL open_top_w(rho_0_vir)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -417,8 +389,6 @@ IF (PRESENT(theta_0_w)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_w(theta_0_w)
-	CASE (2)
-		CALL open_top_w(theta_0_w)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -443,8 +413,6 @@ IF (PRESENT(pi_0_pi)) THEN
 	SELECT CASE (UpperBoundary)
 	CASE (1)
 		CALL no_flux_scalar_top_pi(pi_0_pi)
-	CASE (2)
-		CALL open_top_pi(pi_0_pi)
 	CASE DEFAULT
 		STOP "Wrong upper boundary scheme!!!"
 	END SELECT
@@ -624,29 +592,39 @@ END SUBROUTINE open_lateral_u
 !=================================================
 
 !=================================================
-SUBROUTINE open_top_w(var)
+SUBROUTINE calc_tau(uGrid,wGrid)
 IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
-INTEGER :: k
+TYPE(grid), INTENT(INOUT) :: uGrid, wGrid
+REAL(kd), PARAMETER :: s = 1.0e4 ! (m)
+REAL(kd), PARAMETER :: tau0 = 5.
+INTEGER :: i, k
 !-------------------------------------------------
-CALL set_area_w
-DO k = kmax+1, kme
-	var(:,k) = var(:,kmax)
+CALL set_area_u
+DO k = kmin, kmax
+	DO i = imin, imax
+		IF (uGrid%zz(i,k) < s ) THEN
+			uGrid%tau(i,k) = 0.
+		ELSE
+			uGrid%tau(i,k) = tau0*((uGrid%zz(i,k) - s)/(ztop - s))**4
+		END IF
+	END DO
 END DO
-END SUBROUTINE open_top_w
-!=================================================
 
-!=================================================
-SUBROUTINE open_top_pi(var)
-IMPLICIT NONE
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT) :: var
-INTEGER :: k
-!-------------------------------------------------
-CALL set_area_pi
-DO k = kmax+1, kme
-	var(:,k) = var(:,kmax)
+CALL set_area_w
+DO k = kmin, kmax
+	DO i = imin, imax
+		IF (wGrid%zz(i,k) < s ) THEN
+			wGrid%tau(i,k) = 0.
+		ELSE
+			wGrid%tau(i,k) = tau0*((wGrid%zz(i,k) - s)/(ztop - s))**4
+		END IF
+	END DO
 END DO
-END SUBROUTINE open_top_pi
+
+!CALL debug_ascii_output(uGrid%tau,"tau_u")
+!CALL debug_ascii_output(wGrid%tau,"tau_w")
+!CALL debug_SFSG
+END SUBROUTINE calc_tau
 !=================================================
 
 !=================================================

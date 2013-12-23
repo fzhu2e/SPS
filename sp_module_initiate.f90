@@ -299,8 +299,8 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		wGrid%w(i,k) = 0.
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
-		!wGrid%theta_1(i,k) = 3.*MAX(0.,1. - L/R)
-		wGrid%theta_1(i,k) = 0.
+		wGrid%theta_1(i,k) = 3.*MAX(0.,1. - L/R)
+		!wGrid%theta_1(i,k) = 0.
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
 		!wGrid%qv(i,k) = 0.01*MAX(0.01,1. - L/R)
 		!wGrid%qv(i,k) = 0.
@@ -633,7 +633,7 @@ ELSE IF (RunCase /= 1 .AND. RunCase /= 2) THEN
 	ELSE IF (RunCase == 5) THEN
 		Ts = 270.
 	ELSE
-		Ts = 280.
+		Ts = 300.
 	END IF
 
 	CALL set_area_u

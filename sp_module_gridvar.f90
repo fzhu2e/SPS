@@ -43,6 +43,11 @@ TYPE, EXTENDS(mainvar) :: grid
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: G = undef
 	REAL(kd), DIMENSION(ims:ime) :: H = undef
 
+!=================================================
+! Sponge Layer
+!-------------------------------------------------
+	REAL(kd), DIMENSION(ims:ime,kms:kme) :: tau = undef
+
 END TYPE grid
 !=================================================
 
