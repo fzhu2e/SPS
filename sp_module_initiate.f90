@@ -255,7 +255,6 @@ DO k = kmin, kmax
 	END DO
 END DO
 !OMP END PARALLEL DO
-
 CALL set_area_pi
 !OMP PARALLEL DO
 DO k = kmin, kmax
@@ -289,7 +288,7 @@ CALL set_area_u
 DO k = kmin, kmax
 	DO i = imin, imax
 		!uGrid%u(i,k) = 0.
-		uGrid%u(i,k) = 1.2*MAX(0., REAL(11 - k))
+		uGrid%u(i,k) = - 1.2*MAX(0., REAL(11 - k))
 	END DO
 END DO
 !OMP END PARALLEL DO
@@ -300,10 +299,10 @@ DO k = kmin, kmax
 	DO i = imin, imax
 		wGrid%w(i,k) = 0.
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
-		!wGrid%theta_1(i,k) = 2.*MAX(0.,1. - L/R)
+		!wGrid%theta_1(i,k) = 3.*MAX(0.,1. - L/R)
 		wGrid%theta_1(i,k) = 0.
 		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
-		wGrid%qv(i,k) = 0.01*MAX(0.01,1. - L/R)
+		!wGrid%qv(i,k) = 0.01*MAX(0.01,1. - L/R)
 		!wGrid%qv(i,k) = 0.
 		wGrid%qc(i,k) = 0.
 		wGrid%qr(i,k) = 0.
@@ -313,6 +312,88 @@ DO k = kmin, kmax
 	END DO
 END DO
 !OMP END PARALLEL DO
+
+wGrid%qv(:,1) = 1.400E-02
+wGrid%qv(:,2) = 1.400E-02
+wGrid%qv(:,3) = 1.400E-02
+wGrid%qv(:,4) = 1.400E-02
+wGrid%qv(:,5) = 1.400E-02
+wGrid%qv(:,6) = 1.312E-02
+wGrid%qv(:,7) = 1.188E-02
+wGrid%qv(:,8) = 1.074E-02
+wGrid%qv(:,9) = 9.708E-03
+wGrid%qv(:,10) = 8.764E-03
+wGrid%qv(:,11) = 7.903E-03
+wGrid%qv(:,12) = 7.118E-03
+wGrid%qv(:,13) = 6.402E-03
+wGrid%qv(:,14) = 5.749E-03
+wGrid%qv(:,15) = 5.155E-03
+wGrid%qv(:,16) = 4.615E-03
+wGrid%qv(:,17) = 4.124E-03
+wGrid%qv(:,18) = 3.679E-03
+wGrid%qv(:,19) = 3.275E-03
+wGrid%qv(:,20) = 2.910E-03
+wGrid%qv(:,21) = 2.580E-03
+wGrid%qv(:,22) = 2.282E-03
+wGrid%qv(:,23) = 2.015E-03
+wGrid%qv(:,24) = 1.774E-03
+wGrid%qv(:,25) = 1.558E-03
+wGrid%qv(:,26) = 1.365E-03
+wGrid%qv(:,27) = 1.192E-03
+wGrid%qv(:,28) = 1.039E-03
+wGrid%qv(:,29) = 9.019E-04
+wGrid%qv(:,30) = 7.809E-04
+wGrid%qv(:,31) = 6.739E-04
+wGrid%qv(:,32) = 5.796E-04
+wGrid%qv(:,33) = 4.967E-04
+wGrid%qv(:,34) = 4.241E-04
+wGrid%qv(:,35) = 3.606E-04
+wGrid%qv(:,36) = 3.054E-04
+wGrid%qv(:,37) = 2.576E-04
+wGrid%qv(:,38) = 2.162E-04
+wGrid%qv(:,39) = 1.806E-04
+wGrid%qv(:,40) = 1.502E-04
+wGrid%qv(:,41) = 1.241E-04
+wGrid%qv(:,42) = 1.020E-04
+wGrid%qv(:,43) = 8.336E-05
+wGrid%qv(:,44) = 6.766E-05
+wGrid%qv(:,45) = 5.453E-05
+wGrid%qv(:,46) = 4.361E-05
+wGrid%qv(:,47) = 3.459E-05
+wGrid%qv(:,48) = 2.719E-05
+wGrid%qv(:,49) = 2.457E-05
+wGrid%qv(:,50) = 2.572E-05
+wGrid%qv(:,51) = 2.691E-05
+wGrid%qv(:,52) = 2.816E-05
+wGrid%qv(:,53) = 2.948E-05
+wGrid%qv(:,54) = 3.085E-05
+wGrid%qv(:,55) = 3.230E-05
+wGrid%qv(:,56) = 3.381E-05
+wGrid%qv(:,57) = 3.539E-05
+wGrid%qv(:,58) = 3.705E-05
+wGrid%qv(:,59) = 3.880E-05
+wGrid%qv(:,60) = 4.062E-05
+wGrid%qv(:,61) = 4.254E-05
+wGrid%qv(:,62) = 4.454E-05
+wGrid%qv(:,63) = 4.665E-05
+wGrid%qv(:,64) = 4.886E-05
+wGrid%qv(:,65) = 5.118E-05
+wGrid%qv(:,66) = 5.361E-05
+wGrid%qv(:,67) = 5.616E-05
+wGrid%qv(:,68) = 5.883E-05
+wGrid%qv(:,69) = 6.164E-05
+wGrid%qv(:,70) = 6.458E-05
+wGrid%qv(:,71) = 6.767E-05
+wGrid%qv(:,72) = 7.092E-05
+wGrid%qv(:,73) = 7.432E-05
+wGrid%qv(:,74) = 7.790E-05
+wGrid%qv(:,75) = 8.165E-05
+wGrid%qv(:,76) = 8.559E-05
+wGrid%qv(:,77) = 8.972E-05
+wGrid%qv(:,78) = 9.400E-05
+wGrid%qv(:,79) = 9.400E-05
+wGrid%qv(:,80) = 9.400E-05
+wGrid%qv(:,81) = 9.400E-05
 
 CALL set_area_pi
 !OMP PARALLEL DO

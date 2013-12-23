@@ -16,14 +16,15 @@ CONTAINS
 !=================================================
 ! Output the fields.
 !=================================================
-SUBROUTINE output(flag,u,w,pi_1,theta_1,theta,qv,qc,qr,qi,qs,qg)
+SUBROUTINE output(flag,u,w,pi_1,theta_M_1,theta_M,theta,qv,qc,qr,qi,qs,qg)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1     ! pi'
-REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1  ! theta'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_M_1
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_M
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: qv,qc,qr,qi,qs,qg
 !=================================================
@@ -38,41 +39,45 @@ CASE (0)
 	OPEN(3, FILE="./output/modelvar_pi_1.bin", FORM='binary', CONVERT='big_endian')
 	WRITE(3) pi_1
 
-	OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(4) theta_1
+	OPEN(4, FILE="./output/modelvar_theta_M_1.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(4) theta_M_1
 
-	OPEN(5, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(5) theta
+	OPEN(5, FILE="./output/modelvar_theta_M.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(5) theta_M
 
-	OPEN(6, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(6) qv
+	OPEN(6, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(6) theta
 
-	OPEN(7, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(7) qc
+	OPEN(7, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(7) qv
 
-	OPEN(8, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(8) qr
+	OPEN(8, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(8) qc
 
-	OPEN(9, FILE="./output/modelvar_qi.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(9) qi
+	OPEN(9, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(9) qr
 
-	OPEN(10, FILE="./output/modelvar_qs.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(10) qs
+	OPEN(10, FILE="./output/modelvar_qi.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(10) qi
 
-	OPEN(11, FILE="./output/modelvar_qg.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(11) qg
+	OPEN(11, FILE="./output/modelvar_qs.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(11) qs
+
+	OPEN(12, FILE="./output/modelvar_qg.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(12) qg
 CASE (1)
 	WRITE(1) u
 	WRITE(2) w
 	WRITE(3) pi_1
-	WRITE(4) theta_1
-	WRITE(5) theta
-	WRITE(6) qv
-	WRITE(7) qc
-	WRITE(8) qr
-	WRITE(9) qi
-	WRITE(10) qs
-	WRITE(11) qg
+	WRITE(4) theta_M_1
+	WRITE(5) theta_M
+	WRITE(6) theta
+	WRITE(7) qv
+	WRITE(8) qc
+	WRITE(9) qr
+	WRITE(10) qi
+	WRITE(11) qs
+	WRITE(12) qg
 CASE (99)
 	CLOSE(1)
 	CLOSE(2)
@@ -85,6 +90,7 @@ CASE (99)
 	CLOSE(9)
 	CLOSE(10)
 	CLOSE(11)
+	CLOSE(12)
 CASE DEFAULT
 	WRITE(*,*) "==================================="
 	WRITE(*,*) " WARNING: Illegal flag of output."

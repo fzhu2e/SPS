@@ -71,7 +71,7 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 !-------------------------------------------------
 wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
 CALL w2pi(wGrid%theta_v,piGrid%theta_v)
-wGrid%qt = wGrid%qv + wGrid%qc + wGrid%qr + wGrid%qi + wGrid%qs + wGrid%qg
+wGrid%qt = wGrid%qv + wGrid%qc + wGrid%qi
 wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc)
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
 
