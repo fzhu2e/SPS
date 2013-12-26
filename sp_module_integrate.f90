@@ -55,8 +55,10 @@ wGrid%qi = new%qi
 wGrid%qs = new%qs
 wGrid%qg = new%qg
 
-CALL set_area_w
-CALL mp_wsm6(imin,imax,kmin,kmax,wGrid)
+IF (Vapor == 1) THEN
+	CALL set_area_w
+	CALL mp_wsm6(imin,imax,kmin,kmax,wGrid)
+END IF
 !=================================================
 END SUBROUTINE integrate
 !=================================================

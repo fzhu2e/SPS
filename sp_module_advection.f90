@@ -30,7 +30,7 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_pi
 CALL set_area_expand(expand)
-!OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
 		rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
@@ -44,11 +44,11 @@ DO k = kmin, kmax
 		rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
 CALL set_area_vir
 CALL set_area_expand(expand)
-!OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
 		rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
@@ -65,7 +65,7 @@ DO k = kmin, kmax
 		rhowvar_vir(i,k) = rhowvar_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
 CALL ppx_u(rhou_pi,PrhouPx_u)
 CALL ppx_u(rhouvar_pi,PrhouvarPx_u)
@@ -77,7 +77,7 @@ CALL ppzeta_u(rhow_vir,PrhowPzeta_u)
 CALL ppzeta_u(rhowvar_vir,PrhowvarPzeta_u)
 
 CALL set_area_u
-!OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
+!$OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
 DO k = kmin, kmax
 	DO i = imin, imax
 		temp_a = - 1./uGrid%rho_0(i,k)*(PrhouvarPx_u(i,k) - var_u(i,k)*PrhouPx_u(i,k))
@@ -86,7 +86,7 @@ DO k = kmin, kmax
 		A_u(i,k) = temp_a + temp_b + temp_c
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE calc_advection_u
 !=================================================
@@ -113,7 +113,7 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_vir
 CALL set_area_expand(expand)
-!OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
 		rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
@@ -127,11 +127,11 @@ DO k = kmin, kmax
 		rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
 CALL set_area_pi
 CALL set_area_expand(expand)
-!OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
 		rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
@@ -148,7 +148,7 @@ DO k = kmin, kmax
 		rhowvar_pi(i,k) = rhowvar_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
 CALL ppx_w(rhou_vir,PrhouPx_w)
 CALL ppx_w(rhouvar_vir,PrhouvarPx_w)
@@ -160,7 +160,7 @@ CALL ppzeta_w(rhow_pi,PrhowPzeta_w)
 CALL ppzeta_w(rhowvar_pi,PrhowvarPzeta_w)
 
 CALL set_area_w
-!OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
+!$OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
 DO k = kmin, kmax
 	DO i = imin, imax
 		temp_a = - 1./wGrid%rho_0(i,k)*(PrhouvarPx_w(i,k) - var_w(i,k)*PrhouPx_w(i,k))
@@ -169,7 +169,7 @@ DO k = kmin, kmax
 		A_w(i,k) = temp_a + temp_b + temp_c
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE calc_advection_w
 !=================================================
@@ -196,7 +196,7 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_u
 CALL set_area_expand(expand)
-!OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
 		rhou_u(i,k) = uGrid%rho_0(i,k)*uGrid%u(i,k)
@@ -210,11 +210,11 @@ DO k = kmin, kmax
 		rhouvar_u(i,k) = rhouvar_u(i,k) - ABS(uGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
 CALL set_area_w
 CALL set_area_expand(expand)
-!OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
 DO k = kmin, kmax
 	DO i = imin, imax
 		rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
@@ -231,7 +231,7 @@ DO k = kmin, kmax
 		rhowvar_w(i,k) = rhowvar_w(i,k) - ABS(wGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 
 CALL ppx_pi(rhou_u,PrhouPx_pi)
 CALL ppx_pi(rhouvar_u,PrhouvarPx_pi)
@@ -243,7 +243,7 @@ CALL ppzeta_pi(rhow_w,PrhowPzeta_pi)
 CALL ppzeta_pi(rhowvar_w,PrhowvarPzeta_pi)
 
 CALL set_area_pi
-!OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
+!$OMP PARALLEL DO PRIVATE(temp_a,temp_b,temp_c)
 DO k = kmin, kmax
 	DO i = imin, imax
 		temp_a = - 1./piGrid%rho_0(i,k)*(PrhouvarPx_pi(i,k) - var_pi(i,k)*PrhouPx_pi(i,k))
@@ -252,7 +252,7 @@ DO k = kmin, kmax
 		A_pi(i,k) = temp_a + temp_b + temp_c
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 !=================================================
 END SUBROUTINE calc_advection_pi
 !=================================================

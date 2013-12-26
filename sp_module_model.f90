@@ -153,7 +153,7 @@ INTEGER, PARAMETER :: Vapor = 1
 
 INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
 INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
 REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
 REAL(kd), PARAMETER :: dz = 250.                       ! (m)
 

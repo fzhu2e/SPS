@@ -22,7 +22,6 @@ TYPE, EXTENDS(mainvar) :: grid
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_v = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_M = undef, theta_M_0 = undef, theta_M_1 = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: rho_0 = undef
-	REAL(kd), DIMENSION(ims:ime,kms:kme) :: qt = undef  ! qt = qv + qc + qr + qi + qs + qg
 
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: Du = undef, Dw = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: Dtheta = undef
@@ -64,13 +63,11 @@ INTEGER :: i, k
 CALL set_area_pi
 CALL set_area_expand(expand)
 !IF (ANY(var_u(imin-1:imax,kmin:kmax) == undef)) STOP "u2pi WRONG!!!"
-!OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_pi(i,k) = (var_u(i-1,k) + var_u(i,k))/2.
 	END DO
 END DO
-!OMP END PARALLEL DO
 END SUBROUTINE u2pi
 !=================================================
 
@@ -83,13 +80,13 @@ INTEGER :: i, k
 CALL set_area_vir
 CALL set_area_expand(expand)
 !IF (ANY(var_u(imin:imax,kmin-1:kmax) == undef)) STOP "u2vir WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_vir(i,k) = (var_u(i,k) + var_u(i,k-1))/2.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE u2vir
 !=================================================
 
@@ -102,13 +99,13 @@ INTEGER :: i, k
 CALL set_area_w
 CALL set_area_expand(expand)
 !IF (ANY(var_u(imin-1:imax,kmin-1:kmax) == undef)) STOP "u2w WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_w(i,k) = (var_u(i,k) + var_u(i,k-1) + var_u(i-1,k) + var_u(i-1,k-1))/4.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE u2w
 !=================================================
 
@@ -121,13 +118,13 @@ INTEGER :: i, k
 CALL set_area_u
 CALL set_area_expand(expand)
 !IF (ANY(var_pi(imin:imax+1,kmin:kmax) == undef)) STOP "pi2u WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_u(i,k) = (var_pi(i,k) + var_pi(i+1,k))/2.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE pi2u
 !=================================================
 
@@ -140,13 +137,13 @@ INTEGER :: i, k
 CALL set_area_w
 CALL set_area_expand(expand)
 !IF (ANY(var_pi(imin:imax,kmin-1:kmax) == undef)) STOP "pi2w WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_w(i,k) = (var_pi(i,k-1) + var_pi(i,k))/2.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE pi2w
 !=================================================
 
@@ -159,13 +156,13 @@ INTEGER :: i, k
 CALL set_area_vir
 CALL set_area_expand(expand)
 !IF (ANY(var_pi(imin:imax+1,kmin-1:kmax) == undef)) STOP "pi2vir WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_vir(i,k) = (var_pi(i,k-1) + var_pi(i,k) + var_pi(i+1,k) + var_pi(i+1,k-1))/4.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE pi2vir
 !=================================================
 
@@ -178,13 +175,13 @@ INTEGER :: i, k
 CALL set_area_vir
 CALL set_area_expand(expand)
 !IF (ANY(var_w(imin:imax+1,kmin:kmax) == undef)) STOP "w2vir WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_vir(i,k) = (var_w(i,k) + var_w(i+1,k))/2.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE w2vir
 !=================================================
 
@@ -197,13 +194,13 @@ INTEGER :: i, k
 CALL set_area_pi
 CALL set_area_expand(expand)
 !IF (ANY(var_w(imin:imax,kmin:kmax+1) == undef)) STOP "w2pi WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_pi(i,k) = (var_w(i,k) + var_w(i,k+1))/2.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE w2pi
 !=================================================
 
@@ -216,13 +213,13 @@ INTEGER :: i, k
 CALL set_area_u
 CALL set_area_expand(expand)
 !IF (ANY(var_w(imin:imax+1,kmin:kmax+1) == undef)) STOP "w2u WRONG!!!"
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		var_u(i,k) = (var_w(i,k) + var_w(i,k+1) + var_w(i+1,k) + var_w(i+1,k+1))/4.
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 END SUBROUTINE w2u
 !=================================================
 
@@ -234,11 +231,13 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_u
 !IF (ANY(var_pi(imin:imax+1,kmin:kmax) == undef)) STOP "ppx_u WRONG!!!"
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_pi(i+1,k) - var_pi(i,k))/dx
 	END DO
 END DO
+!$OMP END PARALLEL DO
 END SUBROUTINE ppx_u
 !=================================================
 
@@ -250,11 +249,13 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_u
 !IF (ANY(var_vir(imin:imax,kmin:kmax+1) == undef)) STOP "ppzeta_u WRONG!!!"
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_vir(i,k+1) - var_vir(i,k))/dz
 	END DO
 END DO
+!$OMP END PARALLEL DO
 END SUBROUTINE ppzeta_u
 !=================================================
 
@@ -266,11 +267,13 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_w
 !IF (ANY(var_vir(imin-1:imax,kmin:kmax) == undef)) STOP "ppx_w WRONG!!!"
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_vir(i,k) - var_vir(i-1,k))/dx
 	END DO
 END DO
+!$OMP END PARALLEL DO
 END SUBROUTINE ppx_w
 !=================================================
 
@@ -282,11 +285,13 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_w
 !IF (ANY(var_pi(imin:imax,kmin-1:kmax) == undef)) STOP "ppzeta_w WRONG!!!"
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_pi(i,k) - var_pi(i,k-1))/dz
 	END DO
 END DO
+!$OMP END PARALLEL DO
 END SUBROUTINE ppzeta_w
 !=================================================
 
@@ -298,11 +303,13 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_pi
 !IF (ANY(var_u(imin-1:imax,kmin:kmax) == undef)) STOP "ppx_pi WRONG!!!"
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_u(i,k) - var_u(i-1,k))/dx
 	END DO
 END DO
+!$OMP END PARALLEL DO
 END SUBROUTINE ppx_pi
 !=================================================
 
@@ -314,11 +321,13 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: output
 INTEGER :: i, k
 CALL set_area_pi
 !IF (ANY(var_w(imin:imax,kmin:kmax+1) == undef)) STOP "ppzeta_pi WRONG!!!"
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		output(i,k) = (var_w(i,k+1) - var_w(i,k))/dz
 	END DO
 END DO
+!$OMP END PARALLEL DO
 END SUBROUTINE ppzeta_pi
 !=================================================
 

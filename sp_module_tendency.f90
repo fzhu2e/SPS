@@ -43,7 +43,7 @@ END IF
 D_u = uGrid%Du
 
 CALL set_area_u
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		!P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
@@ -52,7 +52,7 @@ DO k = kmin, kmax
 		tend_u(i,k) = A_u(i,k) + P_u(i,k) + D_u(i,k) + S_u(i,k)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 !-------------------------------------------------
 IF (ANY(ISNAN(tend_u(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_u!!!"
 !=================================================
@@ -84,7 +84,7 @@ END IF
 D_w = wGrid%Dw
 
 CALL set_area_w
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		B_w(i,k) = g*wGrid%theta_M_1(i,k)/wGrid%theta_M_0(i,k)
@@ -95,7 +95,7 @@ DO k = kmin, kmax
 		tend_w(i,k) = A_w(i,k) + B_w(i,k) + P_w(i,k) + D_w(i,k) + S_w(i,k)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 !-------------------------------------------------
 IF (ANY(ISNAN(tend_w(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITHT tend_w!!!"
 !=================================================
@@ -128,7 +128,7 @@ CALL calc_advection_pi(pi,A_pi,uGrid,wGrid,piGrid,virGrid)
 !CALL calc_advection_pi(Main%pi_1,A_pi,uGrid,wGrid,piGrid,virGrid)
 
 CALL set_area_pi
-!OMP PARALLEL DO PRIVATE(temp)
+!$OMP PARALLEL DO PRIVATE(temp)
 DO k = kmin, kmax
 	DO i = imin, imax
 		temp = PuPx_pi(i,k) + piGrid%G(i,k)*PuPzeta_pi(i,k) + piGrid%H(i)*PwPzeta_pi(i,k)
@@ -141,7 +141,7 @@ DO k = kmin, kmax
 		tend_pi_1(i,k) = A_pi(i,k) + Div_pi(i,k) + Th_pi(i,k)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 !-------------------------------------------------
 IF (ANY(ISNAN(tend_pi_1(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_pi_1!!!"
 !=================================================
@@ -224,13 +224,13 @@ CASE DEFAULT
 	STOP "WRONG flag of calc_advection_w"
 END SELECT
 
-!OMP PARALLEL DO
+!$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
 		tend_q(i,k) = A_q(i,k) + D_q(i,k) + M_q(i,k) + S_q(i,k)
 	END DO
 END DO
-!OMP END PARALLEL DO
+!$OMP END PARALLEL DO
 !-------------------------------------------------
 IF (ANY(ISNAN(tend_q(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_theta!!!"
 !=================================================
