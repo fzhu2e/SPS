@@ -96,9 +96,16 @@ CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%t
 !=================================================
 ! Integrate.
 !-------------------------------------------------
-IF (OpenUp == 2) THEN
-	CALL calc_tau(uGrid,wGrid)
+IF (OpenTop == 2) THEN
+	CALL calc_tau_top(uGrid,wGrid)
 END IF
+IF (OpenLateral == 2) THEN
+	CALL calc_tau_lateral(uGrid,wGrid)
+END IF
+!CALL debug_ascii_output(uGrid%tau,"tau_u")
+!CALL debug_ascii_output(wGrid%tau,"tau_w")
+!CALL debug_SFSG
+
 CALL wsm6init(rhoair0,rhowater,rhosnow,cliq,cpv)
 t_all = 0.
 DO i = 1, nstep

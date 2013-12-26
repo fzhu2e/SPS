@@ -592,20 +592,24 @@ END SUBROUTINE open_lateral_u
 !=================================================
 
 !=================================================
-SUBROUTINE calc_tau(uGrid,wGrid)
+SUBROUTINE calc_tau_top(uGrid,wGrid)
 IMPLICIT NONE
 TYPE(grid), INTENT(INOUT) :: uGrid, wGrid
-REAL(kd), PARAMETER :: s = 1.0e4 ! (m)
+REAL(kd), PARAMETER :: s = 1.0e4 ! Thickness of Rayleigh Layer (m)
 REAL(kd), PARAMETER :: tau0 = 5.
 INTEGER :: i, k
 !-------------------------------------------------
 CALL set_area_u
 DO k = kmin, kmax
 	DO i = imin, imax
-		IF (uGrid%zz(i,k) < s ) THEN
+		IF (uGrid%zz(i,k) < ztop - s ) THEN
 			uGrid%tau(i,k) = 0.
 		ELSE
-			uGrid%tau(i,k) = tau0*((uGrid%zz(i,k) - s)/(ztop - s))**4
+			IF (uGrid%tau(i,k) /= undef) THEN
+				uGrid%tau(i,k) = MAX(tau0*((uGrid%zz(i,k) - (ztop - s))/s)**4,uGrid%tau(i,k))
+			ELSE
+				uGrid%tau(i,k) = tau0*((uGrid%zz(i,k) - (ztop - s))/s)**4
+			END IF
 		END IF
 	END DO
 END DO
@@ -613,10 +617,14 @@ END DO
 CALL set_area_w
 DO k = kmin, kmax
 	DO i = imin, imax
-		IF (wGrid%zz(i,k) < s ) THEN
+		IF (wGrid%zz(i,k) < ztop - s ) THEN
 			wGrid%tau(i,k) = 0.
 		ELSE
-			wGrid%tau(i,k) = tau0*((wGrid%zz(i,k) - s)/(ztop - s))**4
+			IF (wGrid%tau(i,k) /= undef) THEN
+				wGrid%tau(i,k) = MAX(tau0*((wGrid%zz(i,k) - (ztop - s))/s)**4,wGrid%tau(i,k))
+			ELSE
+				wGrid%tau(i,k) = tau0*((wGrid%zz(i,k) - (ztop - s))/s)**4
+			END IF
 		END IF
 	END DO
 END DO
@@ -624,7 +632,63 @@ END DO
 !CALL debug_ascii_output(uGrid%tau,"tau_u")
 !CALL debug_ascii_output(wGrid%tau,"tau_w")
 !CALL debug_SFSG
-END SUBROUTINE calc_tau
+END SUBROUTINE calc_tau_top
+!=================================================
+
+!=================================================
+SUBROUTINE calc_tau_lateral(uGrid,wGrid)
+IMPLICIT NONE
+TYPE(grid), INTENT(INOUT) :: uGrid, wGrid
+REAL(kd), PARAMETER :: s = 1.0e4 ! Thickness of Rayleigh Layer(m)
+REAL(kd), PARAMETER :: tau0 = 5.
+INTEGER :: i, k
+!-------------------------------------------------
+CALL set_area_u
+DO k = kmin, kmax
+	DO i = imin, imax
+		IF (uGrid%xx(i) <= s ) THEN
+			IF (uGrid%tau(i,k) /= undef) THEN
+				uGrid%tau(i,k) = MAX(tau0*((s - uGrid%xx(i))/s)**4,uGrid%tau(i,k))
+			ELSE
+				uGrid%tau(i,k) = tau0*((s - uGrid%xx(i))/s)**4
+			END IF
+		ELSE IF (uGrid%xx(i) >= nx*dx - s ) THEN
+			IF (uGrid%tau(i,k) /= undef) THEN
+				uGrid%tau(i,k) = MAX(tau0*((uGrid%xx(i) - (nx*dx - s))/s)**4,uGrid%tau(i,k))
+			ELSE
+				uGrid%tau(i,k) = tau0*((uGrid%xx(i) - (nx*dx - s))/s)**4
+			END IF
+		ELSE
+			uGrid%tau(i,k) = 0.
+		END IF
+	END DO
+END DO
+
+CALL set_area_w
+DO k = kmin, kmax
+	DO i = imin, imax
+		IF (wGrid%xx(i) <= s ) THEN
+			IF (wGrid%tau(i,k) /= undef) THEN
+				wGrid%tau(i,k) = MAX(tau0*((s - wGrid%xx(i))/s)**4,wGrid%tau(i,k))
+			ELSE
+				wGrid%tau(i,k) = tau0*((s - wGrid%xx(i))/s)**4
+			END IF
+		ELSE IF (wGrid%xx(i) >= nx*dx - s ) THEN
+			IF (wGrid%tau(i,k) /= undef) THEN
+				wGrid%tau(i,k) = MAX(tau0*((wGrid%xx(i) - (nx*dx - s))/s)**4,wGrid%tau(i,k))
+			ELSE
+				wGrid%tau(i,k) = tau0*((wGrid%xx(i) - (nx*dx - s))/s)**4
+			END IF
+		ELSE
+			wGrid%tau(i,k) = 0.
+		END IF
+	END DO
+END DO
+
+!CALL debug_ascii_output(uGrid%tau,"tau_u")
+!CALL debug_ascii_output(wGrid%tau,"tau_w")
+!CALL debug_SFSG
+END SUBROUTINE calc_tau_lateral
 !=================================================
 
 !=================================================

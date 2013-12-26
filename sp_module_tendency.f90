@@ -34,7 +34,7 @@ CALL calc_advection_u(Main%u,A_u,uGrid,wGrid,piGrid,virGrid)
 CALL ppx_u(Main%pi_1,Ppi_1Px_u)
 CALL ppzeta_u(Main%pi_1,Ppi_1Pzeta_u)
 
-IF (OpenUp == 2) THEN
+IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 	S_u = - uGrid%tau*Main%u
 ELSE
 	S_u = 0.
@@ -75,7 +75,7 @@ INTEGER :: i, k
 CALL calc_advection_w(Main%w,A_w,uGrid,wGrid,piGrid,virGrid)
 CALL ppzeta_w(Main%pi_1,Ppi_1Pzeta_w)
 
-IF (OpenUp == 2) THEN
+IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 	S_w = - wGrid%tau*Main%w
 ELSE
 	S_w = 0.
@@ -167,7 +167,7 @@ SELECT CASE (flag)
 CASE (0)
 	D_q = wGrid%Dtheta
 	M_q = wGrid%Mtheta
-	IF (OpenUp == 2) THEN
+	IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 		S_q = - wGrid%tau*(wGrid%theta - wGrid%theta_0)
 	ELSE
 		S_q = 0.
@@ -175,7 +175,7 @@ CASE (0)
 CASE (1)
 	D_q = wGrid%Dqv
 	M_q = wGrid%Mqv
-	IF (OpenUp == 2) THEN
+	IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 		S_q = - wGrid%tau*wGrid%qv
 	ELSE
 		S_q = 0.
@@ -183,7 +183,7 @@ CASE (1)
 CASE (2)
 	D_q = wGrid%Dqc
 	M_q = wGrid%Mqc
-	IF (OpenUp == 2) THEN
+	IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 		S_q = - wGrid%tau*wGrid%qc
 	ELSE
 		S_q = 0.
@@ -191,7 +191,7 @@ CASE (2)
 CASE (3)
 	D_q = wGrid%Dqr
 	M_q = wGrid%Mqr
-	IF (OpenUp == 2) THEN
+	IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 		S_q = - wGrid%tau*wGrid%qr
 	ELSE
 		S_q = 0.
@@ -199,7 +199,7 @@ CASE (3)
 CASE (4)
 	D_q = wGrid%Dqi
 	M_q = wGrid%Mqi
-	IF (OpenUp == 2) THEN
+	IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 		S_q = - wGrid%tau*wGrid%qi
 	ELSE
 		S_q = 0.
@@ -207,7 +207,7 @@ CASE (4)
 CASE (5)
 	D_q = wGrid%Dqs
 	M_q = wGrid%Mqs
-	IF (OpenUp == 2) THEN
+	IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 		S_q = - wGrid%tau*wGrid%qs
 	ELSE
 		S_q = 0.
@@ -215,7 +215,7 @@ CASE (5)
 CASE (6)
 	D_q = wGrid%Dqg
 	M_q = wGrid%Mqg
-	IF (OpenUp == 2) THEN
+	IF (OpenTop == 2 .OR. OpenLateral == 2) THEN
 		S_q = - wGrid%tau*wGrid%qg
 	ELSE
 		S_q = 0.

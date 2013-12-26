@@ -19,7 +19,8 @@ INTEGER, PARAMETER :: TimeScheme = 1       ! 1. Runge-Kutta;
 INTEGER, PARAMETER :: AdvectionScheme = 5  ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order;
 INTEGER, PARAMETER :: LateralBoundary = 2  ! 1. No-flux; 2. Periodic; 3. Open;
 INTEGER, PARAMETER :: UpperBoundary = 1    ! 1. No-flux;
-INTEGER, PARAMETER :: OpenUp = 2           ! 1. Not open; 2. Open
+INTEGER, PARAMETER :: OpenTop = 2          ! 1. Close; 2. Open
+INTEGER, PARAMETER :: OpenLateral = 1      ! 1. Close; 2. Open
 INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 
 !=================================================
@@ -158,7 +159,7 @@ REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
 REAL(kd), PARAMETER :: dz = 250.                       ! (m)
 
 !REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
-!INTEGER :: nstep = 18000
+!INTEGER :: nstep = 9000
 REAL(kd), PARAMETER :: dt = 0.3                               ! delta t (s)
 INTEGER :: nstep = 6000
 
