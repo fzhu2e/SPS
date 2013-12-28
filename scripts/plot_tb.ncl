@@ -26,6 +26,8 @@ nt = 101
 ;nt = 401
 ;nt = 1001
 var = "theta_M_1"
+;var = "theta_M"
+;var = "theta"
 ;var = "pi_1"
 ;var = "u"
 ;var = "w"
@@ -86,11 +88,11 @@ res@gsnSpreadColors = True
 res@gsnSpreadColorStart = 11    ; For theta
 res@gsnSpreadColorEnd = 60
 
-res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
-; For theta
-res@cnMinLevelValF          = 0.2
-res@cnMaxLevelValF          = 1.8
-res@cnLevelSpacingF         = 0.2
+;res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
+;; For theta
+;res@cnMinLevelValF          = 0.2
+;res@cnMaxLevelValF          = 1.8
+;res@cnLevelSpacingF         = 0.2
 
 ; For u & w
 ;res@cnMinLevelValF          = - 10

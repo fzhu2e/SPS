@@ -16,7 +16,8 @@ CONTAINS
 !=================================================
 ! Output the fields.
 !=================================================
-SUBROUTINE output(flag,u,w,pi_1,theta_M_1,theta_M,theta,qv,qc,qr,qi,qs,qg)
+SUBROUTINE output(flag,u,w,pi_1,theta_M_1,theta_M,theta, &
+                  qv,qc,qr,qi,qs,qg,rain,snow,graupel)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
@@ -27,6 +28,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_M_1
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_M
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: qv,qc,qr,qi,qs,qg
+REAL(kd), DIMENSION(ims:ime), INTENT(IN) :: rain, snow, graupel
 !=================================================
 SELECT CASE(flag)
 CASE (0)
@@ -65,6 +67,16 @@ CASE (0)
 
 	OPEN(12, FILE="./output/modelvar_qg.bin", FORM='binary', CONVERT='big_endian')
 	WRITE(12) qg
+
+	OPEN(13, FILE="./output/modelvar_rain.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(13) rain
+
+	OPEN(14, FILE="./output/modelvar_snow.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(14) snow
+
+	OPEN(15, FILE="./output/modelvar_graupel.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(15) graupel
+
 CASE (1)
 	WRITE(1) u
 	WRITE(2) w
@@ -78,6 +90,9 @@ CASE (1)
 	WRITE(10) qi
 	WRITE(11) qs
 	WRITE(12) qg
+	WRITE(13) rain
+	WRITE(14) snow
+	WRITE(15) graupel
 CASE (99)
 	CLOSE(1)
 	CLOSE(2)
@@ -91,6 +106,9 @@ CASE (99)
 	CLOSE(10)
 	CLOSE(11)
 	CLOSE(12)
+	CLOSE(13)
+	CLOSE(14)
+	CLOSE(15)
 CASE DEFAULT
 	WRITE(*,*) "==================================="
 	WRITE(*,*) " WARNING: Illegal flag of output."

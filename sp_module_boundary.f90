@@ -595,8 +595,6 @@ END SUBROUTINE open_lateral_u
 SUBROUTINE calc_tau_top(uGrid,wGrid)
 IMPLICIT NONE
 TYPE(grid), INTENT(INOUT) :: uGrid, wGrid
-REAL(kd), PARAMETER :: s = 1.0e4 ! Thickness of Rayleigh Layer (m)
-REAL(kd), PARAMETER :: tau0 = 5.
 INTEGER :: i, k
 !-------------------------------------------------
 CALL set_area_u
@@ -629,9 +627,6 @@ DO k = kmin, kmax
 	END DO
 END DO
 
-!CALL debug_ascii_output(uGrid%tau,"tau_u")
-!CALL debug_ascii_output(wGrid%tau,"tau_w")
-!CALL debug_SFSG
 END SUBROUTINE calc_tau_top
 !=================================================
 
@@ -639,8 +634,6 @@ END SUBROUTINE calc_tau_top
 SUBROUTINE calc_tau_lateral(uGrid,wGrid)
 IMPLICIT NONE
 TYPE(grid), INTENT(INOUT) :: uGrid, wGrid
-REAL(kd), PARAMETER :: s = 1.0e4 ! Thickness of Rayleigh Layer(m)
-REAL(kd), PARAMETER :: tau0 = 5.
 INTEGER :: i, k
 !-------------------------------------------------
 CALL set_area_u
@@ -685,9 +678,6 @@ DO k = kmin, kmax
 	END DO
 END DO
 
-!CALL debug_ascii_output(uGrid%tau,"tau_u")
-!CALL debug_ascii_output(wGrid%tau,"tau_w")
-!CALL debug_SFSG
 END SUBROUTINE calc_tau_lateral
 !=================================================
 

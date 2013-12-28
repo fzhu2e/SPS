@@ -48,14 +48,6 @@ WRITE(*,*)
 CALL initiate_grid(uGrid,wGrid,piGrid,virGrid)
 CALL initiate_terrain(uGrid,wGrid,piGrid,virGrid)
 CALL initiate_basic_state(uGrid,wGrid,piGrid,virGrid)
-IF (Vapor == 0) THEN
-	wGrid%qc = 0.
-	wGrid%qv = 0.
-	wGrid%qr = 0.
-	wGrid%qi = 0.
-	wGrid%qs = 0.
-	wGrid%qg = 0.
-END IF
 !-------------------------------------------------
 ! Initiate.
 !-------------------------------------------------
@@ -79,6 +71,21 @@ CASE (6)
 CASE DEFAULT
 	STOP "Wrong ideal case!!!"
 END SELECT
+IF (Vapor == 0) THEN
+	wGrid%qv = 0.
+END IF
+wGrid%qc = 0.
+wGrid%qr = 0.
+wGrid%qi = 0.
+wGrid%qs = 0.
+wGrid%qg = 0.
+wGrid%rain = 0.
+wGrid%rainncv = 0.
+wGrid%sr = 0.
+wGrid%snow = 0.
+wGrid%snowncv = 0.
+wGrid%graupel = 0.
+wGrid%graupelncv = 0.
 
 CALL update_boundary(uGrid%u,wGrid%w,wGrid,piGrid%pi_1,wGrid%theta,                   &
                      wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,           &
@@ -92,7 +99,8 @@ uGrid%theta_M_0 = uGrid%theta_0
 CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 
 CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
-              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg      )
+              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
+              wGrid%rain,wGrid%snow,wGrid%graupel     )
 !=================================================
 ! Integrate.
 !-------------------------------------------------
@@ -116,20 +124,24 @@ DO i = 1, nstep
 	CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 	IF (MOD(i,100) == 0.) THEN
 		CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
-		              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg      )
+		              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
+                      wGrid%rain,wGrid%snow,wGrid%graupel     )
 	END IF
 	
 	CALL SYSTEM_CLOCK(t_end)
 	t_lapse = REAL(t_end - t_start)/REAL(rate)
-	t_left = t_lapse*(nstep - i)/60./60.  ! unit: hour
+	!t_left = t_lapse*(nstep - i)/60./60.  ! unit: hour
+	t_left = t_lapse*(nstep - i)/60.  ! unit: minute
 	t_all = t_all + t_lapse
-	WRITE(*,"('Step/nStep -- time lapse/left: ',2X,I6,'/ ',I6,' --',F12.6,' sec/',1X,F6.3,' hr')") , i, nstep, t_lapse, t_left
+	!WRITE(*,"('Step/nStep -- time lapse/left: ',2X,I6,'/ ',I6,' --',F12.6,' sec/',1X,F6.3,' hr')") , i, nstep, t_lapse, t_left
+	WRITE(*,"('Step/nStep -- time lapse/left: ',2X,I6,'/ ',I6,' --',F12.6,' sec/',1X,F6.3,' min')") , i, nstep, t_lapse, t_left
 END DO
 !=================================================
 ! Finish.
 !-------------------------------------------------
 CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
-               wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg      )
+               wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
+               wGrid%rain,wGrid%snow,wGrid%graupel     )
 WRITE(*,*)
 WRITE(*,*) "====================="
 WRITE(*,*) " Finish!!!"
@@ -147,7 +159,8 @@ WRITE(*,*) " UpperBoundary:   ", UpperBoundary
 WRITE(*,*) "---------------------"
 WRITE(*,*) " Km/Kh: ", Km, Kh
 WRITE(*,*) "---------------------"
-WRITE(*,*) " TIME: ", t_all/60./60., "hr"
+!WRITE(*,*) " TIME: ", t_all/60./60., "hr"
+WRITE(*,*) " TIME: ", t_all/60., "min"
 WRITE(*,*) "====================="
 WRITE(*,*)
 !-------------------------------------------------

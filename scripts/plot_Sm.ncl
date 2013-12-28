@@ -17,18 +17,19 @@ nz = 100
 ;nt = 3
 ;nt = 2
 ;nt = 5
+;nt = 10
 ;nt = 20
-;nt = 65
+nt = 65
 ;nt = 91
-nt = 101
+;nt = 101
 ;nt = 141
 ;nt = 301
 ;nt = 401
 ;nt = 1001
 ;var = "theta_1"
 ;var = "pi_1"
-;var = "u"
-var = "w"
+var = "u"
+;var = "w"
 halo = 4
 ;=================================
 ; Read data.
@@ -81,10 +82,10 @@ res@gsnSpreadColors = True
 res@gsnSpreadColorStart = 11
 res@gsnSpreadColorEnd = 60
 
-res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
+;res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
 ;res@cnMinLevelValF          = -2
 ;res@cnMaxLevelValF          = 2
-res@cnLevelSpacingF         = 0.2
+;res@cnLevelSpacingF         = 0.2
 ;res@cnMinLevelValF          = 0.10
 ;res@cnMaxLevelValF          = 0.20
 ;res@cnLevelSpacingF         = 0.001

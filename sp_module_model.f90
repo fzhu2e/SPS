@@ -23,6 +23,8 @@ INTEGER, PARAMETER :: OpenTop = 2          ! 1. Close; 2. Open
 INTEGER, PARAMETER :: OpenLateral = 1      ! 1. Close; 2. Open
 INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 
+REAL(kd), PARAMETER :: s = 1.0e4 ! Thickness of Rayleigh Layer (m)
+REAL(kd), PARAMETER :: tau0 = 2
 !=================================================
 !-------------------------------------------------
 ! 1. Density current.
@@ -56,7 +58,7 @@ INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 ! 2. Thermal bubble.
 !-------------------------------------------------
 !INTEGER, PARAMETER :: RunCase = 2         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-!INTEGER, PARAMETER :: Vapor = 1
+!INTEGER, PARAMETER :: Vapor = 0
 
 !INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
@@ -90,8 +92,8 @@ INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 !!REAL(kd), PARAMETER :: dx = 500.                        ! delta x (m)
 !!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
 
-!INTEGER, PARAMETER :: nx = 301                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 101                               ! grid number along z-axis
+!INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
 !REAL(kd), PARAMETER :: dx = 1000.                        ! delta x (m)
 !REAL(kd), PARAMETER :: dz = 100.                       ! (m)
 
@@ -152,7 +154,7 @@ INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 INTEGER, PARAMETER :: RunCase = 6
 INTEGER, PARAMETER :: Vapor = 1
 
-INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
+INTEGER, PARAMETER :: nx = 201                              ! grid number along x-axis
 INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
 !INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
 REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)

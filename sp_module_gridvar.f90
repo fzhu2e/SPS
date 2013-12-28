@@ -42,6 +42,9 @@ TYPE, EXTENDS(mainvar) :: grid
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: G = undef
 	REAL(kd), DIMENSION(ims:ime) :: H = undef
 
+	REAL(kd), DIMENSION(ims:ime) :: rain = undef, rainncv = undef, sr = undef
+	REAL(kd), DIMENSION(ims:ime) :: snow = undef, snowncv = undef, graupel = undef, graupelncv = undef
+
 !=================================================
 ! Sponge Layer
 !-------------------------------------------------

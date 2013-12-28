@@ -38,6 +38,7 @@ CALL w2vir(Main%w,virGrid%w)
 CALL pi2vir(Main%pi_1,virGrid%pi_1)
 
 CALL w2u(wGrid%theta_M,uGrid%theta_M)
+CALL w2pi(wGrid%theta_M,piGrid%theta_M)
 
 !CALL w2pi(Main%theta,piGrid%theta)
 
@@ -72,6 +73,7 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
 CALL w2pi(wGrid%theta_v,piGrid%theta_v)
 wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc - wGrid%qi)
+CALL w2pi(wGrid%theta_M,piGrid%theta_M)
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
 
 piGrid%pi = piGrid%pi_1 + piGrid%pi_0

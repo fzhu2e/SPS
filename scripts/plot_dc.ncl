@@ -49,6 +49,8 @@ nt = 91
 ;nt = 1
 ;nt = 1501
 var = "theta_M_1"
+;var = "theta_M"
+;var = "theta"
 ;var = "pi_1"
 ;var = "u"
 ;var = "w"
@@ -60,7 +62,6 @@ setfileoption ("bin", "ReadByteOrder", "BigEndian")
 ;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
 data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz+2*halo,nx+2*halo/),"double")
 ;print(data)
-pi_data = (data(:,0:nz-2,:) + data(:,1:nz-1,:))/2.
 ;=================================
 ; Plot.
 ;---------------------------------
