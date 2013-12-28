@@ -86,6 +86,13 @@ wGrid%snow = 0.
 wGrid%snowncv = 0.
 wGrid%graupel = 0.
 wGrid%graupelncv = 0.
+wGrid%Mtheta = 0.
+wGrid%Mqv = 0.
+wGrid%Mqc = 0.
+wGrid%Mqr = 0.
+wGrid%Mqi = 0.
+wGrid%Mqs = 0.
+wGrid%Mqg = 0.
 
 CALL update_boundary(uGrid%u,wGrid%w,wGrid,piGrid%pi_1,wGrid%theta,                   &
                      wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,           &
@@ -118,7 +125,7 @@ CALL wsm6init(rhoair0,rhowater,rhosnow,cliq,cpv)
 t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
-	CALL integrate(uGrid,wGrid,piGrid,virGrid) ! main integrate module
+	CALL integrate(i,uGrid,wGrid,piGrid,virGrid) ! main integrate module
 	CALL update_boundary(uGrid%u,wGrid%w,wGrid,piGrid%pi_1,wGrid%theta,       &
 	                     wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg)
 	CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)

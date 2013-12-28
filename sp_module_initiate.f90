@@ -564,7 +564,6 @@ ELSE IF (RunCase /= 1 .AND. RunCase /= 2) THEN
 		uGrid%theta_0 = piGrid%theta_0
 		virGrid%pi_0 = wGrid%pi_0
 		uGrid%pi_0 = piGrid%pi_0
-
 	END IF
 
 ELSE
