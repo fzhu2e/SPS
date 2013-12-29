@@ -74,25 +74,31 @@ END SELECT
 IF (Vapor == 0) THEN
 	wGrid%qv = 0.
 END IF
-wGrid%qc = 0.
-wGrid%qr = 0.
-wGrid%qi = 0.
-wGrid%qs = 0.
-wGrid%qg = 0.
-wGrid%rain = 0.
-wGrid%rainncv = 0.
-wGrid%sr = 0.
-wGrid%snow = 0.
-wGrid%snowncv = 0.
-wGrid%graupel = 0.
-wGrid%graupelncv = 0.
-wGrid%Mtheta = 0.
-wGrid%Mqv = 0.
-wGrid%Mqc = 0.
-wGrid%Mqr = 0.
-wGrid%Mqi = 0.
-wGrid%Mqs = 0.
-wGrid%Mqg = 0.
+
+CALL set_area_w
+DO k = kmin, kmax
+	DO i = imin, imax
+		wGrid%qc = 0.
+		wGrid%qr = 0.
+		wGrid%qi = 0.
+		wGrid%qs = 0.
+		wGrid%qg = 0.
+		wGrid%rain = 0.
+		wGrid%rainncv = 0.
+		wGrid%sr = 0.
+		wGrid%snow = 0.
+		wGrid%snowncv = 0.
+		wGrid%graupel = 0.
+		wGrid%graupelncv = 0.
+		wGrid%Mtheta = 0.
+		wGrid%Mqv = 0.
+		wGrid%Mqc = 0.
+		wGrid%Mqr = 0.
+		wGrid%Mqi = 0.
+		wGrid%Mqs = 0.
+		wGrid%Mqg = 0.
+	END DO
+END DO
 
 CALL update_boundary(uGrid%u,wGrid%w,wGrid,piGrid%pi_1,wGrid%theta,                   &
                      wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,           &
@@ -104,6 +110,27 @@ piGrid%theta_M_0 = piGrid%theta_0
 uGrid%theta_M_0 = uGrid%theta_0
 
 CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
+
+!=================================================
+! Adjust pi_1
+!-------------------------------------------------
+CALL set_area_w
+wGrid%pi(imin:imax,kmax) = wGrid%pi_0(imin:imax,kmax)
+DO k = kmax-1, kmin, -1
+	DO i = imin, imax
+		wGrid%pi(i,k) = wGrid%pi(i,k+1) + g*dz/Cp/wGrid%theta(i,k)
+	END DO
+END DO
+
+CALL set_area_pi
+DO k = kmin, kmax
+	DO i = imin, imax
+		piGrid%pi(i,k) = (wGrid%pi(i,k) + wGrid%pi(i,k+1))/2.
+		piGrid%pi_1(i,k) = piGrid%pi(i,k) - piGrid%pi_0(i,k)
+	END DO
+END DO
+CALL update_boundary(pi_1=piGrid%pi_1,wGrid=wGrid)
+!=================================================
 
 CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
               wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &

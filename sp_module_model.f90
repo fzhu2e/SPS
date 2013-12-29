@@ -23,9 +23,10 @@ INTEGER, PARAMETER :: OpenTop = 2          ! 1. Close; 2. Open
 INTEGER, PARAMETER :: OpenLateral = 1      ! 1. Close; 2. Open
 INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 
-REAL(kd), PARAMETER :: s = 1.0e4 ! Thickness of Rayleigh Layer (m)
+REAL(kd), PARAMETER :: s = 1.00e4 ! Thickness of Rayleigh Layer (m)
 !REAL(kd), PARAMETER :: tau0 = 0.5
 REAL(kd), PARAMETER :: tau0 = 1.0
+!REAL(kd), PARAMETER :: tau0 = 5.0
 !=================================================
 !-------------------------------------------------
 ! 1. Density current.
@@ -164,7 +165,7 @@ REAL(kd), PARAMETER :: dz = 250.                       ! (m)
 !REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
 !INTEGER :: nstep = 9000
 REAL(kd), PARAMETER :: dt = 0.3                               ! delta t (s)
-INTEGER :: nstep = 6000
+INTEGER :: nstep = 12000
 
 REAL(kd) :: Km = 0.        !(m s)
 REAL(kd) :: Kh = 0.        !(K s)

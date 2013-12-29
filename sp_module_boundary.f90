@@ -22,7 +22,7 @@ SUBROUTINE update_boundary(u, w, wGrid, pi_1, theta,                       &
                            rho_0_pi, rho_0_u, rho_0_w, rho_0_vir,          &
                            theta_0_w, pi_0_pi)
 IMPLICIT NONE
-TYPE(grid), INTENT(IN) :: wGrid
+TYPE(grid), INTENT(IN), OPTIONAL :: wGrid
 !-------------------------------------------------
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(INOUT), OPTIONAL :: w        ! wind speed along z-axis
