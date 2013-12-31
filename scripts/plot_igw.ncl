@@ -5,10 +5,10 @@ begin
 ;=================================
 ; Settings.
 ;---------------------------------
-;nx = 600
+;nx = 601
 ;nz = 200
 
-nx = 300
+nx = 301
 nz = 100
 
 ;nx = 150
@@ -23,22 +23,22 @@ nz = 100
 ;nt = 10
 ;nt = 11
 ;nt = 16
-;nt = 31
+;nt = 41
 ;nt = 65
 ;nt = 83
 ;nt = 101
 ;nt = 188
-;nt = 161
+nt = 151
 ;nt = 201
-nt = 301
+;nt = 301
 ;nt = 311
 ;nt = 401
 ;nt = 1001
-var = "theta_M_1"
+;var = "theta_M_1"
 ;var = "theta"
 ;var = "pi_1"
 ;var = "u"
-;var = "w"
+var = "w"
 halo = 4
 ;=================================
 ;Read data.
@@ -123,7 +123,7 @@ res@tiMainFontHeightF  = 0.015                    ; change font heights
 ;res@tiYAxisFontHeightF  = 0.015                    ; change font heights
 
 ;res@gsnLeftString   = "dx = 500m; dz = 50m; dt = 0.1s"               ; add the gsn titles
-res@gsnLeftString   = "dx = 1000m; dz = 100m; dt = 0.1s"               ; add the gsn titles
+res@gsnLeftString   = "dx = 1000m; dz = 100m; dt = 0.2s"               ; add the gsn titles
 ;res@gsnLeftString   = "dx = 2500m; dz = 250m; dt = 0.1s"               ; add the gsn titles
 res@gsnLeftStringFontHeightF   = 0.015
 

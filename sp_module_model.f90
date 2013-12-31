@@ -17,9 +17,9 @@ IMPLICIT NONE
 !-------------------------------------------------
 INTEGER, PARAMETER :: TimeScheme = 1       ! 1. Runge-Kutta;
 INTEGER, PARAMETER :: AdvectionScheme = 5  ! 2. 2-order; 3. 3-order; 4. 4-order; 5. 5-order; 6. 6-order;
-INTEGER, PARAMETER :: LateralBoundary = 2  ! 1. No-flux; 2. Periodic; 3. Open;
+INTEGER, PARAMETER :: LateralBoundary = 1  ! 1. No-flux; 2. Periodic; 3. Open;
 INTEGER, PARAMETER :: UpperBoundary = 1    ! 1. No-flux;
-INTEGER, PARAMETER :: OpenTop = 2          ! 1. Close; 2. Open
+INTEGER, PARAMETER :: OpenTop = 1          ! 1. Close; 2. Open
 INTEGER, PARAMETER :: OpenLateral = 1      ! 1. Close; 2. Open
 INTEGER, PARAMETER :: VertCoords = 1       ! 1. Height;
 
@@ -31,30 +31,30 @@ REAL(kd), PARAMETER :: tau0 = 1.0
 !-------------------------------------------------
 ! 1. Density current.
 !-------------------------------------------------
-!INTEGER, PARAMETER :: RunCase = 1         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
-!INTEGER, PARAMETER :: Vapor = 0
+INTEGER, PARAMETER :: RunCase = 1         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
+INTEGER, PARAMETER :: Vapor = 0
 
 !INTEGER, PARAMETER :: nx = 512                              ! grid number along x-axis
 !INTEGER, PARAMETER :: nz = 64                               ! grid number along z-axis
 !REAL(kd), PARAMETER :: dx = 100.                        ! delta x (m)
 !REAL(kd), PARAMETER :: dz = 100.                       ! (m)
 
-!!INTEGER, PARAMETER :: nx = 1024                              ! grid number along x-axis
-!!INTEGER, PARAMETER :: nz = 128                               ! grid number along z-axis
-!!REAL(kd), PARAMETER :: dx = 50.                        ! delta x (m)
-!!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
+INTEGER, PARAMETER :: nx = 1061                              ! grid number along x-axis
+INTEGER, PARAMETER :: nz = 128                               ! grid number along z-axis
+REAL(kd), PARAMETER :: dx = 50.                        ! delta x (m)
+REAL(kd), PARAMETER :: dz = 50.                       ! (m)
 
-!!INTEGER, PARAMETER :: nx = 2048                              ! grid number along x-axis
-!!INTEGER, PARAMETER :: nz = 256                               ! grid number along z-axis
-!!REAL(kd), PARAMETER :: dx = 25.                        ! delta x (m)
-!!REAL(kd), PARAMETER :: dz = 25.                       ! (m)
+!INTEGER, PARAMETER :: nx = 2048                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 256                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 25.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 25.                       ! (m)
 
-!REAL(kd), PARAMETER :: dt = 0.1                               ! delta t (s)
-!INTEGER :: nstep = 9000
-!!INTEGER :: nstep = 10000
+REAL(kd), PARAMETER :: dt = 0.1                               ! delta t (s)
+INTEGER :: nstep = 9000
+!INTEGER :: nstep = 10000
 
-!REAL(kd) :: Km = 75.        ! (m s)
-!REAL(kd) :: Kh = 75.        ! (K s)
+REAL(kd) :: Km = 75.        ! (m s)
+REAL(kd) :: Kh = 75.        ! (K s)
 
 !-------------------------------------------------
 ! 2. Thermal bubble.
@@ -62,21 +62,21 @@ REAL(kd), PARAMETER :: tau0 = 1.0
 !INTEGER, PARAMETER :: RunCase = 2         ! 1. Density Current; 2. Thermal Bubble; 3. Internal gravity waves
 !INTEGER, PARAMETER :: Vapor = 0
 
-!INTEGER, PARAMETER :: nx = 200                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-!REAL(kd), PARAMETER :: dx = 100.                        ! delta x (m)
-!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 201                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!!REAL(kd), PARAMETER :: dx = 100.                        ! delta x (m)
+!!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
 
-!!INTEGER, PARAMETER :: nx = 400                              ! grid number along x-axis
-!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!!REAL(kd), PARAMETER :: dx = 50.                        ! delta x (m)
-!!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: nx = 401                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 50.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
 
 !REAL(kd), PARAMETER :: dt = 0.1                               ! delta t (s)
 !INTEGER :: nstep = 10000
 
-!REAL(kd) :: Km = 20.        !(m s)
-!REAL(kd) :: Kh = 20.        !(K s)
+!REAL(kd) :: Km = 0.        !(m s)
+!REAL(kd) :: Kh = 0.        !(K s)
 
 !-------------------------------------------------
 ! 3. Inertia gravity waves.
@@ -89,15 +89,15 @@ REAL(kd), PARAMETER :: tau0 = 1.0
 !!REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
 !!REAL(kd), PARAMETER :: dz = 25.                       ! (m)
 
-!!INTEGER, PARAMETER :: nx = 600                              ! grid number along x-axis
-!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-!!REAL(kd), PARAMETER :: dx = 500.                        ! delta x (m)
-!!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
+!INTEGER, PARAMETER :: nx = 601                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 500.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 50.                       ! (m)
 
-!INTEGER, PARAMETER :: nx = 300                              ! grid number along x-axis
-!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
-!REAL(kd), PARAMETER :: dx = 1000.                        ! delta x (m)
-!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
+!!INTEGER, PARAMETER :: nx = 301                              ! grid number along x-axis
+!!INTEGER, PARAMETER :: nz = 100                               ! grid number along z-axis
+!!REAL(kd), PARAMETER :: dx = 1000.                        ! delta x (m)
+!!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
 
 !!INTEGER, PARAMETER :: nx = 150                              ! grid number along x-axis
 !!INTEGER, PARAMETER :: nz = 50                               ! grid number along z-axis
@@ -106,6 +106,8 @@ REAL(kd), PARAMETER :: tau0 = 1.0
 
 !REAL(kd), PARAMETER :: dt = 0.1                               ! delta t (s)
 !INTEGER :: nstep = 30000
+!!REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
+!!INTEGER :: nstep = 15000
 
 !REAL :: Km = 0., Kh = 0.
 !-------------------------------------------------
@@ -153,22 +155,22 @@ REAL(kd), PARAMETER :: tau0 = 1.0
 !-------------------------------------------------
 ! 6. Thunderstorm
 !-------------------------------------------------
-INTEGER, PARAMETER :: RunCase = 6
-INTEGER, PARAMETER :: Vapor = 1
+!INTEGER, PARAMETER :: RunCase = 6
+!INTEGER, PARAMETER :: Vapor = 1
 
-INTEGER, PARAMETER :: nx = 201                              ! grid number along x-axis
-INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
-!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
-REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
-REAL(kd), PARAMETER :: dz = 250.                       ! (m)
+!INTEGER, PARAMETER :: nx = 201                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
+!!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 250.                       ! (m)
 
-!REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
-!INTEGER :: nstep = 9000
-REAL(kd), PARAMETER :: dt = 0.3                               ! delta t (s)
-INTEGER :: nstep = 12000
+!!REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
+!!INTEGER :: nstep = 9000
+!REAL(kd), PARAMETER :: dt = 0.3                               ! delta t (s)
+!INTEGER :: nstep = 12000
 
-REAL(kd) :: Km = 0.        !(m s)
-REAL(kd) :: Kh = 0.        !(K s)
+!REAL(kd) :: Km = 0.        !(m s)
+!REAL(kd) :: Kh = 0.        !(K s)
 
 !=================================================
 INTEGER, PARAMETER :: its = 1

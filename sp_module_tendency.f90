@@ -132,7 +132,7 @@ CALL set_area_pi
 DO k = kmin, kmax
 	DO i = imin, imax
 		temp = PuPx_pi(i,k) + piGrid%G(i,k)*PuPzeta_pi(i,k) + piGrid%H(i)*PwPzeta_pi(i,k)
-		!Div_pi_1(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*temp
+		!Div_pi(i,k) = - cs*cs/Cp/piGrid%theta_M_0(i,k)*temp
 		Div_pi(i,k) = - Rd*pi(i,k)/Cv*temp
 
 		temp = (piGrid%Mtheta(i,k) + piGrid%Dtheta(i,k))*(1. + 0.61*piGrid%qv(i,k)) + (0.61*piGrid%theta(i,k)*(piGrid%Mqv(i,k) + piGrid%Dqv(i,k)))

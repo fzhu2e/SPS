@@ -30,42 +30,74 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_pi
 CALL set_area_expand(expand)
-!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-DO k = kmin, kmax
-	DO i = imin, imax
-		rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
-		fa = var_u(i-1,k) + var_u(i,k)
-		fb = var_u(i-2,k) + var_u(i+1,k)
-		fc = var_u(i-3,k) + var_u(i+2,k)
-		rhouvar_pi(i,k) = rhou_pi(i,k)/60.*(37*fa - 8*fb + fc)
-		fd = - var_u(i-1,k) + var_u(i,k)
-		fe = - var_u(i-2,k) + var_u(i+1,k)
-		ff = - var_u(i-3,k) + var_u(i+2,k)
-		rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+SELECT CASE (AdvectionScheme)
+CASE(2)
+	!$OMP PARALLEL DO PRIVATE(fa)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+			fa = var_u(i-1,k) + var_u(i,k)
+			rhouvar_pi(i,k) = rhou_pi(i,k)*fa/2.
+		END DO
 	END DO
-END DO
-!$OMP END PARALLEL DO
+	!$OMP END PARALLEL DO
+CASE(5)
+	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+			fa = var_u(i-1,k) + var_u(i,k)
+			fb = var_u(i-2,k) + var_u(i+1,k)
+			fc = var_u(i-3,k) + var_u(i+2,k)
+			rhouvar_pi(i,k) = rhou_pi(i,k)/60.*(37*fa - 8*fb + fc)
+			fd = - var_u(i-1,k) + var_u(i,k)
+			fe = - var_u(i-2,k) + var_u(i+1,k)
+			ff = - var_u(i-3,k) + var_u(i+2,k)
+			rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+		END DO
+	END DO
+	!$OMP END PARALLEL DO
+CASE DEFAULT
+	STOP "Wrong AdvectionScheme!!!"
+END SELECT
 
 CALL set_area_vir
 CALL set_area_expand(expand)
-!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-DO k = kmin, kmax
-	DO i = imin, imax
-		rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
-		rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
-		fa = var_u(i,k-1) + var_u(i,k)
-		fb = var_u(i,k-2) + var_u(i,k+1)
-		fc = var_u(i,k-3) + var_u(i,k+2)
-		rhouvar_vir(i,k) = rhou_vir(i,k)/60.*(37*fa - 8*fb + fc)
-		rhowvar_vir(i,k) = rhow_vir(i,k)/60.*(37*fa - 8*fb + fc)
-		fd = - var_u(i,k-1) + var_u(i,k)
-		fe = - var_u(i,k-2) + var_u(i,k+1)
-		ff = - var_u(i,k-3) + var_u(i,k+2)
-		rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
-		rhowvar_vir(i,k) = rhowvar_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+SELECT CASE (AdvectionScheme)
+CASE(2)
+	!$OMP PARALLEL DO PRIVATE(fa)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+			rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
+			fa = var_u(i,k-1) + var_u(i,k)
+			rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
+			rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+		END DO
 	END DO
-END DO
-!$OMP END PARALLEL DO
+	!$OMP END PARALLEL DO
+CASE(5)
+	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+			rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
+			fa = var_u(i,k-1) + var_u(i,k)
+			fb = var_u(i,k-2) + var_u(i,k+1)
+			fc = var_u(i,k-3) + var_u(i,k+2)
+			rhouvar_vir(i,k) = rhou_vir(i,k)/60.*(37*fa - 8*fb + fc)
+			rhowvar_vir(i,k) = rhow_vir(i,k)/60.*(37*fa - 8*fb + fc)
+			fd = - var_u(i,k-1) + var_u(i,k)
+			fe = - var_u(i,k-2) + var_u(i,k+1)
+			ff = - var_u(i,k-3) + var_u(i,k+2)
+			rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+			rhowvar_vir(i,k) = rhowvar_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+		END DO
+	END DO
+	!$OMP END PARALLEL DO
+CASE DEFAULT
+	STOP "Wrong AdvectionScheme!!!"
+END SELECT
 
 CALL ppx_u(rhou_pi,PrhouPx_u)
 CALL ppx_u(rhouvar_pi,PrhouvarPx_u)
@@ -113,42 +145,74 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_vir
 CALL set_area_expand(expand)
-!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-DO k = kmin, kmax
-	DO i = imin, imax
-		rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
-		fa = var_w(i,k) + var_w(i+1,k)
-		fb = var_w(i-1,k) + var_w(i+2,k)
-		fc = var_w(i-2,k) + var_w(i+3,k)
-		rhouvar_vir(i,k) = rhou_vir(i,k)/60.*(37*fa - 8*fb + fc)
-		fd = - var_w(i,k) + var_w(i+1,k)
-		fe = - var_w(i-1,k) + var_w(i+2,k)
-		ff = - var_w(i-2,k) + var_w(i+3,k)
-		rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+SELECT CASE (AdvectionScheme)
+CASE(2)
+	!$OMP PARALLEL DO PRIVATE(fa)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+			fa = var_w(i,k) + var_w(i+1,k)
+			rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
+		END DO
 	END DO
-END DO
-!$OMP END PARALLEL DO
+	!$OMP END PARALLEL DO
+CASE(5)
+	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+			fa = var_w(i,k) + var_w(i+1,k)
+			fb = var_w(i-1,k) + var_w(i+2,k)
+			fc = var_w(i-2,k) + var_w(i+3,k)
+			rhouvar_vir(i,k) = rhou_vir(i,k)/60.*(37*fa - 8*fb + fc)
+			fd = - var_w(i,k) + var_w(i+1,k)
+			fe = - var_w(i-1,k) + var_w(i+2,k)
+			ff = - var_w(i-2,k) + var_w(i+3,k)
+			rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+		END DO
+	END DO
+	!$OMP END PARALLEL DO
+CASE DEFAULT
+	STOP "Wrong AdvectionScheme!!!"
+END SELECT
 
 CALL set_area_pi
 CALL set_area_expand(expand)
-!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-DO k = kmin, kmax
-	DO i = imin, imax
-		rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
-		rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
-		fa = var_w(i,k) + var_w(i,k+1)
-		fb = var_w(i,k-1) + var_w(i,k+2)
-		fc = var_w(i,k-2) + var_w(i,k+3)
-		rhouvar_pi(i,k) = rhou_pi(i,k)/60.*(37*fa - 8*fb + fc)
-		rhowvar_pi(i,k) = rhow_pi(i,k)/60.*(37*fa - 8*fb + fc)
-		fd = - var_w(i,k) + var_w(i,k+1)
-		fe = - var_w(i,k-1) + var_w(i,k+2)
-		ff = - var_w(i,k-2) + var_w(i,k+3)
-		rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
-		rhowvar_pi(i,k) = rhowvar_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+SELECT CASE (AdvectionScheme)
+CASE(2)
+	!$OMP PARALLEL DO PRIVATE(fa)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+			rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
+			fa = var_w(i,k) + var_w(i,k+1)
+			rhouvar_pi(i,k) = rhou_pi(i,k)*fa/2.
+			rhowvar_pi(i,k) = rhow_pi(i,k)*fa/2.
+		END DO
 	END DO
-END DO
-!$OMP END PARALLEL DO
+	!$OMP END PARALLEL DO
+CASE(5)
+	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+			rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
+			fa = var_w(i,k) + var_w(i,k+1)
+			fb = var_w(i,k-1) + var_w(i,k+2)
+			fc = var_w(i,k-2) + var_w(i,k+3)
+			rhouvar_pi(i,k) = rhou_pi(i,k)/60.*(37*fa - 8*fb + fc)
+			rhowvar_pi(i,k) = rhow_pi(i,k)/60.*(37*fa - 8*fb + fc)
+			fd = - var_w(i,k) + var_w(i,k+1)
+			fe = - var_w(i,k-1) + var_w(i,k+2)
+			ff = - var_w(i,k-2) + var_w(i,k+3)
+			rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+			rhowvar_pi(i,k) = rhowvar_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+		END DO
+	END DO
+	!$OMP END PARALLEL DO
+CASE DEFAULT
+	STOP "Wrong AdvectionScheme!!!"
+END SELECT
 
 CALL ppx_w(rhou_vir,PrhouPx_w)
 CALL ppx_w(rhouvar_vir,PrhouvarPx_w)
@@ -196,42 +260,74 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_u
 CALL set_area_expand(expand)
-!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-DO k = kmin, kmax
-	DO i = imin, imax
-		rhou_u(i,k) = uGrid%rho_0(i,k)*uGrid%u(i,k)
-		fa = var_pi(i,k) + var_pi(i+1,k)
-		fb = var_pi(i-1,k) + var_pi(i+2,k)
-		fc = var_pi(i-2,k) + var_pi(i+3,k)
-		rhouvar_u(i,k) = rhou_u(i,k)/60.*(37*fa - 8*fb + fc)
-		fd = - var_pi(i,k) + var_pi(i+1,k)
-		fe = - var_pi(i-1,k) + var_pi(i+2,k)
-		ff = - var_pi(i-2,k) + var_pi(i+3,k)
-		rhouvar_u(i,k) = rhouvar_u(i,k) - ABS(uGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+SELECT CASE (AdvectionScheme)
+CASE(2)
+	!$OMP PARALLEL DO PRIVATE(fa)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_u(i,k) = uGrid%rho_0(i,k)*uGrid%u(i,k)
+			fa = var_pi(i,k) + var_pi(i+1,k)
+			rhouvar_u(i,k) = rhou_u(i,k)*fa/2.
+		END DO
 	END DO
-END DO
-!$OMP END PARALLEL DO
+	!$OMP END PARALLEL DO
+CASE(5)
+	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_u(i,k) = uGrid%rho_0(i,k)*uGrid%u(i,k)
+			fa = var_pi(i,k) + var_pi(i+1,k)
+			fb = var_pi(i-1,k) + var_pi(i+2,k)
+			fc = var_pi(i-2,k) + var_pi(i+3,k)
+			rhouvar_u(i,k) = rhou_u(i,k)/60.*(37*fa - 8*fb + fc)
+			fd = - var_pi(i,k) + var_pi(i+1,k)
+			fe = - var_pi(i-1,k) + var_pi(i+2,k)
+			ff = - var_pi(i-2,k) + var_pi(i+3,k)
+			rhouvar_u(i,k) = rhouvar_u(i,k) - ABS(uGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+		END DO
+	END DO
+	!$OMP END PARALLEL DO
+CASE DEFAULT
+	STOP "Wrong AdvectionScheme!!!"
+END SELECT
 
 CALL set_area_w
 CALL set_area_expand(expand)
-!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-DO k = kmin, kmax
-	DO i = imin, imax
-		rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
-		rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
-		fa = var_pi(i,k-1) + var_pi(i,k)
-		fb = var_pi(i,k-2) + var_pi(i,k+1)
-		fc = var_pi(i,k-3) + var_pi(i,k+2)
-		rhouvar_w(i,k) = rhou_w(i,k)/60.*(37*fa - 8*fb + fc)
-		rhowvar_w(i,k) = rhow_w(i,k)/60.*(37*fa - 8*fb + fc)
-		fd = - var_pi(i,k-1) + var_pi(i,k)
-		fe = - var_pi(i,k-2) + var_pi(i,k+1)
-		ff = - var_pi(i,k-3) + var_pi(i,k+2)
-		rhouvar_w(i,k) = rhouvar_w(i,k) - ABS(wGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
-		rhowvar_w(i,k) = rhowvar_w(i,k) - ABS(wGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+SELECT CASE (AdvectionScheme)
+CASE(2)
+	!$OMP PARALLEL DO PRIVATE(fa)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
+			rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
+			fa = var_pi(i,k-1) + var_pi(i,k)
+			rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
+			rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+		END DO
 	END DO
-END DO
-!$OMP END PARALLEL DO
+	!$OMP END PARALLEL DO
+CASE(5)
+	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+	DO k = kmin, kmax
+		DO i = imin, imax
+			rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
+			rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
+			fa = var_pi(i,k-1) + var_pi(i,k)
+			fb = var_pi(i,k-2) + var_pi(i,k+1)
+			fc = var_pi(i,k-3) + var_pi(i,k+2)
+			rhouvar_w(i,k) = rhou_w(i,k)/60.*(37*fa - 8*fb + fc)
+			rhowvar_w(i,k) = rhow_w(i,k)/60.*(37*fa - 8*fb + fc)
+			fd = - var_pi(i,k-1) + var_pi(i,k)
+			fe = - var_pi(i,k-2) + var_pi(i,k+1)
+			ff = - var_pi(i,k-3) + var_pi(i,k+2)
+			rhouvar_w(i,k) = rhouvar_w(i,k) - ABS(wGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+			rhowvar_w(i,k) = rhowvar_w(i,k) - ABS(wGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+		END DO
+	END DO
+	!$OMP END PARALLEL DO
+CASE DEFAULT
+	STOP "Wrong AdvectionScheme!!!"
+END SELECT
 
 CALL ppx_pi(rhou_u,PrhouPx_pi)
 CALL ppx_pi(rhouvar_u,PrhouvarPx_pi)

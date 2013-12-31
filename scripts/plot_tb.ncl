@@ -6,11 +6,11 @@ begin
 ; Settings.
 ;---------------------------------
 
-nx = 200
-nz = 100
+;nx = 201
+;nz = 100
 
-;nx = 400
-;nz = 200
+nx = 401
+nz = 200
 
 ;nt = 1
 ;nt = 3
@@ -88,11 +88,11 @@ res@gsnSpreadColors = True
 res@gsnSpreadColorStart = 11    ; For theta
 res@gsnSpreadColorEnd = 60
 
-;res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
-;; For theta
-;res@cnMinLevelValF          = 0.2
-;res@cnMaxLevelValF          = 1.8
-;res@cnLevelSpacingF         = 0.2
+res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
+; For theta
+res@cnMinLevelValF          = 0.2
+res@cnMaxLevelValF          = 1.8
+res@cnLevelSpacingF         = 0.2
 
 ; For u & w
 ;res@cnMinLevelValF          = - 10
