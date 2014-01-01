@@ -249,6 +249,7 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), PARAMETER :: x_c = 25.0*1000. ! (m)
 REAL(kd), PARAMETER :: z_c = 4.0*1000.  ! (m)
 REAL(kd), PARAMETER :: R = 4.0*1000.    ! (m)
+REAL(kd), PARAMETER :: S = 15.0*1000.    ! (m)
 !-------------------------------------------------
 REAL(kd) :: L
 REAL(kd), DIMENSION(nz) :: qv
@@ -275,11 +276,26 @@ DO k = kmin+1, kmax-1
 	wGrid%qv(:,k) = (piGrid%qv(:,k-1) + piGrid%qv(:,k))/2.
 END DO
 
+!CALL set_area_w
+!DO k = kmin, kmax
+	!DO i = imin, imax
+		!!wGrid%qv = 0.
+		!IF (wGrid%zz(i,k) <= S) THEN
+			!wGrid%qv(i,k) = 0.014*(1.-SIN(wGrid%zz(i,k)/S*PI_math/2.)**4)
+		!ELSE
+			!wGrid%qv(i,k) = 0.
+		!END IF
+	!END DO
+!END DO
+!WRITE(*,*) wGrid%qv(5,:)*1000
+!CALL debug_SFSG
+
 CALL set_area_u
 DO k = kmin, kmax
 	DO i = imin, imax
-		!uGrid%u(i,k) = 0.
-		uGrid%u(i,k) = - 1.2*MAX(0., REAL(11 - k))
+		!uGrid%u_0(i,k) = 0.
+		uGrid%u_0(i,k) = - 1.2*MAX(0., REAL(11 - k))
+		uGrid%u(i,k) = uGrid%u_0(i,k)
 	END DO
 END DO
 
@@ -462,6 +478,7 @@ INTEGER :: i, k
 !-------------------------------------------------
 
 ! theta_0, pi_0
+!IF (RunCase == 1 .OR. RunCase == 2 .OR. RunCase == 6) THEN
 IF (RunCase == 1 .OR. RunCase == 2) THEN
 	CALL set_area_u
 	DO k = kmin, kmax

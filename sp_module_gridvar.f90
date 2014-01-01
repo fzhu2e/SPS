@@ -17,6 +17,7 @@ END TYPE mainvar
 
 !=================================================
 TYPE, EXTENDS(mainvar) :: grid
+	REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_0 = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi = undef, pi_0 = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0 = undef, theta_1 = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_v = undef
@@ -41,6 +42,7 @@ TYPE, EXTENDS(mainvar) :: grid
 	REAL(kd), DIMENSION(kms:kme) :: b = undef                  ! decay coeff of terrain
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: G = undef
 	REAL(kd), DIMENSION(ims:ime) :: H = undef
+
 
 	REAL(kd), DIMENSION(ims:ime) :: rain = undef, rainncv = undef, sr = undef
 	REAL(kd), DIMENSION(ims:ime) :: snow = undef, snowncv = undef, graupel = undef, graupelncv = undef

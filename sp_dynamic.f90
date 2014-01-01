@@ -35,6 +35,10 @@ WRITE(*,*) " TimeScheme:      ", TimeScheme
 WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
 WRITE(*,*) " LateralBoundary: ", LateralBoundary
 WRITE(*,*) " UpperBoundary:   ", UpperBoundary
+WRITE(*,*) " DampTop:         ", DampTop
+WRITE(*,*) " DampLateral:     ", DampLateral
+WRITE(*,*) " DampThickness:   ", s
+WRITE(*,*) " DampCooef:       ", tau0
 WRITE(*,*) "---------------------"
 WRITE(*,*) " nstep: ", nstep
 WRITE(*,*) " nx/nz: ", nx, nz
@@ -143,10 +147,10 @@ END IF
 !=================================================
 ! Integrate.
 !-------------------------------------------------
-IF (OpenTop == 2) THEN
+IF (DampTop == 1) THEN
 	CALL calc_tau_top(uGrid,wGrid)
 END IF
-IF (OpenLateral == 2) THEN
+IF (DampLateral == 1) THEN
 	CALL calc_tau_lateral(uGrid,wGrid)
 END IF
 !CALL debug_ascii_output(uGrid%tau,"tau_u")
@@ -203,6 +207,10 @@ WRITE(*,*) " TimeScheme:      ", TimeScheme
 WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
 WRITE(*,*) " LateralBoundary: ", LateralBoundary
 WRITE(*,*) " UpperBoundary:   ", UpperBoundary
+WRITE(*,*) " DampTop:         ", DampTop
+WRITE(*,*) " DampLateral:     ", DampLateral
+WRITE(*,*) " DampThickness:   ", s
+WRITE(*,*) " DampCooef:       ", tau0
 WRITE(*,*) "---------------------"
 WRITE(*,*) " Km/Kh: ", Km, Kh
 WRITE(*,*) "---------------------"
