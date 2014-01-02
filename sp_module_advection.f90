@@ -92,6 +92,10 @@ CASE(5)
 			ff = - var_u(i,k-3) + var_u(i,k+2)
 			rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
 			rhowvar_vir(i,k) = rhowvar_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			IF (k <= kmin+2 .OR. k >= kmax-2) THEN
+				rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
+				rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+			END IF
 		END DO
 	END DO
 	!$OMP END PARALLEL DO
@@ -207,6 +211,10 @@ CASE(5)
 			ff = - var_w(i,k-2) + var_w(i,k+3)
 			rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
 			rhowvar_pi(i,k) = rhowvar_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			IF (k <= kmin+1 .OR. k >= kmax-1) THEN
+				rhouvar_pi(i,k) = rhou_pi(i,k)*fa/2.
+				rhowvar_pi(i,k) = rhow_pi(i,k)*fa/2.
+			END IF
 		END DO
 	END DO
 	!$OMP END PARALLEL DO
@@ -322,6 +330,10 @@ CASE(5)
 			ff = - var_pi(i,k-3) + var_pi(i,k+2)
 			rhouvar_w(i,k) = rhouvar_w(i,k) - ABS(wGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
 			rhowvar_w(i,k) = rhowvar_w(i,k) - ABS(wGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			IF (k <= kmin+2 .OR. k >= kmax-2) THEN
+				rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
+				rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+			END IF
 		END DO
 	END DO
 	!$OMP END PARALLEL DO
