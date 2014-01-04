@@ -77,28 +77,67 @@ CASE(2)
 	END DO
 	!$OMP END PARALLEL DO
 CASE(5)
-	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-	DO k = kmin, kmax
-		DO i = imin, imax
-			rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
-			rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
-			fa = var_u(i,k-1) + var_u(i,k)
-			fb = var_u(i,k-2) + var_u(i,k+1)
-			fc = var_u(i,k-3) + var_u(i,k+2)
-			rhouvar_vir(i,k) = rhou_vir(i,k)/60.*(37*fa - 8*fb + fc)
-			rhowvar_vir(i,k) = rhow_vir(i,k)/60.*(37*fa - 8*fb + fc)
-			fd = - var_u(i,k-1) + var_u(i,k)
-			fe = - var_u(i,k-2) + var_u(i,k+1)
-			ff = - var_u(i,k-3) + var_u(i,k+2)
-			rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
-			rhowvar_vir(i,k) = rhowvar_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
-			IF (k <= kmin+2 .OR. k >= kmax-2) THEN
+	IF (RunCase == 1 .OR. RunCase == 2) THEN
+		!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+		DO k = kmin, kmax
+			DO i = imin, imax
+				rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+				rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
+				fa = var_u(i,k-1) + var_u(i,k)
+				fb = var_u(i,k-2) + var_u(i,k+1)
+				fc = var_u(i,k-3) + var_u(i,k+2)
+				rhouvar_vir(i,k) = rhou_vir(i,k)/60.*(37*fa - 8*fb + fc)
+				rhowvar_vir(i,k) = rhow_vir(i,k)/60.*(37*fa - 8*fb + fc)
+				fd = - var_u(i,k-1) + var_u(i,k)
+				fe = - var_u(i,k-2) + var_u(i,k+1)
+				ff = - var_u(i,k-3) + var_u(i,k+2)
+				rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+				rhowvar_vir(i,k) = rhowvar_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+	ELSE
+		!$OMP PARALLEL DO PRIVATE(fa)
+		DO k = kmin, kmin+halo-1
+			DO i = imin, imax
+				rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+				rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
+				fa = var_u(i,k-1) + var_u(i,k)
 				rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
 				rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
-			END IF
+			END DO
 		END DO
-	END DO
-	!$OMP END PARALLEL DO
+		!$OMP END PARALLEL DO
+		!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+		DO k = kmin+halo, kmax-halo
+			DO i = imin, imax
+				rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+				rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
+				fa = var_u(i,k-1) + var_u(i,k)
+				fb = var_u(i,k-2) + var_u(i,k+1)
+				fc = var_u(i,k-3) + var_u(i,k+2)
+				rhouvar_vir(i,k) = rhou_vir(i,k)/60.*(37*fa - 8*fb + fc)
+				rhowvar_vir(i,k) = rhow_vir(i,k)/60.*(37*fa - 8*fb + fc)
+				fd = - var_u(i,k-1) + var_u(i,k)
+				fe = - var_u(i,k-2) + var_u(i,k+1)
+				ff = - var_u(i,k-3) + var_u(i,k+2)
+				rhouvar_vir(i,k) = rhouvar_vir(i,k) - ABS(virGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+				rhowvar_vir(i,k) = rhowvar_vir(i,k) - ABS(virGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+		!$OMP PARALLEL DO PRIVATE(fa)
+		DO k = kmax-halo+1, kmax
+			DO i = imin, imax
+				rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
+				rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
+				fa = var_u(i,k-1) + var_u(i,k)
+				rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
+				rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+	END IF
 CASE DEFAULT
 	STOP "Wrong AdvectionScheme!!!"
 END SELECT
@@ -196,28 +235,67 @@ CASE(2)
 	END DO
 	!$OMP END PARALLEL DO
 CASE(5)
-	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-	DO k = kmin, kmax
-		DO i = imin, imax
-			rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
-			rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
-			fa = var_w(i,k) + var_w(i,k+1)
-			fb = var_w(i,k-1) + var_w(i,k+2)
-			fc = var_w(i,k-2) + var_w(i,k+3)
-			rhouvar_pi(i,k) = rhou_pi(i,k)/60.*(37*fa - 8*fb + fc)
-			rhowvar_pi(i,k) = rhow_pi(i,k)/60.*(37*fa - 8*fb + fc)
-			fd = - var_w(i,k) + var_w(i,k+1)
-			fe = - var_w(i,k-1) + var_w(i,k+2)
-			ff = - var_w(i,k-2) + var_w(i,k+3)
-			rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
-			rhowvar_pi(i,k) = rhowvar_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
-			IF (k <= kmin+1 .OR. k >= kmax-1) THEN
+	IF (RunCase == 1 .OR. RunCase == 2) THEN
+		!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+		DO k = kmin, kmax
+			DO i = imin, imax
+				rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+				rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
+				fa = var_w(i,k) + var_w(i,k+1)
+				fb = var_w(i,k-1) + var_w(i,k+2)
+				fc = var_w(i,k-2) + var_w(i,k+3)
+				rhouvar_pi(i,k) = rhou_pi(i,k)/60.*(37*fa - 8*fb + fc)
+				rhowvar_pi(i,k) = rhow_pi(i,k)/60.*(37*fa - 8*fb + fc)
+				fd = - var_w(i,k) + var_w(i,k+1)
+				fe = - var_w(i,k-1) + var_w(i,k+2)
+				ff = - var_w(i,k-2) + var_w(i,k+3)
+				rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+				rhowvar_pi(i,k) = rhowvar_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+	ELSE
+		!$OMP PARALLEL DO PRIVATE(fa)
+		DO k = kmin, kmin+halo-1
+			DO i = imin, imax
+				rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+				rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
+				fa = var_w(i,k) + var_w(i,k+1)
 				rhouvar_pi(i,k) = rhou_pi(i,k)*fa/2.
 				rhowvar_pi(i,k) = rhow_pi(i,k)*fa/2.
-			END IF
+			END DO
 		END DO
-	END DO
-	!$OMP END PARALLEL DO
+		!$OMP END PARALLEL DO
+		!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+		DO k = kmin+halo, kmax-halo
+			DO i = imin, imax
+				rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+				rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
+				fa = var_w(i,k) + var_w(i,k+1)
+				fb = var_w(i,k-1) + var_w(i,k+2)
+				fc = var_w(i,k-2) + var_w(i,k+3)
+				rhouvar_pi(i,k) = rhou_pi(i,k)/60.*(37*fa - 8*fb + fc)
+				rhowvar_pi(i,k) = rhow_pi(i,k)/60.*(37*fa - 8*fb + fc)
+				fd = - var_w(i,k) + var_w(i,k+1)
+				fe = - var_w(i,k-1) + var_w(i,k+2)
+				ff = - var_w(i,k-2) + var_w(i,k+3)
+				rhouvar_pi(i,k) = rhouvar_pi(i,k) - ABS(piGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+				rhowvar_pi(i,k) = rhowvar_pi(i,k) - ABS(piGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+		!$OMP PARALLEL DO PRIVATE(fa)
+		DO k = kmax-halo+1, kmax
+			DO i = imin, imax
+				rhou_pi(i,k) = piGrid%rho_0(i,k)*piGrid%u(i,k)
+				rhow_pi(i,k) = piGrid%rho_0(i,k)*piGrid%w(i,k)
+				fa = var_w(i,k) + var_w(i,k+1)
+				rhouvar_pi(i,k) = rhou_pi(i,k)*fa/2.
+				rhowvar_pi(i,k) = rhow_pi(i,k)*fa/2.
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+	END IF
 CASE DEFAULT
 	STOP "Wrong AdvectionScheme!!!"
 END SELECT
@@ -315,28 +393,67 @@ CASE(2)
 	END DO
 	!$OMP END PARALLEL DO
 CASE(5)
-	!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
-	DO k = kmin, kmax
-		DO i = imin, imax
-			rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
-			rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
-			fa = var_pi(i,k-1) + var_pi(i,k)
-			fb = var_pi(i,k-2) + var_pi(i,k+1)
-			fc = var_pi(i,k-3) + var_pi(i,k+2)
-			rhouvar_w(i,k) = rhou_w(i,k)/60.*(37*fa - 8*fb + fc)
-			rhowvar_w(i,k) = rhow_w(i,k)/60.*(37*fa - 8*fb + fc)
-			fd = - var_pi(i,k-1) + var_pi(i,k)
-			fe = - var_pi(i,k-2) + var_pi(i,k+1)
-			ff = - var_pi(i,k-3) + var_pi(i,k+2)
-			rhouvar_w(i,k) = rhouvar_w(i,k) - ABS(wGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
-			rhowvar_w(i,k) = rhowvar_w(i,k) - ABS(wGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
-			IF (k <= kmin+2 .OR. k >= kmax-2) THEN
+	IF (RunCase == 1 .OR. RunCase == 2) THEN
+		!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+		DO k = kmin, kmax
+			DO i = imin, imax
+				rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
+				rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
+				fa = var_pi(i,k-1) + var_pi(i,k)
+				fb = var_pi(i,k-2) + var_pi(i,k+1)
+				fc = var_pi(i,k-3) + var_pi(i,k+2)
+				rhouvar_w(i,k) = rhou_w(i,k)/60.*(37*fa - 8*fb + fc)
+				rhowvar_w(i,k) = rhow_w(i,k)/60.*(37*fa - 8*fb + fc)
+				fd = - var_pi(i,k-1) + var_pi(i,k)
+				fe = - var_pi(i,k-2) + var_pi(i,k+1)
+				ff = - var_pi(i,k-3) + var_pi(i,k+2)
+				rhouvar_w(i,k) = rhouvar_w(i,k) - ABS(wGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+				rhowvar_w(i,k) = rhowvar_w(i,k) - ABS(wGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+	ELSE
+		!$OMP PARALLEL DO PRIVATE(fa)
+		DO k = kmin, kmin+halo-1
+			DO i = imin, imax
+				rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
+				rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
+				fa = var_pi(i,k-1) + var_pi(i,k)
 				rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
 				rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
-			END IF
+			END DO
 		END DO
-	END DO
-	!$OMP END PARALLEL DO
+		!$OMP END PARALLEL DO
+		!$OMP PARALLEL DO PRIVATE(fa,fb,fc,fd,fe,ff)
+		DO k = kmin+halo, kmax-halo
+			DO i = imin, imax
+				rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
+				rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
+				fa = var_pi(i,k-1) + var_pi(i,k)
+				fb = var_pi(i,k-2) + var_pi(i,k+1)
+				fc = var_pi(i,k-3) + var_pi(i,k+2)
+				rhouvar_w(i,k) = rhou_w(i,k)/60.*(37*fa - 8*fb + fc)
+				rhowvar_w(i,k) = rhow_w(i,k)/60.*(37*fa - 8*fb + fc)
+				fd = - var_pi(i,k-1) + var_pi(i,k)
+				fe = - var_pi(i,k-2) + var_pi(i,k+1)
+				ff = - var_pi(i,k-3) + var_pi(i,k+2)
+				rhouvar_w(i,k) = rhouvar_w(i,k) - ABS(wGrid%u(i,k))/60.*(10*fd - 5*fe + ff)
+				rhowvar_w(i,k) = rhowvar_w(i,k) - ABS(wGrid%w(i,k))/60.*(10*fd - 5*fe + ff)
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+		!$OMP PARALLEL DO PRIVATE(fa)
+		DO k = kmax-halo+1, kmax
+			DO i = imin, imax
+				rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
+				rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
+				fa = var_pi(i,k-1) + var_pi(i,k)
+				rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
+				rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+			END DO
+		END DO
+		!$OMP END PARALLEL DO
+	END IF
 CASE DEFAULT
 	STOP "Wrong AdvectionScheme!!!"
 END SELECT

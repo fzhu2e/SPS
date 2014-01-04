@@ -249,46 +249,49 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd), PARAMETER :: x_c = 25.0*1000. ! (m)
 REAL(kd), PARAMETER :: z_c = 4.0*1000.  ! (m)
 REAL(kd), PARAMETER :: R = 4.0*1000.    ! (m)
-REAL(kd), PARAMETER :: S = 15.0*1000.    ! (m)
+REAL(kd), PARAMETER :: DeltaTheta = 3.
+REAL(kd), PARAMETER :: qv0 = 14.e-3
+REAL(kd), PARAMETER :: S = 8.e3    ! (m)
 !-------------------------------------------------
 REAL(kd) :: L
 REAL(kd), DIMENSION(nz) :: qv
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
-OPEN(1, FILE="./input/qv.input", STATUS='old')
-DO k = 1, nz
-	READ(1,*) qv(k)
-END DO
-CLOSE(1)
+! qv
+!-------------------------------------------------
+!OPEN(1, FILE="./input/qv.input", STATUS='old')
+!DO k = 1, nz
+	!READ(1,*) qv(k)
+!END DO
+!CLOSE(1)
 
-CALL set_area_pi
-DO k = kmin, kmax
-	DO i = ims, ime
-		piGrid%qv(i,k) = qv(k)
-	END DO
-END DO
-
-CALL set_area_w
-wGrid%qv(:,kmin) = 1.400E-02
-wGrid%qv(:,kmax) = 9.400E-05
-DO k = kmin+1, kmax-1
-	wGrid%qv(:,k) = (piGrid%qv(:,k-1) + piGrid%qv(:,k))/2.
-END DO
-
-!CALL set_area_w
+!CALL set_area_pi
 !DO k = kmin, kmax
-	!DO i = imin, imax
-		!!wGrid%qv = 0.
-		!IF (wGrid%zz(i,k) <= S) THEN
-			!wGrid%qv(i,k) = 0.014*(1.-SIN(wGrid%zz(i,k)/S*PI_math/2.)**4)
-		!ELSE
-			!wGrid%qv(i,k) = 0.
-		!END IF
+	!DO i = ims, ime
+		!piGrid%qv(i,k) = qv(k)
 	!END DO
 !END DO
-!WRITE(*,*) wGrid%qv(5,:)*1000
+
+!CALL set_area_w
+!wGrid%qv(:,kmin) = 1.400E-02
+!wGrid%qv(:,kmax) = 9.400E-05
+!DO k = kmin+1, kmax-1
+	!wGrid%qv(:,k) = (piGrid%qv(:,k-1) + piGrid%qv(:,k))/2.
+!END DO
+CALL set_area_w
+DO k = kmin, kmax
+	DO i = imin, imax
+		IF (wGrid%zz(i,k) <= S) THEN
+			wGrid%qv(i,k) = qv0*(1. - SIN(wGrid%zz(i,k)/S*PI_math/2.))
+		ELSE
+			wGrid%qv(i,k) = 0.
+		END IF
+	END DO
+END DO
+!WRITE(*,*) wGrid%qv(100,:)
 !CALL debug_SFSG
+!=================================================
 
 CALL set_area_u
 DO k = kmin, kmax
@@ -300,16 +303,25 @@ DO k = kmin, kmax
 END DO
 
 CALL set_area_w
+
+DO k = kmin, kmax
+	DO i = imin, imax
+		wGrid%theta_M_0(i,k) = wGrid%theta_0(i,k)
+		wGrid%theta_M(i,k) = wGrid%theta_M_0(i,k)
+		wGrid%theta(i,k) = wGrid%theta_M(i,k)/(1. + 0.61*wGrid%qv(i,k))
+	END DO
+END DO
+
 DO k = kmin, kmax
 	DO i = imin, imax
 		wGrid%w(i,k) = 0.
 		L = SQRT((wGrid%xx(i) - x_c)*(wGrid%xx(i) - x_c) + (wGrid%zz(i,k) - z_c)*(wGrid%zz(i,k) - z_c))
 		IF (L/R <= 1.) THEN
-			wGrid%theta_1(i,k) = 3.*COS(.5*PI_math*L/R)**2  ! <= I want this.
+			wGrid%theta_1(i,k) = DeltaTheta*COS(.5*PI_math*L/R)**2  ! <= I want this.
 		ELSE
 			wGrid%theta_1(i,k) = 0.
 		END IF
-		wGrid%theta(i,k) = wGrid%theta_0(i,k) + wGrid%theta_1(i,k)
+		wGrid%theta(i,k) = wGrid%theta(i,k) + wGrid%theta_1(i,k)/(1. + 0.61*wGrid%qv(i,k))
 	END DO
 END DO
 
@@ -320,6 +332,7 @@ DO k = kmin, kmax
 		piGrid%pi(i,k) = piGrid%pi_0(i,k) + piGrid%pi_1(i,k)
 	END DO
 END DO
+
 !=================================================
 END SUBROUTINE initiate_th
 !=================================================
@@ -470,7 +483,7 @@ TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 REAL(kd) :: Ts = 300.
 REAL(kd) :: N0 = 0.01         ! (s-1)
 
-REAL(kd), DIMENSION(nz) :: theta,pressure ! sounding input in thunderstorm case
+REAL(kd), DIMENSION(nz) :: theta, pressure ! sounding input in thunderstorm case
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -551,37 +564,43 @@ ELSE IF (RunCase /= 1 .AND. RunCase /= 2) THEN
 		END DO
 	END DO
 
-	IF (RunCase == 6) THEN
-		OPEN(1, FILE="./input/theta.input", STATUS='old')
-		DO k = 1, nz
-			READ(1,*) theta(k)
-		END DO
-		CLOSE(1)
-		OPEN(1, FILE="./input/pressure.input", STATUS='old')
-		DO k = 1, nz
-			READ(1,*) pressure(k)
-		END DO
-		CLOSE(1)
-		DO k = kmin, kmax
-			DO i = ims, ime
-				piGrid%theta_0(i,k) = theta(k)
-				piGrid%pi_0(i,k) = (pressure(k)/p0)**(Rd/Cp)
-			END DO
-		END DO
-		CALL set_area_w
-		wGrid%theta_0(:,kmin) = 3.000E+02
-		wGrid%theta_0(:,kmax) = 4.978E+02
-		wGrid%pi_0(:,kmin) = 1
-		wGrid%pi_0(:,kmax) = 0.4392
-		DO k = kmin+1, kmax-1
-			wGrid%theta_0(:,k) = (piGrid%theta_0(:,k-1) + piGrid%theta_0(:,k))/2.
-			wGrid%pi_0(:,k) = (piGrid%pi_0(:,k-1) + piGrid%pi_0(:,k))/2.
-		END DO
-		virGrid%theta_0 = wGrid%theta_0
-		uGrid%theta_0 = piGrid%theta_0
-		virGrid%pi_0 = wGrid%pi_0
-		uGrid%pi_0 = piGrid%pi_0
-	END IF
+	!IF (RunCase == 6) THEN
+		!OPEN(1, FILE="./input/theta.input", STATUS='old')
+		!DO k = 1, nz
+			!READ(1,*) theta(k)
+		!END DO
+		!CLOSE(1)
+		
+		!OPEN(1, FILE="./input/pressure.input", STATUS='old')
+		!DO k = 1, nz
+			!READ(1,*) pressure(k)
+		!END DO
+		!CLOSE(1)
+
+		!CALL set_area_pi
+		!DO k = kmin, kmax
+			!DO i = ims, ime
+				!piGrid%theta_M(i,k) = theta(k)
+				!piGrid%pi(i,k) = (pressure(k)/p0)**(Rd/Cp)
+			!END DO
+		!END DO
+		
+		!CALL set_area_w
+		!wGrid%theta_M(:,kmin) = 3.000E+02
+		!wGrid%theta_M(:,kmax) = 4.978E+02
+		!wGrid%pi(:,kmin) = 1
+		!wGrid%pi(:,kmax) = 0.4392
+		
+		!DO k = kmin+1, kmax-1
+			!wGrid%theta_M(:,k) = (piGrid%theta_M(:,k-1) + piGrid%theta_M(:,k))/2.
+			!wGrid%pi(:,k) = (piGrid%pi(:,k-1) + piGrid%pi(:,k))/2.
+		!END DO
+		
+		!virGrid%theta_M = wGrid%theta_M
+		!uGrid%theta_M = piGrid%theta_M
+		!virGrid%pi = wGrid%pi
+		!uGrid%pi = piGrid%pi
+	!END IF
 
 ELSE
 	STOP "WRONG RunCase!!!"

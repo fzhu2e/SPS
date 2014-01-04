@@ -116,31 +116,12 @@ uGrid%theta_M_0 = uGrid%theta_0
 CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 
 !=================================================
-! Adjust pi_1
-!-------------------------------------------------
-!CALL set_area_w
-!wGrid%pi(imin:imax,kmax) = wGrid%pi_0(imin:imax,kmax)
-!DO k = kmax-1, kmin, -1
-	!DO i = imin, imax
-		!wGrid%pi(i,k) = wGrid%pi(i,k+1) + g*dz/Cp/wGrid%theta(i,k)
-	!END DO
-!END DO
-
-!CALL set_area_pi
-!DO k = kmin, kmax
-	!DO i = imin, imax
-		!piGrid%pi(i,k) = (wGrid%pi(i,k) + wGrid%pi(i,k+1))/2.
-		!piGrid%pi_1(i,k) = piGrid%pi(i,k) - piGrid%pi_0(i,k)
-	!END DO
-!END DO
-!CALL update_boundary(pi_1=piGrid%pi_1,wGrid=wGrid)
-!=================================================
 
 IF (Vapor == 0) THEN
-	CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
+	CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
 	
 ELSE
-	CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
+	CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
 	              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
 	              wGrid%rain,wGrid%snow,wGrid%graupel     )
 END IF
@@ -167,9 +148,9 @@ DO i = 1, nstep
 	CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 	IF (MOD(i,100) == 0.) THEN
 		IF (Vapor == 0) THEN
-			CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
+			CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
 		ELSE
-			CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
+			CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
 			              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
 	                      wGrid%rain,wGrid%snow,wGrid%graupel     )
 		END IF
@@ -187,9 +168,9 @@ END DO
 ! Finish.
 !-------------------------------------------------
 IF (Vapor == 0) THEN
-	CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
+	CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
 ELSE
-	CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
+	CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
 	              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
                   wGrid%rain,wGrid%snow,wGrid%graupel     )
 END IF

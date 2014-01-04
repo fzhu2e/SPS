@@ -16,7 +16,7 @@ CONTAINS
 !=================================================
 ! Output the fields.
 !=================================================
-SUBROUTINE output(flag,u,w,pi_1,theta_M_1,theta_M,theta, &
+SUBROUTINE output(flag,u,w,pi_1,theta_1,theta_M_1,theta_M,theta, &
                   qv,qc,qr,qi,qs,qg,rain,snow,graupel)
 IMPLICIT NONE
 !-------------------------------------------------
@@ -24,6 +24,7 @@ INTEGER,INTENT(IN) :: flag
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: u        ! wind speed along x-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: w        ! wind speed along z-axis
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: pi_1     ! pi'
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_1
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_M_1
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_M
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
@@ -41,76 +42,80 @@ CASE (0)
 	OPEN(3, FILE="./output/modelvar_pi_1.bin", FORM='binary', CONVERT='big_endian')
 	WRITE(3) pi_1
 
-	OPEN(4, FILE="./output/modelvar_theta_M_1.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(4) theta_M_1
+	OPEN(4, FILE="./output/modelvar_theta_1.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(4) theta_1
 
-	OPEN(5, FILE="./output/modelvar_theta_M.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(5) theta_M
+	OPEN(5, FILE="./output/modelvar_theta_M_1.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(5) theta_M_1
 
-	OPEN(6, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
-	WRITE(6) theta
+	OPEN(6, FILE="./output/modelvar_theta_M.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(6) theta_M
+
+	OPEN(7, FILE="./output/modelvar_theta.bin", FORM='binary', CONVERT='big_endian')
+	WRITE(7) theta
 
 	IF (PRESENT(qv)) THEN
-		OPEN(7, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(7) qv
+		OPEN(8, FILE="./output/modelvar_qv.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(8) qv
 	END IF
 
 	IF (PRESENT(qc)) THEN
-		OPEN(8, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(8) qc
+		OPEN(9, FILE="./output/modelvar_qc.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(9) qc
 	END IF
 
 	IF (PRESENT(qr)) THEN
-		OPEN(9, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(9) qr
+		OPEN(10, FILE="./output/modelvar_qr.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(10) qr
 	END IF
 
 	IF (PRESENT(qi)) THEN
-		OPEN(10, FILE="./output/modelvar_qi.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(10) qi
+		OPEN(11, FILE="./output/modelvar_qi.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(11) qi
 	END IF
 
 	IF (PRESENT(qs)) THEN
-		OPEN(11, FILE="./output/modelvar_qs.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(11) qs
+		OPEN(12, FILE="./output/modelvar_qs.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(12) qs
 	END IF
 
 	IF (PRESENT(qg)) THEN
-		OPEN(12, FILE="./output/modelvar_qg.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(12) qg
+		OPEN(13, FILE="./output/modelvar_qg.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(13) qg
 	END IF
 
 	IF (PRESENT(rain)) THEN
-		OPEN(13, FILE="./output/modelvar_rain.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(13) rain
+		OPEN(14, FILE="./output/modelvar_rain.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(14) rain
 	END IF
 
 	IF (PRESENT(snow)) THEN
-		OPEN(14, FILE="./output/modelvar_snow.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(14) snow
+		OPEN(15, FILE="./output/modelvar_snow.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(15) snow
 	END IF
 
 	IF (PRESENT(graupel)) THEN
-		OPEN(15, FILE="./output/modelvar_graupel.bin", FORM='binary', CONVERT='big_endian')
-		WRITE(15) graupel
+		OPEN(16, FILE="./output/modelvar_graupel.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(16) graupel
 	END IF
 
 CASE (1)
 	WRITE(1) u
 	WRITE(2) w
 	WRITE(3) pi_1
-	WRITE(4) theta_M_1
-	WRITE(5) theta_M
-	WRITE(6) theta
-	IF (PRESENT(qv)) WRITE(7) qv
-	IF (PRESENT(qc)) WRITE(8) qc
-	IF (PRESENT(qr)) WRITE(9) qr
-	IF (PRESENT(qi)) WRITE(10) qi
-	IF (PRESENT(qs)) WRITE(11) qs
-	IF (PRESENT(qg)) WRITE(12) qg
-	IF (PRESENT(rain)) WRITE(13) rain
-	IF (PRESENT(snow)) WRITE(14) snow
-	IF (PRESENT(graupel)) WRITE(15) graupel
+	WRITE(4) theta_1
+	WRITE(5) theta_M_1
+	WRITE(6) theta_M
+	WRITE(7) theta
+	IF (PRESENT(qv)) WRITE(8) qv
+	IF (PRESENT(qc)) WRITE(9) qc
+	IF (PRESENT(qr)) WRITE(10) qr
+	IF (PRESENT(qi)) WRITE(11) qi
+	IF (PRESENT(qs)) WRITE(12) qs
+	IF (PRESENT(qg)) WRITE(13) qg
+	IF (PRESENT(rain)) WRITE(14) rain
+	IF (PRESENT(snow)) WRITE(15) snow
+	IF (PRESENT(graupel)) WRITE(16) graupel
 CASE (99)
 	CLOSE(1)
 	CLOSE(2)
@@ -118,15 +123,16 @@ CASE (99)
 	CLOSE(4)
 	CLOSE(5)
 	CLOSE(6)
-	IF (PRESENT(qv)) CLOSE(7)
-	IF (PRESENT(qc)) CLOSE(8)
-	IF (PRESENT(qr)) CLOSE(9)
-	IF (PRESENT(qi)) CLOSE(10)
-	IF (PRESENT(qs)) CLOSE(11)
-	IF (PRESENT(qg)) CLOSE(12)
-	IF (PRESENT(rain)) CLOSE(13)
-	IF (PRESENT(snow)) CLOSE(14)
-	IF (PRESENT(graupel)) CLOSE(15)
+	CLOSE(7)
+	IF (PRESENT(qv)) CLOSE(8)
+	IF (PRESENT(qc)) CLOSE(9)
+	IF (PRESENT(qr)) CLOSE(10)
+	IF (PRESENT(qi)) CLOSE(11)
+	IF (PRESENT(qs)) CLOSE(12)
+	IF (PRESENT(qg)) CLOSE(13)
+	IF (PRESENT(rain)) CLOSE(14)
+	IF (PRESENT(snow)) CLOSE(15)
+	IF (PRESENT(graupel)) CLOSE(16)
 CASE DEFAULT
 	WRITE(*,*) "==================================="
 	WRITE(*,*) " WARNING: Illegal flag of output."

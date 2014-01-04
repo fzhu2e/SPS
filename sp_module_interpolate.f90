@@ -74,6 +74,7 @@ wGrid%theta_v = wGrid%theta*(1. + 0.61*wGrid%qv)
 CALL w2pi(wGrid%theta_v,piGrid%theta_v)
 wGrid%theta_M = wGrid%theta_v*(1. - wGrid%qc - wGrid%qi)
 CALL w2pi(wGrid%theta_M,piGrid%theta_M)
+wGrid%theta_1 = wGrid%theta - wGrid%theta_0 ! for output
 wGrid%theta_M_1 = wGrid%theta_M - wGrid%theta_M_0
 
 piGrid%pi = piGrid%pi_1 + piGrid%pi_0
