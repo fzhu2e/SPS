@@ -165,7 +165,7 @@ REAL(kd), PARAMETER :: tau0 = 1.0
 INTEGER, PARAMETER :: RunCase = 6
 INTEGER, PARAMETER :: Vapor = 1
 
-INTEGER, PARAMETER :: nx = 301                              ! grid number along x-axis
+INTEGER, PARAMETER :: nx = 201                              ! grid number along x-axis
 INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
 REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
 REAL(kd), PARAMETER :: dz = 250.                       ! (m)
