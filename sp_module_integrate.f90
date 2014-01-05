@@ -15,6 +15,7 @@ USE sp_module_timeschemes
 USE sp_module_boundary
 USE sp_module_subgrid
 USE sp_module_wsm6
+USE sp_module_cldfra
 USE sp_module_debug
 IMPLICIT NONE
 !=================================================
@@ -46,6 +47,8 @@ IF (Vapor == 1) THEN
 			END DO
 		END DO
 		!$OMP END PARALLEL DO
+		CALL calc_cldfra(wGrid)
+		!CALL calc_cldfra2(wGrid)
 	END IF
 END IF
 

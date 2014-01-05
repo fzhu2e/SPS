@@ -17,7 +17,7 @@ CONTAINS
 ! Output the fields.
 !=================================================
 SUBROUTINE output(flag,u,w,pi_1,theta_1,theta_M_1,theta_M,theta, &
-                  qv,qc,qr,qi,qs,qg,rain,snow,graupel)
+                  qv,qc,qr,qi,qs,qg,rain,snow,graupel,cldfra)
 IMPLICIT NONE
 !-------------------------------------------------
 INTEGER,INTENT(IN) :: flag
@@ -30,6 +30,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta_M
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: theta
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: qv,qc,qr,qi,qs,qg
 REAL(kd), DIMENSION(ims:ime), INTENT(IN), OPTIONAL :: rain, snow, graupel
+REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN), OPTIONAL :: cldfra
 !=================================================
 SELECT CASE(flag)
 CASE (0)
@@ -99,6 +100,11 @@ CASE (0)
 		WRITE(16) graupel
 	END IF
 
+	IF (PRESENT(cldfra)) THEN
+		OPEN(17, FILE="./output/modelvar_cldfra.bin", FORM='binary', CONVERT='big_endian')
+		WRITE(17) cldfra
+	END IF
+
 CASE (1)
 	WRITE(1) u
 	WRITE(2) w
@@ -116,6 +122,7 @@ CASE (1)
 	IF (PRESENT(rain)) WRITE(14) rain
 	IF (PRESENT(snow)) WRITE(15) snow
 	IF (PRESENT(graupel)) WRITE(16) graupel
+	IF (PRESENT(graupel)) WRITE(17) cldfra
 CASE (99)
 	CLOSE(1)
 	CLOSE(2)
@@ -133,6 +140,7 @@ CASE (99)
 	IF (PRESENT(rain)) CLOSE(14)
 	IF (PRESENT(snow)) CLOSE(15)
 	IF (PRESENT(graupel)) CLOSE(16)
+	IF (PRESENT(cldfra)) CLOSE(17)
 CASE DEFAULT
 	WRITE(*,*) "==================================="
 	WRITE(*,*) " WARNING: Illegal flag of output."

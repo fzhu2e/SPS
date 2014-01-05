@@ -94,6 +94,7 @@ DO k = kmin, kmax
 		wGrid%snowncv = 0.
 		wGrid%graupel = 0.
 		wGrid%graupelncv = 0.
+		wGrid%cldfra = 0.
 		wGrid%Mtheta = 0.
 		wGrid%Mqv = 0.
 		wGrid%Mqc = 0.
@@ -123,7 +124,7 @@ IF (Vapor == 0) THEN
 ELSE
 	CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
 	              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
-	              wGrid%rain,wGrid%snow,wGrid%graupel     )
+	              wGrid%rain,wGrid%snow,wGrid%graupel,wGrid%cldfra     )
 END IF
 !=================================================
 ! Integrate.
@@ -152,7 +153,7 @@ DO i = 1, nstep
 		ELSE
 			CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
 			              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
-	                      wGrid%rain,wGrid%snow,wGrid%graupel     )
+			              wGrid%rain,wGrid%snow,wGrid%graupel,wGrid%cldfra     )
 		END IF
 	END IF
 	
@@ -172,7 +173,7 @@ IF (Vapor == 0) THEN
 ELSE
 	CALL output(99,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
 	              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
-                  wGrid%rain,wGrid%snow,wGrid%graupel     )
+	              wGrid%rain,wGrid%snow,wGrid%graupel,wGrid%cldfra     )
 END IF
 WRITE(*,*)
 WRITE(*,*) "====================="

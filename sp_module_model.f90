@@ -165,12 +165,19 @@ REAL(kd), PARAMETER :: tau0 = 1.0
 INTEGER, PARAMETER :: RunCase = 6
 INTEGER, PARAMETER :: Vapor = 1
 
-INTEGER, PARAMETER :: nx = 201                              ! grid number along x-axis
+INTEGER, PARAMETER :: nx = 301                              ! grid number along x-axis
 INTEGER, PARAMETER :: nz = 80                               ! grid number along z-axis
 REAL(kd), PARAMETER :: dx = 250.                        ! delta x (m)
 REAL(kd), PARAMETER :: dz = 250.                       ! (m)
-REAL(kd), PARAMETER :: dt = 0.3                               ! delta t (s)
-INTEGER :: nstep = 12000
+REAL(kd), PARAMETER :: dt = 0.5                               ! delta t (s)
+INTEGER :: nstep = 7200
+
+!INTEGER, PARAMETER :: nx = 501                              ! grid number along x-axis
+!INTEGER, PARAMETER :: nz = 200                               ! grid number along z-axis
+!REAL(kd), PARAMETER :: dx = 100.                        ! delta x (m)
+!REAL(kd), PARAMETER :: dz = 100.                       ! (m)
+!REAL(kd), PARAMETER :: dt = 0.2                               ! delta t (s)
+!INTEGER :: nstep = 18000
 
 REAL(kd) :: Km = 0.        !(m s)
 REAL(kd) :: Kh = 0.        !(K s)

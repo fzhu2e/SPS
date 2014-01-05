@@ -246,12 +246,13 @@ SUBROUTINE initiate_th(uGrid,wGrid,piGrid,virGrid)
 IMPLICIT NONE
 TYPE (grid), INTENT(INOUT) :: uGrid, wGrid, piGrid, virGrid
 !-------------------------------------------------
-REAL(kd), PARAMETER :: x_c = 25.0*1000. ! (m)
+!REAL(kd), PARAMETER :: x_c = 25.0*1000. ! (m)
+REAL(kd), PARAMETER :: x_c = 37.5*1000. ! (m)
 REAL(kd), PARAMETER :: z_c = 4.0*1000.  ! (m)
 REAL(kd), PARAMETER :: R = 4.0*1000.    ! (m)
 REAL(kd), PARAMETER :: DeltaTheta = 3.
 REAL(kd), PARAMETER :: qv0 = 14.e-3
-REAL(kd), PARAMETER :: S = 8.e3    ! (m)
+REAL(kd), PARAMETER :: S = 4.e3    ! (m)
 !-------------------------------------------------
 REAL(kd) :: L
 REAL(kd), DIMENSION(nz) :: qv
@@ -283,7 +284,7 @@ CALL set_area_w
 DO k = kmin, kmax
 	DO i = imin, imax
 		IF (wGrid%zz(i,k) <= S) THEN
-			wGrid%qv(i,k) = qv0*(1. - SIN(wGrid%zz(i,k)/S*PI_math/2.))
+			wGrid%qv(i,k) = qv0*(1. - SIN(wGrid%zz(i,k)/S*PI_math/2.)**4)
 		ELSE
 			wGrid%qv(i,k) = 0.
 		END IF

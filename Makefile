@@ -46,9 +46,10 @@ sp_module_debug.o: sp_module_constant.o sp_module_model.o
 sp_module_gridvar.o: sp_module_constant.o sp_module_debug.o sp_module_model.o
 sp_module_initiate.o: sp_module_constant.o sp_module_debug.o \
 	sp_module_gridvar.o sp_module_model.o
-sp_module_integrate.o: sp_module_boundary.o sp_module_constant.o \
-	sp_module_debug.o sp_module_gridvar.o sp_module_model.o \
-	sp_module_subgrid.o sp_module_timeschemes.o sp_module_wsm6.o
+sp_module_integrate.o: sp_module_boundary.o sp_module_cldfra.o \
+	sp_module_constant.o sp_module_debug.o sp_module_gridvar.o \
+	sp_module_model.o sp_module_subgrid.o sp_module_timeschemes.o \
+	sp_module_wsm6.o
 sp_module_interpolate.o: sp_module_constant.o sp_module_debug.o \
 	sp_module_gridvar.o sp_module_model.o
 sp_module_model.o: sp_module_constant.o
