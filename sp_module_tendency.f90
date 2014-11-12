@@ -1,10 +1,10 @@
 !=================================================
-! The flux module of SPS-dynamic-integrate
+! Super-Parametertization System (SPS)
 !-------------------------------------------------
-! Version: 0.15
-! Author: Zhu F.
-! Email: lyricorpse@gmail.com
-! Date: 2013-05-04 13:59:46 
+! Version: 0.2
+! Author: Feng Zhu
+! Email: zhuf.atmos@gmail.com
+! Date: 2014-06-12 18:18:45
 ! Copyright: This software is provided under a CC BY-NC-SA 3.0 License(http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh)
 !=================================================
 MODULE sp_module_tendency
@@ -26,6 +26,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_u
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: Ppi_1Px_u = undef, Ppi_1Pzeta_u = undef
 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_u = undef, P_u = undef, D_u = undef, S_u = undef
+REAL(kd), DIMENSION(kms:kme) :: F_u = undef
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -41,6 +42,7 @@ ELSE
 END IF
 
 D_u = uGrid%Du
+F_u = uGrid%forcing_u
 
 CALL set_area_u
 !$OMP PARALLEL DO
@@ -49,12 +51,12 @@ DO k = kmin, kmax
 		!P_u(i,k) = - Cp*uGrid%theta_M_0(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
 		P_u(i,k) = - Cp*uGrid%theta_M(i,k)*(Ppi_1Px_u(i,k) + uGrid%G(i,k)*Ppi_1Pzeta_u(i,k))
 
-		tend_u(i,k) = A_u(i,k) + P_u(i,k) + D_u(i,k) + S_u(i,k)
+		tend_u(i,k) = A_u(i,k) + P_u(i,k) + D_u(i,k) + S_u(i,k) + F_u(k)
 	END DO
 END DO
 !$OMP END PARALLEL DO
 !-------------------------------------------------
-IF (ANY(ISNAN(tend_u(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_u!!!"
+!IF (ANY(ISNAN(tend_u(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_u!!!"
 !=================================================
 END SUBROUTINE tendency_u
 !=================================================
@@ -97,7 +99,7 @@ DO k = kmin, kmax
 END DO
 !$OMP END PARALLEL DO
 !-------------------------------------------------
-IF (ANY(ISNAN(tend_w(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITHT tend_w!!!"
+!IF (ANY(ISNAN(tend_w(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITHT tend_w!!!"
 !=================================================
 END SUBROUTINE tendency_w
 !=================================================
@@ -143,7 +145,7 @@ DO k = kmin, kmax
 END DO
 !$OMP END PARALLEL DO
 !-------------------------------------------------
-IF (ANY(ISNAN(tend_pi_1(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_pi_1!!!"
+!IF (ANY(ISNAN(tend_pi_1(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_pi_1!!!"
 !=================================================
 END SUBROUTINE tendency_pi
 !=================================================
@@ -157,6 +159,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: q
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: tend_q
 !=================================================
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: A_q = undef, D_q = undef, M_q = undef, S_q = undef
+REAL(kd), DIMENSION(kms:kme) :: F_q = undef
 !-------------------------------------------------
 INTEGER :: i, k
 !=================================================
@@ -172,6 +175,7 @@ CASE (0)
 	ELSE
 		S_q = 0.
 	END IF
+	F_q = wGrid%forcing_theta
 CASE (1)
 	D_q = wGrid%Dqv
 	M_q = wGrid%Mqv
@@ -180,6 +184,7 @@ CASE (1)
 	ELSE
 		S_q = 0.
 	END IF
+	F_q = wGrid%forcing_qv
 CASE (2)
 	D_q = wGrid%Dqc
 	M_q = wGrid%Mqc
@@ -188,6 +193,7 @@ CASE (2)
 	ELSE
 		S_q = 0.
 	END IF
+	F_q = wGrid%forcing_qc
 CASE (3)
 	D_q = wGrid%Dqr
 	M_q = wGrid%Mqr
@@ -196,6 +202,7 @@ CASE (3)
 	ELSE
 		S_q = 0.
 	END IF
+	F_q = wGrid%forcing_qr
 CASE (4)
 	D_q = wGrid%Dqi
 	M_q = wGrid%Mqi
@@ -204,6 +211,7 @@ CASE (4)
 	ELSE
 		S_q = 0.
 	END IF
+	F_q = wGrid%forcing_qi
 CASE (5)
 	D_q = wGrid%Dqs
 	M_q = wGrid%Mqs
@@ -212,6 +220,7 @@ CASE (5)
 	ELSE
 		S_q = 0.
 	END IF
+	F_q = wGrid%forcing_qs
 CASE (6)
 	D_q = wGrid%Dqg
 	M_q = wGrid%Mqg
@@ -220,6 +229,7 @@ CASE (6)
 	ELSE
 		S_q = 0.
 	END IF
+	F_q = wGrid%forcing_qg
 CASE DEFAULT
 	STOP "WRONG flag of calc_advection_w"
 END SELECT
@@ -227,12 +237,12 @@ END SELECT
 !$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		tend_q(i,k) = A_q(i,k) + D_q(i,k) + M_q(i,k) + S_q(i,k)
+		tend_q(i,k) = A_q(i,k) + D_q(i,k) + M_q(i,k) + S_q(i,k) + F_q(k)
 	END DO
 END DO
 !$OMP END PARALLEL DO
 !-------------------------------------------------
-IF (ANY(ISNAN(tend_q(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_theta!!!"
+!IF (ANY(ISNAN(tend_q(its:ite,kts:kte)))) STOP "SOMETHING IS WRONG WITH tend_theta!!!"
 !=================================================
 END SUBROUTINE tendency_q
 !=================================================

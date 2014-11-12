@@ -14,7 +14,7 @@ OBJS =	sp_dynamic.o sp_module_advection.o sp_module_boundary.o \
 	sp_module_subgrid.o sp_module_tendency.o sp_module_timeschemes.o \
 	sp_module_wsm6.o
 
-LIBS =	
+LIBS =
 
 F90 = ifort
 F90FLAGS = -O3 -w -fp-model precise -openmp

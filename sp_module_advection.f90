@@ -1,4 +1,12 @@
 !=================================================
+! Super-Parametertization System (SPS)
+!-------------------------------------------------
+! Version: 0.2
+! Author: Feng Zhu
+! Email: zhuf.atmos@gmail.com
+! Date: 2014-06-12 18:18:45
+! Copyright: This software is provided under a CC BY-NC-SA 3.0 License(http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh)
+!=================================================
 MODULE sp_module_advection
 USE sp_module_constant
 USE sp_module_model
@@ -20,6 +28,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_vir, rhouvar_vir
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_vir, rhowvar_vir
 
 REAL(kd) :: fa, fb, fc, fd, fe, ff
+REAL(kd) :: a, b, c
 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_u, PrhouvarPx_u
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPzeta_u, PrhouvarPzeta_u
@@ -30,7 +39,7 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_pi
 CALL set_area_expand(expand)
-SELECT CASE (AdvectionScheme)
+SELECT CASE (HoriAdv)
 CASE(2)
 	!$OMP PARALLEL DO PRIVATE(fa)
 	DO k = kmin, kmax
@@ -63,16 +72,22 @@ END SELECT
 
 CALL set_area_vir
 CALL set_area_expand(expand)
-SELECT CASE (AdvectionScheme)
+SELECT CASE (VertAdv)
 CASE(2)
-	!$OMP PARALLEL DO PRIVATE(fa)
+	!$OMP PARALLEL DO PRIVATE(fa,a,b,c)
 	DO k = kmin, kmax
 		DO i = imin, imax
 			rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
 			rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
-			fa = var_u(i,k-1) + var_u(i,k)
-			rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
-			rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+			!fa = var_u(i,k-1) + var_u(i,k)
+			!rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
+			!rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+			c = dk(k)/2. + dk(k-1)/2.
+			a = dk(k)/2./c
+			b = dk(k-1)/2./c
+			fa = a*var_u(i,k-1) + b*var_u(i,k)
+			rhouvar_vir(i,k) = rhou_vir(i,k)*fa
+			rhowvar_vir(i,k) = rhow_vir(i,k)*fa
 		END DO
 	END DO
 	!$OMP END PARALLEL DO
@@ -97,14 +112,20 @@ CASE(5)
 		END DO
 		!$OMP END PARALLEL DO
 	ELSE
-		!$OMP PARALLEL DO PRIVATE(fa)
+		!$OMP PARALLEL DO PRIVATE(fa,a,b,c)
 		DO k = kmin, kmin+halo-1
 			DO i = imin, imax
 				rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
 				rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
-				fa = var_u(i,k-1) + var_u(i,k)
-				rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
-				rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+				!fa = var_u(i,k-1) + var_u(i,k)
+				!rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
+				!rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+				c = dk(k)/2. + dk(k-1)/2.
+				a = dk(k)/2./c
+				b = dk(k-1)/2./c
+				fa = a*var_u(i,k-1) + b*var_u(i,k)
+				rhouvar_vir(i,k) = rhou_vir(i,k)*fa
+				rhowvar_vir(i,k) = rhow_vir(i,k)*fa
 			END DO
 		END DO
 		!$OMP END PARALLEL DO
@@ -126,14 +147,20 @@ CASE(5)
 			END DO
 		END DO
 		!$OMP END PARALLEL DO
-		!$OMP PARALLEL DO PRIVATE(fa)
+		!$OMP PARALLEL DO PRIVATE(fa,a,b,c)
 		DO k = kmax-halo+1, kmax
 			DO i = imin, imax
 				rhou_vir(i,k) = virGrid%rho_0(i,k)*virGrid%u(i,k)
 				rhow_vir(i,k) = virGrid%rho_0(i,k)*virGrid%w(i,k)
-				fa = var_u(i,k-1) + var_u(i,k)
-				rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
-				rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+				!fa = var_u(i,k-1) + var_u(i,k)
+				!rhouvar_vir(i,k) = rhou_vir(i,k)*fa/2.
+				!rhowvar_vir(i,k) = rhow_vir(i,k)*fa/2.
+				c = dk(k)/2. + dk(k-1)/2.
+				a = dk(k)/2./c
+				b = dk(k-1)/2./c
+				fa = a*var_u(i,k-1) + b*var_u(i,k)
+				rhouvar_vir(i,k) = rhou_vir(i,k)*fa
+				rhowvar_vir(i,k) = rhow_vir(i,k)*fa
 			END DO
 		END DO
 		!$OMP END PARALLEL DO
@@ -188,7 +215,7 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_vir
 CALL set_area_expand(expand)
-SELECT CASE (AdvectionScheme)
+SELECT CASE (HoriAdv)
 CASE(2)
 	!$OMP PARALLEL DO PRIVATE(fa)
 	DO k = kmin, kmax
@@ -221,7 +248,7 @@ END SELECT
 
 CALL set_area_pi
 CALL set_area_expand(expand)
-SELECT CASE (AdvectionScheme)
+SELECT CASE (VertAdv)
 CASE(2)
 	!$OMP PARALLEL DO PRIVATE(fa)
 	DO k = kmin, kmax
@@ -336,6 +363,7 @@ REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhou_w, rhouvar_w
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: rhow_w, rhowvar_w
 
 REAL(kd) :: fa, fb, fc, fd, fe, ff
+REAL(kd) :: a, b, c
 
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPx_pi, PrhouvarPx_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme) :: PrhouPzeta_pi, PrhouvarPzeta_pi
@@ -346,7 +374,7 @@ INTEGER :: i, k
 !=================================================
 CALL set_area_u
 CALL set_area_expand(expand)
-SELECT CASE (AdvectionScheme)
+SELECT CASE (HoriAdv)
 CASE(2)
 	!$OMP PARALLEL DO PRIVATE(fa)
 	DO k = kmin, kmax
@@ -379,16 +407,22 @@ END SELECT
 
 CALL set_area_w
 CALL set_area_expand(expand)
-SELECT CASE (AdvectionScheme)
+SELECT CASE (VertAdv)
 CASE(2)
-	!$OMP PARALLEL DO PRIVATE(fa)
+	!$OMP PARALLEL DO PRIVATE(fa,a,b,c)
 	DO k = kmin, kmax
 		DO i = imin, imax
 			rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
 			rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
-			fa = var_pi(i,k-1) + var_pi(i,k)
-			rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
-			rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+			!fa = var_pi(i,k-1) + var_pi(i,k)
+			!rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
+			!rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+			c = dk(k)/2. + dk(k-1)/2.
+			a = dk(k)/2./c
+			b = dk(k-1)/2./c
+			fa = a*var_pi(i,k-1) + b*var_pi(i,k)
+			rhouvar_w(i,k) = rhou_w(i,k)*fa
+			rhowvar_w(i,k) = rhow_w(i,k)*fa
 		END DO
 	END DO
 	!$OMP END PARALLEL DO
@@ -413,14 +447,20 @@ CASE(5)
 		END DO
 		!$OMP END PARALLEL DO
 	ELSE
-		!$OMP PARALLEL DO PRIVATE(fa)
+		!$OMP PARALLEL DO PRIVATE(fa,a,b,c)
 		DO k = kmin, kmin+halo-1
 			DO i = imin, imax
 				rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
 				rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
-				fa = var_pi(i,k-1) + var_pi(i,k)
-				rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
-				rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+				!fa = var_pi(i,k-1) + var_pi(i,k)
+				!rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
+				!rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+				c = dk(k)/2. + dk(k-1)/2.
+				a = dk(k)/2./c
+				b = dk(k-1)/2./c
+				fa = a*var_pi(i,k-1) + b*var_pi(i,k)
+				rhouvar_w(i,k) = rhou_w(i,k)*fa
+				rhowvar_w(i,k) = rhow_w(i,k)*fa
 			END DO
 		END DO
 		!$OMP END PARALLEL DO
@@ -447,9 +487,15 @@ CASE(5)
 			DO i = imin, imax
 				rhou_w(i,k) = wGrid%rho_0(i,k)*wGrid%u(i,k)
 				rhow_w(i,k) = wGrid%rho_0(i,k)*wGrid%w(i,k)
-				fa = var_pi(i,k-1) + var_pi(i,k)
-				rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
-				rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+				!fa = var_pi(i,k-1) + var_pi(i,k)
+				!rhouvar_w(i,k) = rhou_w(i,k)*fa/2.
+				!rhowvar_w(i,k) = rhow_w(i,k)*fa/2.
+				c = dk(k)/2. + dk(k-1)/2.
+				a = dk(k)/2./c
+				b = dk(k-1)/2./c
+				fa = a*var_pi(i,k-1) + b*var_pi(i,k)
+				rhouvar_w(i,k) = rhou_w(i,k)*fa
+				rhowvar_w(i,k) = rhow_w(i,k)*fa
 			END DO
 		END DO
 		!$OMP END PARALLEL DO

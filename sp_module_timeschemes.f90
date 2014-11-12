@@ -1,10 +1,10 @@
 !=================================================
-! The timeschemes module of SPS-dynamic-integrate
+! Super-Parametertization System (SPS)
 !-------------------------------------------------
-! Version: 0.11
-! Author: Zhu F.
-! Email: lyricorpse@gmail.com
-! Date: 2013-05-04 13:59:46 
+! Version: 0.2
+! Author: Feng Zhu
+! Email: zhuf.atmos@gmail.com
+! Date: 2014-06-12 18:18:45
 ! Copyright: This software is provided under a CC BY-NC-SA 3.0 License(http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh)
 !=================================================
 MODULE sp_module_timeschemes

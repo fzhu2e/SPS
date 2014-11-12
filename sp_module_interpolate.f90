@@ -1,10 +1,10 @@
 !=================================================
-! The interpolate module of SPS-dynamic-integrate
+! Super-Parametertization System (SPS)
 !-------------------------------------------------
-! Version: 0.11
-! Author: Zhu F.
-! Email: lyricorpse@gmail.com
-! Date: 2013-05-04 14:01:18 
+! Version: 0.2
+! Author: Feng Zhu
+! Email: zhuf.atmos@gmail.com
+! Date: 2014-06-12 18:18:45
 ! Copyright: This software is provided under a CC BY-NC-SA 3.0 License(http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh)
 !=================================================
 MODULE sp_module_interpolate
@@ -83,24 +83,27 @@ CALL pi2w(piGrid%pi,wGrid%pi)
 !CALL debug_ascii_output(uGrid%u,"u")
 !CALL debug_ascii_output(wGrid%w,"w")
 !CALL debug_ascii_output(piGrid%pi_1,"pi_1")
-!CALL debug_ascii_output(wGrid%theta,"theta")
-!CALL debug_ascii_output(wGrid%qv,"qv")
-!CALL debug_ascii_output(wGrid%qc,"qc")
-!CALL debug_ascii_output(wGrid%qr,"qr")
-
-!CALL debug_ascii_output(wGrid%theta_M,"theta_M")
-!CALL debug_ascii_output(wGrid%theta_M_0,"theta_M_0")
-!CALL debug_ascii_output(wGrid%theta_M_1,"theta_M_1")
-
-!CALL debug_ascii_output(piGrid%rho_0,"rho_0_pi")
-!CALL debug_ascii_output(uGrid%rho_0,"rho_0_u")
-!CALL debug_ascii_output(wGrid%rho_0,"rho_0_w")
-!CALL debug_ascii_output(virGrid%rho_0,"rho_0_vir")
-
 !CALL debug_ascii_output(piGrid%pi_0,"pi_0_pi")
 !CALL debug_ascii_output(uGrid%pi_0,"pi_0_u")
 !CALL debug_ascii_output(wGrid%pi_0,"pi_0_w")
 !CALL debug_ascii_output(virGrid%pi_0,"pi_0_vir")
+!CALL debug_ascii_output(piGrid%pi,"pi")
+!CALL debug_ascii_output(wGrid%theta,"theta")
+!CALL debug_ascii_output(wGrid%theta_0,"theta_0_w")
+!CALL debug_ascii_output(uGrid%theta_0,"theta_0_u")
+!CALL debug_ascii_output(piGrid%theta_0,"theta_0_pi")
+!CALL debug_ascii_output(virGrid%theta_0,"theta_0_vir")
+!CALL debug_ascii_output(wGrid%theta_1,"theta_1")
+!CALL debug_ascii_output(wGrid%qv,"qv")
+!CALL debug_ascii_output(wGrid%qc,"qc")
+!CALL debug_ascii_output(wGrid%qr,"qr")
+!CALL debug_ascii_output(wGrid%qi,"qi")
+!CALL debug_ascii_output(wGrid%qs,"qs")
+!CALL debug_ascii_output(wGrid%qg,"qg")
+!CALL debug_ascii_output(uGrid%rho_0,"rho_0_u")
+!CALL debug_ascii_output(wGrid%rho_0,"rho_0_w")
+!CALL debug_ascii_output(piGrid%rho_0,"rho_0_pi")
+!CALL debug_ascii_output(virGrid%rho_0,"rho_0_vir")
 
 !CALL debug_SFSG
 !=================================================

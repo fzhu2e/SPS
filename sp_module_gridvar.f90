@@ -1,4 +1,12 @@
 !=================================================
+! Super-Parametertization System (SPS)
+!-------------------------------------------------
+! Version: 0.2
+! Author: Feng Zhu
+! Email: zhuf.atmos@gmail.com
+! Date: 2014-06-12 18:18:45
+! Copyright: This software is provided under a CC BY-NC-SA 3.0 License(http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh)
+!=================================================
 MODULE sp_module_gridvar
 USE sp_module_constant
 USE sp_module_model
@@ -17,6 +25,7 @@ END TYPE mainvar
 
 !=================================================
 TYPE, EXTENDS(mainvar) :: grid
+	REAL(kd), DIMENSION(ims:ime,kms:kme) :: v = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: u_0 = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: pi = undef, pi_0 = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: theta_0 = undef, theta_1 = undef
@@ -47,6 +56,16 @@ TYPE, EXTENDS(mainvar) :: grid
 	REAL(kd), DIMENSION(ims:ime) :: rain = undef, rainncv = undef, sr = undef
 	REAL(kd), DIMENSION(ims:ime) :: snow = undef, snowncv = undef, graupel = undef, graupelncv = undef
 	REAL(kd), DIMENSION(ims:ime,kms:kme) :: cldfra = undef
+
+    ! for SP run with real data
+	REAL(kd), DIMENSION(kms:kme) :: forcing_u = undef
+	REAL(kd), DIMENSION(kms:kme) :: forcing_theta = undef
+	REAL(kd), DIMENSION(kms:kme) :: forcing_qv = undef
+	REAL(kd), DIMENSION(kms:kme) :: forcing_qc = undef
+	REAL(kd), DIMENSION(kms:kme) :: forcing_qr = undef
+	REAL(kd), DIMENSION(kms:kme) :: forcing_qi = undef
+	REAL(kd), DIMENSION(kms:kme) :: forcing_qs = undef
+	REAL(kd), DIMENSION(kms:kme) :: forcing_qg = undef
 
 !=================================================
 ! Sponge Layer
@@ -83,13 +102,18 @@ IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_u
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_vir
 INTEGER :: i, k
+REAL(kd) :: a, b, c
 CALL set_area_vir
 CALL set_area_expand(expand)
 !IF (ANY(var_u(imin:imax,kmin-1:kmax) == undef)) STOP "u2vir WRONG!!!"
-!$OMP PARALLEL DO
+!$OMP PARALLEL DO PRIVATE(a,b,c)
 DO k = kmin, kmax
 	DO i = imin, imax
-		var_vir(i,k) = (var_u(i,k) + var_u(i,k-1))/2.
+		!var_vir(i,k) = (var_u(i,k) + var_u(i,k-1))/2.
+		c = dk(k)/2. + dk(k-1)/2.
+		a = dk(k)/2./c
+		b = dk(k-1)/2./c
+		var_vir(i,k) = a*var_u(i,k-1) + b*var_u(i,k)
 	END DO
 END DO
 !$OMP END PARALLEL DO
@@ -102,13 +126,18 @@ IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_u 
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_w 
 INTEGER :: i, k
+REAL(kd) :: a, b, c
 CALL set_area_w
 CALL set_area_expand(expand)
 !IF (ANY(var_u(imin-1:imax,kmin-1:kmax) == undef)) STOP "u2w WRONG!!!"
-!$OMP PARALLEL DO
+!$OMP PARALLEL DO PRIVATE(a,b,c)
 DO k = kmin, kmax
 	DO i = imin, imax
-		var_w(i,k) = (var_u(i,k) + var_u(i,k-1) + var_u(i-1,k) + var_u(i-1,k-1))/4.
+		!var_w(i,k) = (var_u(i,k) + var_u(i,k-1) + var_u(i-1,k) + var_u(i-1,k-1))/4.
+		c = dk(k)/2. + dk(k-1)/2.
+		a = dk(k)/2./c
+		b = dk(k-1)/2./c
+		var_w(i,k) = (a*var_u(i,k-1) + b*var_u(i,k) + a*var_u(i-1,k-1) + b*var_u(i-1,k))/2.
 	END DO
 END DO
 !$OMP END PARALLEL DO
@@ -140,13 +169,18 @@ IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_w
 INTEGER :: i, k
+REAL(kd) :: a, b, c
 CALL set_area_w
 CALL set_area_expand(expand)
 !IF (ANY(var_pi(imin:imax,kmin-1:kmax) == undef)) STOP "pi2w WRONG!!!"
-!$OMP PARALLEL DO
+!$OMP PARALLEL DO PRIVATE(a,b,c)
 DO k = kmin, kmax
 	DO i = imin, imax
-		var_w(i,k) = (var_pi(i,k-1) + var_pi(i,k))/2.
+		!var_w(i,k) = (var_pi(i,k-1) + var_pi(i,k))/2.
+		c = dk(k)/2. + dk(k-1)/2.
+		a = dk(k)/2./c
+		b = dk(k-1)/2./c
+		var_w(i,k) = a*var_pi(i,k-1) + b*var_pi(i,k)
 	END DO
 END DO
 !$OMP END PARALLEL DO
@@ -159,13 +193,18 @@ IMPLICIT NONE
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(IN) :: var_pi
 REAL(kd), DIMENSION(ims:ime,kms:kme), INTENT(OUT) :: var_vir
 INTEGER :: i, k
+REAL(kd) :: a, b, c
 CALL set_area_vir
 CALL set_area_expand(expand)
 !IF (ANY(var_pi(imin:imax+1,kmin-1:kmax) == undef)) STOP "pi2vir WRONG!!!"
-!$OMP PARALLEL DO
+!$OMP PARALLEL DO PRIVATE(a,b,c)
 DO k = kmin, kmax
 	DO i = imin, imax
-		var_vir(i,k) = (var_pi(i,k-1) + var_pi(i,k) + var_pi(i+1,k) + var_pi(i+1,k-1))/4.
+		!var_vir(i,k) = (var_pi(i,k-1) + var_pi(i,k) + var_pi(i+1,k) + var_pi(i+1,k-1))/4.
+		c = dk(k)/2. + dk(k-1)/2.
+		a = dk(k)/2./c
+		b = dk(k-1)/2./c
+		var_vir(i,k) = (a*var_pi(i,k-1) + b*var_pi(i,k) + a*var_pi(i+1,k-1) + b*var_pi(i+1,k))/2.
 	END DO
 END DO
 !$OMP END PARALLEL DO
@@ -258,7 +297,8 @@ CALL set_area_u
 !$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		output(i,k) = (var_vir(i,k+1) - var_vir(i,k))/dz
+		!output(i,k) = (var_vir(i,k+1) - var_vir(i,k))/dz
+		output(i,k) = (var_vir(i,k+1) - var_vir(i,k))/dk(k)
 	END DO
 END DO
 !$OMP END PARALLEL DO
@@ -294,7 +334,8 @@ CALL set_area_w
 !$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		output(i,k) = (var_pi(i,k) - var_pi(i,k-1))/dz
+		!output(i,k) = (var_pi(i,k) - var_pi(i,k-1))/dz
+		output(i,k) = (var_pi(i,k) - var_pi(i,k-1))/(dk(k)/2. + dk(k-1)/2.)
 	END DO
 END DO
 !$OMP END PARALLEL DO
@@ -330,7 +371,8 @@ CALL set_area_pi
 !$OMP PARALLEL DO
 DO k = kmin, kmax
 	DO i = imin, imax
-		output(i,k) = (var_w(i,k+1) - var_w(i,k))/dz
+		!output(i,k) = (var_w(i,k+1) - var_w(i,k))/dz
+		output(i,k) = (var_w(i,k+1) - var_w(i,k))/dk(k)
 	END DO
 END DO
 !$OMP END PARALLEL DO

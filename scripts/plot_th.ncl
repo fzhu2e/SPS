@@ -6,48 +6,65 @@ begin
 ; Settings.
 ;---------------------------------
 
+;nx = 301
+;nz = 80
+;nt = 73
+
+;nx = 801
 nx = 201
-nz = 100
+;nz = 80
+nz = 31
+;nt = 73
+;nt = 37
 
-;nx = 401
+;nx = 501
 ;nz = 200
+nt = 180
 
 ;nt = 1
-;nt = 3
 ;nt = 2
-;nt = 1
-;nt = 11
+;nt = 8
+;nt = 15
+;nt = 28
 ;nt = 35
-nt = 51
-;nt = 65
+;nt = 40
+;nt = 61
+;nt = 73
 ;nt = 91
-;nt = 101
+;nt = 121
+;nt = 181
 ;nt = 141
 ;nt = 301
 ;nt = 401
 ;nt = 1001
-var = "theta_M_1"
-;var = "theta_M"
 ;var = "theta"
+;var = "theta_M_1"
+;var = "cldfra"
+;var = "theta_1"
+;var = "theta_M"
 ;var = "pi_1"
 ;var = "u"
-;var = "w"
+var = "w"
 ;var = "qv"
 ;var = "qc"
 ;var = "qr"
+;var = "qi"
+;var = "qs"
+;var = "qg"
 halo = 4
 ;=================================
 ; Read data.
 ;---------------------------------
 setfileoption ("bin", "ReadByteOrder", "BigEndian")
-;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"float")
+;data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz,nx/),"double")
 data = cbinread("../output/modelvar_"+var+".bin",(/nt,nz+2*halo,nx+2*halo/),"double")
-;print(data)
-pi_data = (data(:,0:nz-2,:) + data(:,1:nz-1,:))/2.
+;data = data*1000.
+;data = smth9(data,.5,.25,True)
+;print(data(nt-1,10,:))
 ;=================================
 ; Plot.
 ;---------------------------------
-wks = gsn_open_wks ("pdf","tb")                  ; open workstation
+wks = gsn_open_wks ("pdf","th")                  ; open workstation
 ;wks = gsn_open_wks ("pdf","tb_w")                  ; open workstation
 ;wks = gsn_open_wks ("pdf","tb_u")                  ; open workstation
 gsn_define_colormap(wks,"temp_diff_18lev")    ; For theta
@@ -57,7 +74,8 @@ res = True
 
 res@gsnMaximize = True
 res@vpWidthF  = 1.0                    ; change the aspect ratio
-res@vpHeightF = 0.5
+;res@vpHeightF = 0.1
+res@vpHeightF = 0.28
 ;res@vpWidthF  = 0.5                    ; change the aspect ratio
 ;res@vpHeightF = 1.0
 ;res@vpXF      = .1                     ; location of where plot starts
@@ -68,57 +86,23 @@ res@tmYLLabelFontHeightF = 0.015
 res@tmXTOn = False
 res@tmYROn = False
 
-
-; LabelBar
-res@cnFillOn = True
+;res@cnLevelSelectionMode           = "ExplicitLevels"
+;res@cnLevels           = (/0.01,0.02,0.04,0.08,0.16,0.32,0.64,1.28,2.56,5.12,10.24/)
 res@cnLineLabelsOn = False
-res@cnInfoLabelOn = False
-;res@pmLabelBarDisplayMode   = "Always" ; turn on color bar
-res@pmLabelBarSide          = "Bottom" ; put it on the bottom of plot
-res@pmLabelBarWidthF        = 1.0      ; control size of colorbar
-res@pmLabelBarHeightF       = 0.1      ;
-;res@pmLabelBarOrthogonalPosF = -0.02   ; position wrt plot
-res@lbLabelFontHeightF      = 0.015     ; label bar font
-res@lbOrientation           = "Horizontal" ; label bar orientation
-res@lbPerimOn               = False    ; no box around label bar
-res@lbAutoManage            = False	 ; we control how drawn not plot 
-;res@cnLevelSelectionMode = "ExplicitLevels"   ; set explicit contour levels
-;res@cnLevels            = (//)
+res@cnInfoLabelOn = True
+;res@cnInfoLabelOn = False
 
-res@gsnSpreadColors = True
-res@gsnSpreadColorStart = 11    ; For theta
-res@gsnSpreadColorEnd = 60
-
-res@cnLevelSelectionMode = "ManualLevels"   ; set explicit contour levels
-; For theta
-res@cnMinLevelValF          = 0.2
-res@cnMaxLevelValF          = 1.8
-res@cnLevelSpacingF         = 0.2
-
-; For u & w
-;res@cnMinLevelValF          = - 10
-;res@cnMaxLevelValF          = 10
-;res@cnLevelSpacingF         = 1
-
-;res@cnFillColors = ispan(250,10,16)
-
-; Line
-;res@cnFillOn = False
-;res@cnLinesOn = True
-;res@cnLineLabelsOn = True
-;res@cnMonoLevelFlag = False
-;res@cnLevelFlags = "LineAndLabel"
-
-res@tiMainString = "Thermal Bubble"
+res@tiMainString = "Thunderstorm"
 ;res@tiXAxisString      = "X"  
 ;res@tiYAxisString      = "Z (height)"
+res@gsnContourNegLineDashPattern = 2
 
 res@tiMainFontHeightF  = 0.015                    ; change font heights
 ;res@tiXAxisFontHeightF  = 0.015                    ; change font heights
 ;res@tiYAxisFontHeightF  = 0.015                    ; change font heights
 
 ;res@gsnLeftString   = "dx = 50m; dz = 50m; dt = 0.1s"               ; add the gsn titles
-res@gsnLeftString   = "dx = 100m; dz = 100m; dt = 0.1s"               ; add the gsn titles
+res@gsnLeftString   = "dx = 250m; dz = 250m; dt = 0.3s"               ; add the gsn titles
 res@gsnLeftStringFontHeightF   = 0.015
 
 ;plot = gsn_contour(wks,pi_data,res)

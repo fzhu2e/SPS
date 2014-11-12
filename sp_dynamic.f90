@@ -1,10 +1,10 @@
 !=================================================
-! The dynamic core of Super-Parametertization System (SPS).
+! Super-Parametertization System (SPS)
 !-------------------------------------------------
-! Version: 0.11
-! Author: Zhu F.
-! Email: lyricorpse@gmail.com
-! Date: 2013-05-04 12:47:26 
+! Version: 0.2
+! Author: Feng Zhu
+! Email: zhuf.atmos@gmail.com
+! Date: 2014-06-12 18:18:45
 ! Copyright: This software is provided under a CC BY-NC-SA 3.0 License(http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh)
 !=================================================
 PROGRAM sp_dynamic
@@ -32,13 +32,15 @@ WRITE(*,*) "====================="
 WRITE(*,*) " Kind:            ", kd
 WRITE(*,*) " RunCase:         ", RunCase
 WRITE(*,*) " TimeScheme:      ", TimeScheme
-WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
+WRITE(*,*) " HoriAdv:         ", HoriAdv
+WRITE(*,*) " VertAdv:         ", VertAdv
 WRITE(*,*) " LateralBoundary: ", LateralBoundary
 WRITE(*,*) " UpperBoundary:   ", UpperBoundary
 WRITE(*,*) " DampTop:         ", DampTop
 WRITE(*,*) " DampLateral:     ", DampLateral
 WRITE(*,*) " DampThickness:   ", s
 WRITE(*,*) " DampCooef:       ", tau0
+WRITE(*,*) " ztop:            ", ztop
 WRITE(*,*) "---------------------"
 WRITE(*,*) " nstep: ", nstep
 WRITE(*,*) " nx/nz: ", nx, nz
@@ -49,61 +51,81 @@ WRITE(*,"(1X,A9,2F9.2)") " Km/Kh: ", Km, Kh
 WRITE(*,*) "====================="
 WRITE(*,*)
 
-CALL initiate_grid(uGrid,wGrid,piGrid,virGrid)
-CALL initiate_terrain(uGrid,wGrid,piGrid,virGrid)
-CALL initiate_basic_state(uGrid,wGrid,piGrid,virGrid)
+IF (RunCase /= 99) THEN
 !-------------------------------------------------
-! Initiate.
+! Ideal Cases
 !-------------------------------------------------
-WRITE(*,*) "====================="
-WRITE(*,*) " Initial case..."
-WRITE(*,*) "====================="
-WRITE(*,*)
-SELECT CASE (RunCase)
-CASE (1)
-	CALL initiate_dc(uGrid,wGrid,piGrid,virGrid)
-CASE (2)
-	CALL initiate_tb(uGrid,wGrid,piGrid,virGrid)
-CASE (3)
-	CALL initiate_igw(uGrid,wGrid,piGrid,virGrid)
-CASE (4)
-	CALL initiate_Sm(uGrid,wGrid,piGrid,virGrid)
-CASE (5)
-	CALL initiate_wb(uGrid,wGrid,piGrid,virGrid)
-CASE (6)
-	CALL initiate_th(uGrid,wGrid,piGrid,virGrid)
-CASE DEFAULT
-	STOP "Wrong ideal case!!!"
-END SELECT
-IF (Vapor == 0) THEN
-	wGrid%qv = 0.
-END IF
+	CALL initiate_grid(uGrid,wGrid,piGrid,virGrid)
+	CALL initiate_terrain(uGrid,wGrid,piGrid,virGrid)
+	CALL initiate_basic_state(uGrid,wGrid,piGrid,virGrid)
+	!-------------------------------------------------
+	! Initiate.
+	!-------------------------------------------------
+	WRITE(*,*) "====================="
+	WRITE(*,*) " Initial case..."
+	WRITE(*,*) "====================="
+	WRITE(*,*)
+	SELECT CASE (RunCase)
+	CASE (1)
+		CALL initiate_dc(uGrid,wGrid,piGrid,virGrid)
+	CASE (2)
+		CALL initiate_tb(uGrid,wGrid,piGrid,virGrid)
+	CASE (3)
+		CALL initiate_igw(uGrid,wGrid,piGrid,virGrid)
+	CASE (4)
+		CALL initiate_Sm(uGrid,wGrid,piGrid,virGrid)
+	CASE (5)
+		CALL initiate_wb(uGrid,wGrid,piGrid,virGrid)
+	CASE (6)
+		CALL initiate_th(uGrid,wGrid,piGrid,virGrid)
+	CASE DEFAULT
+		STOP "Wrong ideal case!!!"
+	END SELECT
+	IF (Vapor == 0) THEN
+		wGrid%qv = 0.
+	END IF
 
-CALL set_area_w
-DO k = kmin, kmax
-	DO i = imin, imax
-		wGrid%qc = 0.
-		wGrid%qr = 0.
-		wGrid%qi = 0.
-		wGrid%qs = 0.
-		wGrid%qg = 0.
-		wGrid%rain = 0.
-		wGrid%rainncv = 0.
-		wGrid%sr = 0.
-		wGrid%snow = 0.
-		wGrid%snowncv = 0.
-		wGrid%graupel = 0.
-		wGrid%graupelncv = 0.
-		wGrid%cldfra = 0.
-		wGrid%Mtheta = 0.
-		wGrid%Mqv = 0.
-		wGrid%Mqc = 0.
-		wGrid%Mqr = 0.
-		wGrid%Mqi = 0.
-		wGrid%Mqs = 0.
-		wGrid%Mqg = 0.
-	END DO
-END DO
+	wGrid%qc = 0.
+	wGrid%qr = 0.
+	wGrid%qi = 0.
+	wGrid%qs = 0.
+	wGrid%qg = 0.
+	wGrid%rain = 0.
+	wGrid%rainncv = 0.
+	wGrid%sr = 0.
+	wGrid%snow = 0.
+	wGrid%snowncv = 0.
+	wGrid%graupel = 0.
+	wGrid%graupelncv = 0.
+	wGrid%cldfra = 0.
+	wGrid%Mtheta = 0.
+	wGrid%Mqv = 0.
+	wGrid%Mqc = 0.
+	wGrid%Mqr = 0.
+	wGrid%Mqi = 0.
+	wGrid%Mqs = 0.
+	wGrid%Mqg = 0.
+
+	uGrid%forcing_u = 0.
+	wGrid%forcing_theta = 0.
+	wGrid%forcing_qv = 0.
+	wGrid%forcing_qc = 0.
+	wGrid%forcing_qr = 0.
+	wGrid%forcing_qi = 0.
+	wGrid%forcing_qs = 0.
+	wGrid%forcing_qg = 0.
+
+ELSE
+!-------------------------------------------------
+! Real Case
+!-------------------------------------------------
+	CALL initiate_grid(uGrid,wGrid,piGrid,virGrid)
+	CALL initiate_terrain(uGrid,wGrid,piGrid,virGrid)
+	CALL initiate_basic_state(uGrid,wGrid,piGrid,virGrid)
+	CALL initiate_real(uGrid,wGrid,piGrid,virGrid)
+
+END IF
+!=================================================
 
 CALL update_boundary(uGrid%u,wGrid%w,wGrid,piGrid%pi_1,wGrid%theta,                   &
                      wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,           &
@@ -120,7 +142,7 @@ CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 
 IF (Vapor == 0) THEN
 	CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
-	
+
 ELSE
 	CALL output(0,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta, &
 	              wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg,                  &
@@ -140,6 +162,8 @@ END IF
 !CALL debug_SFSG
 
 CALL wsm6init(rhoair0,rhowater,rhosnow,cliq,cpv)
+
+
 t_all = 0.
 DO i = 1, nstep
 	CALL SYSTEM_CLOCK(t_start,rate)
@@ -148,6 +172,9 @@ DO i = 1, nstep
 	                     wGrid%qv,wGrid%qc,wGrid%qr,wGrid%qi,wGrid%qs,wGrid%qg)
 	CALL calc_virTheta(uGrid,wGrid,piGrid,virGrid)
 	IF (MOD(i,100) == 0.) THEN
+		!IF (RunCase == 99) THEN
+			!CALL digital_filter()
+		!END IF
 		IF (Vapor == 0) THEN
 			CALL output(1,uGrid%u,wGrid%w,piGrid%pi_1,wGrid%theta_1,wGrid%theta_M_1,wGrid%theta_M, wGrid%theta)
 		ELSE
@@ -156,7 +183,7 @@ DO i = 1, nstep
 			              wGrid%rain,wGrid%snow,wGrid%graupel,wGrid%cldfra     )
 		END IF
 	END IF
-	
+
 	CALL SYSTEM_CLOCK(t_end)
 	t_lapse = REAL(t_end - t_start)/REAL(rate)
 	!t_left = t_lapse*(nstep - i)/60./60.  ! unit: hour
@@ -186,13 +213,15 @@ WRITE(*,*) "    dt: ", dt
 WRITE(*,*) "---------------------"
 WRITE(*,*) " RunCase:         ", RunCase
 WRITE(*,*) " TimeScheme:      ", TimeScheme
-WRITE(*,*) " AdvectionScheme: ", AdvectionScheme
+WRITE(*,*) " HoriAdv:         ", HoriAdv
+WRITE(*,*) " VertAdv:         ", VertAdv
 WRITE(*,*) " LateralBoundary: ", LateralBoundary
 WRITE(*,*) " UpperBoundary:   ", UpperBoundary
 WRITE(*,*) " DampTop:         ", DampTop
 WRITE(*,*) " DampLateral:     ", DampLateral
 WRITE(*,*) " DampThickness:   ", s
 WRITE(*,*) " DampCooef:       ", tau0
+WRITE(*,*) " ztop:            ", ztop
 WRITE(*,*) "---------------------"
 WRITE(*,*) " Km/Kh: ", Km, Kh
 WRITE(*,*) "---------------------"
@@ -200,7 +229,6 @@ WRITE(*,*) "---------------------"
 WRITE(*,*) " TIME: ", t_all/60., "min"
 WRITE(*,*) "====================="
 WRITE(*,*)
-!-------------------------------------------------
 !=================================================
 END PROGRAM sp_dynamic
 !=================================================
