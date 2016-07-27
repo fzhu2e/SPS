@@ -21,6 +21,17 @@ And suggestions are much appreciated.
 
 Let's hack nature~
 
+## Ideal Experiments
+
+Below are some results of ideal experiments conducted by this model:
+
+### Thermal Bubble
+![](http://spsystem.sinaapp.com/results/tb.gif)
+### Density Current
+![](http://spsystem.sinaapp.com/results/dc.gif)
+### Internal Gravity Wave
+![](http://spsystem.sinaapp.com/results/igw.gif)
+
 ## The modules
 + sp_dynamic.f90                          : the main program
 + sp_module_model.f90                     : settings for the running
@@ -58,4 +69,5 @@ Email: zhuf.atmos@gmail.com
 
 Date: 2014-06-12
 
-Copyright: This software is provided under a CC BY-NC-SA 3.0 License(http://creativecommons.org/licenses/by-nc-sa/3.0/deed.zh)
+License: MIT
+
