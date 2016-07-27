@@ -114,7 +114,7 @@ res@cnLevelSpacingF         = 0.0005
 ;res@cnMonoLevelFlag = False
 ;res@cnLevelFlags = "LineAndLabel"
 
-res@tiMainString = "Inertia Gravity Waves"
+res@tiMainString = "Internal Gravity Waves"
 ;res@tiXAxisString      = "X"  
 ;res@tiYAxisString      = "Z (height)"
 

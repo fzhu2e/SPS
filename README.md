@@ -23,14 +23,16 @@ Let's hack nature~
 
 ## Ideal Experiments
 
-Below are some results of ideal experiments conducted by this model:
+Below are some results of ideal experiments conducted by this model (click to
+see the gifs):
+
+### Density Current
+
+![Density Current](scripts/dc.gif)
 
 ### Thermal Bubble
-![](http://spsystem.sinaapp.com/results/tb.gif)
-### Density Current
-![](http://spsystem.sinaapp.com/results/dc.gif)
-### Internal Gravity Wave
-![](http://spsystem.sinaapp.com/results/igw.gif)
+
+![Thermal Bubble](scripts/tb.gif)
 
 ## The modules
 + sp_dynamic.f90                          : the main program
