@@ -67,8 +67,6 @@ Version: 0.2
 
 Author: Feng Zhu
 
-Email: zhuf.atmos@gmail.com
-
 Date: 2014-06-12
 
 License: MIT
