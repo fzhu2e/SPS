@@ -23,8 +23,7 @@ Let's hack nature~
 
 ## Ideal Experiments
 
-Below are some results of ideal experiments conducted by this model (click to
-see the gifs):
+Below are some results of ideal experiments conducted by this model:
 
 ### Density Current
 
