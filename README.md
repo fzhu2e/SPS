@@ -33,6 +33,10 @@ Below are some results of ideal experiments conducted by this model:
 
 ![Thermal Bubble](scripts/tb.gif)
 
+### A Thurderstorm Experiment
+
+![Thunderstorm](scripts/th.gif)
+
 ## The modules
 + sp_dynamic.f90                          : the main program
 + sp_module_model.f90                     : settings for the running
