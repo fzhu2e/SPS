@@ -33,7 +33,7 @@ Below are some results of ideal experiments conducted by this model:
 
 ![Thermal Bubble](scripts/tb.gif)
 
-### A Thurderstorm Experiment
+### An Ideal Thunderstorm Experiment
 
 ![Thunderstorm](scripts/th.gif)
 
